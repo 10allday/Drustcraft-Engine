@@ -1,4 +1,5 @@
 # Drustcraft - Realtime Time
+# Adjusts the worlds time to server time
 # https://github.com/drustcraft/drustcraft
 
 drustcraftw_realtime:
