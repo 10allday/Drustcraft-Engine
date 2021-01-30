@@ -43,6 +43,7 @@ Some of the plugins we use are premium and are marked with an asterik.
 - [CoreProtect](https://www.spigotmc.org/resources/coreprotect.8631/) - *Undo world changes, find looters, etc*
 - [Denizen](https://www.spigotmc.org/resources/denizen.21039/) - *Minecraft scripting, the glue that makes our server work!*
 - [Depenizen](https://github.com/DenizenScript/Depenizen/blob/master/README.md) - *Denizen <-> Other Plugins glue*
+- [DepenizenBungee](https://github.com/DenizenScript/DepenizenBungee) - *Denizen <-> BungeeCord glue*
 - [DiscordSRV](https://www.spigotmc.org/resources/discordsrv.18494/) - *Minecraft <-> Discord console and chat bridge*
 - [DragonTravel](https://www.spigotmc.org/resources/dragontravel.10380/) - *Travel on Dragons*
 - [Dynmap](https://www.spigotmc.org/resources/dynmap.274/) - *World map rendering for the website*
