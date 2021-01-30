@@ -12,6 +12,8 @@ We have some general notes that should be applied throughout the code:
   
   - Use the MySQL database for storage. Player/server do not carry across servers with BungeeCord
   
+  - Keep code modular and in a seperate file. This makes it easier to update and isolate issues
+  
   - Make sure to comment your code where possible.
 
 
