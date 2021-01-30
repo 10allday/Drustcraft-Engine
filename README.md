@@ -1,9 +1,9 @@
 <img src="https://drustcraft.com.au/img/drustcraft-logo-full.png" alt="Drustcraft" width="600"/>
 
 
-[![License: GPL-3.0](https://img.shields.io/github/license/Drustcraft/Denizen?color=blue)](LICENSE)
+[![License: GPL-3.0](https://img.shields.io/github/license/Drustcraft/Drustcraft?color=blue)](LICENSE)
 [![Discord](https://img.shields.io/discord/782787130334248973.svg?color=%237289da&label=discord)](http://discord.drustcraft.com.au/)
-[![HitCount](http://hits.dwyl.com/Drustcraft/Denizen.svg)](http://hits.dwyl.com/Drustcraft/Denizen)
+[![HitCount](http://hits.dwyl.com/Drustcraft/Drustcraft.svg)](http://hits.dwyl.com/Drustcraft/Drustcraft)
 
 Drustcraft is a Minecraft network that enables players to participate in an open MMORPG, creating their own cities, quests, shops, NPCs and participanting in world events, dungeons and raids.
 
@@ -17,7 +17,7 @@ The ultimate goal of this project is to create a free-play, safe and open world 
 ### Currently supporting Minecraft Bedrock v1.16.200 and Minecraft Java v1.16.4 - v1.16.5.
 
 ## Setting Up
-Take a look [here](https://github.com/Drustcraft/Denizen/wiki#Setup) for how to set up Drustcraft.
+Take a look [here](https://github.com/Drustcraft/Drustcraft/wiki#Setup) for how to set up Drustcraft.
 
 ## Links:
 - Website: https://drustcraft.com.au
