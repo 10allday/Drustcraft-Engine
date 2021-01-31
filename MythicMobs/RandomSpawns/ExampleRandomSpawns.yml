@@ -1,0 +1,14 @@
+Spiders:
+    Type: spider
+    Worlds: azentina
+    Chance: 1
+    Action: replace
+    Conditions:
+    - outside true
+DecayingSkeleton:
+    Type: DecayingSkeleton
+    Worlds: azentina
+    Chance: 1
+    Action: replace
+    Conditions:
+    - outside true
