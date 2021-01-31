@@ -6,7 +6,7 @@ drustcraftw_regenerate:
     type: world
     debug: false
     events:
-        on drustcraft load server_flag:
+        on drustcraft load:
             - flag server drustcraft_regenerate:!
             - waituntil <yaml.list.contains[drustcraft_server]>
 
