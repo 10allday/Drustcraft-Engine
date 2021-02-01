@@ -8,7 +8,8 @@ drustcraftw_whitelist:
     events:
         on drustcraft load:
             - define whitelist_storage:<yaml[drustcraft_server].read[drustcraft.whitelist.storage]||<empty>>
-            
+
+            # If the drustcraft server YML doesnt have a whitelist storage setting, default to YAML
             - if <list[yaml].contains[<[whitelist_storage]>]> == false:
                 - yaml id:drustcraft_server set drustcraft.whitelist.storage:yaml
                 - define whitelist_storage:yaml
