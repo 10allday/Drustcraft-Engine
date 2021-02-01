@@ -40,7 +40,7 @@ drustcraftw_whitelist:
 
                     - if <[create_tables]>:
                         - ~sql id:drustcraft_database 'update:INSERT INTO `drustcraft_version` (`name`,`version`) VALUES ("drustcraft_whitelist",'1');'
-                        - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`player` VARCHAR(255) NOT NULL);'
+                        - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`player` VARCHAR(255) NOT NULL, `account` INT NOT NULL, `confirm` INT NOT NULL, `added_date` INT NOT NULL, `added_player` VARCHAR(255) NOT NULL);'
                         
             
             - flag server drustcraft_whitelist_storage:<[whitelist_storage]>
@@ -92,7 +92,12 @@ drustcraftc_whitelist:
                         - case sql:
                             - ~sql id:drustcraft_database 'query:SELECT `name` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE name="<[name]>";' save:sql_result
                             - if <entry[sql_result].result.size||0> == 0:
-                                - sql id:drustcraft_database 'query:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`name`) VALUES("<[name]>");'
+                                - define account:0
+                                - define confirm:0
+                                - define added_date:<util.time_now.epoch_millis.div[1000].round>
+                                - define added_player:<player.name||console>
+                                
+                                - sql id:drustcraft_database 'query:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`name`, `account`, `confirm`, `added_date`, `added_player`) VALUES("<[name]>", <[account]>, <[confirm]>, <[added_date]>, "<[added_player]>");'
                                 - narrate '<&e>The player <&sq><[name]><&sq> has been added to the whitelist of this server'
                             - else:
                                 - narrate '<&e>The player <&sq><[name]><&sq> was already on the whitelist of this server'
