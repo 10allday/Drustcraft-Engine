@@ -7,13 +7,25 @@ drustcraftw_whitelist:
     debug: false
     events:
         on drustcraft load:
+            - flag server drustcraft_whitelist_storage:!
             - define whitelist_storage:<yaml[drustcraft_server].read[drustcraft.whitelist.storage]||<empty>>
 
             # If the drustcraft server YML doesnt have a whitelist storage setting, default to YAML
-            - if <list[yaml|sql].contains[<[whitelist_storage]>]> == false:
+            - if <list[yaml|sql|web].contains[<[whitelist_storage]>]> == false:
                 - yaml id:drustcraft_server set drustcraft.whitelist.storage:yaml
                 - define whitelist_storage:yaml
-    
+
+            # If web is the storage, check that the web tables are present    
+            - if <[whitelist_storage]> == 'web':
+                - ~sql id:drustcraft_database 'query:SELECT version FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_version WHERE name="drustcraft_web";' save:sql_result
+                    - if <entry[sql_result].result.size||0> >= 1:
+                        - define row:<entry[sql_result].result.get[1].split[/]||0>
+                        - define create_tables:false
+                        - if <[row]> >= 2 || <[row]> < 1:
+                            # Weird version error
+                            - narrate 'Drustcraft Web version is not compatible with the Drustcraft whitelist extension'
+                            - stop
+                        
             - choose <[whitelist_storage]>:
                 - case yaml:
                     - if <yaml.list.contains[drustcraft_whitelist]>:
@@ -26,7 +38,7 @@ drustcraftw_whitelist:
                         - yaml id:drustcraft_whitelist set whitelist.players:->:nomadjimbob
                         - yaml id:drustcraft_whitelist set 'whitelist.kick_text:You are not whitelisted'
                         - yaml id:drustcraft_whitelist savefile:drustcraft_whitelist.yml
-                - case sql:
+                - case sql web:
                     - waituntil <yaml.list.contains[drustcraft_server]>
 
                     - define create_tables:true
@@ -53,16 +65,16 @@ drustcraftw_whitelist:
     
     
         on player logs in:
-            - choose <server.flag[drustcraft_whitelist_storage]>:
+            - choose <server.flag[drustcraft_whitelist_storage]||<empty>>:
                 - case yaml:
                     - if <yaml[drustcraft_whitelist].read[whitelist.players].contains[<player.name>]> == false:
                         - determine:<yaml[drustcraft_whitelist].read[whitelist.kick_text]>
                 - case sql:
-                    - if <yaml.list.contains[drustcraft_server]> == false:
-                        - 'determine:Server is not ready'
                     - ~sql id:drustcraft_database 'query:SELECT `name` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE name="<player.name>";' save:sql_result
                     - if <entry[sql_result].result.size||0> == 0:
                         - determine:<yaml[drustcraft_whitelist].read[whitelist.kick_text]>
+                - default:
+                    - 'determine:Whitelist configuration error'
 
 
 drustcraftc_whitelist:
@@ -89,7 +101,7 @@ drustcraftc_whitelist:
                                 - narrate '<&e>The player <&sq><[name]><&sq> has been added to the whitelist of this server'
                             - else:
                                 - narrate '<&e>The player <&sq><[name]><&sq> was already on the whitelist of this server'
-                        - case sql:
+                        - case sql web:
                             - ~sql id:drustcraft_database 'query:SELECT `name` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE name="<[name]>";' save:sql_result
                             - if <entry[sql_result].result.size||0> == 0:
                                 - define account:0
@@ -97,8 +109,21 @@ drustcraftc_whitelist:
                                 - define added_date:<util.time_now.epoch_millis.div[1000].round>
                                 - define added_player:<player.name||console>
                                 
-                                - sql id:drustcraft_database 'query:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`name`, `account`, `confirm`, `added_date`, `added_player`) VALUES("<[name]>", <[account]>, <[confirm]>, <[added_date]>, "<[added_player]>");'
-                                - narrate '<&e>The player <&sq><[name]><&sq> has been added to the whitelist of this server'
+                                - if <server.flag[drustcraft_whitelist_storage]> == 'web' && <context.args.get[3]||<empty>> != <empty>:
+                                    - define email:<context.args.get[3]>
+                                    
+                                    - ~sql id:drustcraft_database 'query:SELECT `id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_account` WHERE email="<[email]>";' save:sql_result
+                                    - if <entry[sql_result].result.size||0> >= 1:
+                                        - define row:<entry[sql_result].result.get[1].split[/]||0>
+                                        - define account:<[row]>
+
+                                        - sql id:drustcraft_database 'query:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`name`, `account`, `confirm`, `added_date`, `added_player`) VALUES("<[name]>", <[account]>, <[confirm]>, <[added_date]>, "<[added_player]>");'
+                                        - narrate '<&e>The player <&sq><[name]><&sq> has been added to the whitelist of this server, connected to account <&sq><[email]><&sq>'
+                                    - else:
+                                        - narrate '<&e>The account <&sq><[email]><&sq> is not registered. The player <&sq><[name]><&sq> has not been whitelisted'
+                                - else:
+                                    - sql id:drustcraft_database 'query:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`name`, `account`, `confirm`, `added_date`, `added_player`) VALUES("<[name]>", <[account]>, <[confirm]>, <[added_date]>, "<[added_player]>");'
+                                    - narrate '<&e>The player <&sq><[name]><&sq> has been added to the whitelist of this server'
                             - else:
                                 - narrate '<&e>The player <&sq><[name]><&sq> was already on the whitelist of this server'
                 - else:
@@ -115,7 +140,7 @@ drustcraftc_whitelist:
                                 - narrate '<&e>The player <&sq><[name]><&sq> has been removed from the whitelist of this server'
                             - else:
                                 - narrate '<&e>The player <&sq><[name]><&sq> was not on the whitelist of this server'
-                        - case sql:
+                        - case sql web:
                             - ~sql id:drustcraft_database 'query:SELECT `name` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE name="<[name]>";' save:sql_result
                             - if <entry[sql_result].result.size||0> > 0:
                                 - sql id:drustcraft_database 'query:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE `name`="<[name]>";'
@@ -130,7 +155,7 @@ drustcraftc_whitelist:
                 - choose <server.flag[drustcraft_whitelist_storage]>:
                     - case yaml:
                         - define list:<yaml[drustcraft_whitelist].read[whitelist.players]>
-                    - case sql:
+                    - case sql web:
                         - ~sql id:drustcraft_database 'query:SELECT `name` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE 1";' save:sql_result
                         - define list:<entry[sql_result].result||<list[]>>
 
