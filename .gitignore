@@ -1,5 +1,8 @@
-# OS-X specific\
+# OS-X specific
 .DS_Store
+
+# Project Management Configs
+.nova/
 
 # Cleanup
 Denizen/scripts/_drustcraft.dsc
