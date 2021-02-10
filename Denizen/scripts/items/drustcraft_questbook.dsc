@@ -7,4 +7,4 @@ drustcraft_questbook:
   author: Quest Book
   signed: true
   text:
-  - You should not be seeing this padiwan. Can you report how you got it using /report please?
+  - You should not be seeing this padiwan. Can you report how you got it using the command /report please?
