@@ -5,6 +5,7 @@
 drustcraftw_group:
   type: world
   debug: false
+  version: 1
   events:
     on server start:
       - run drustcraftt_group.load
