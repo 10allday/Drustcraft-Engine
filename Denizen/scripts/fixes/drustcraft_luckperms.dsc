@@ -1,7 +1,7 @@
 # Drustcraft Fix - Luckperms
 # https://github.com/drustcraft/drustcraft
 
-drustcraftw_luckperms
+drustcraftw_luckperms:
     type: world
     debug: false
     events:

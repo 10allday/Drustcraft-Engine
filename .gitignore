@@ -1,7 +1,2 @@
-# OS-X specific\
+# OS-X specific
 .DS_Store
-
-# Cleanup
-Denizen/scripts/_drustcraft.dsc
-MythicMobs/OLD/
-MythicMobs/SavedData/

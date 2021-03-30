@@ -3,35 +3,35 @@
 # https://github.com/drustcraft/drustcraft
 
 drustcraftw:
-    type: world
-    debug: false
-    events:
-        on server start:
-            - event 'drustcraft preload'
-            - define time_now:<util.time_now.epoch_millis.add[5000]>
-            - waituntil <queue.list.size> <= 1 || <[time_now]> < <util.time_now.epoch_millis>
+  type: world
+  debug: false
+  events:
+    on server start:
+      - ~run drustcraftt.load      
+      - foreach <yaml[drustcraft_server].read[drustcraft.run.startup]||<list[]>>:
+        - execute as_server <[value]>
 
-            - event 'drustcraft load'
-            - define time_now:<util.time_now.epoch_millis.add[5000]>
-            - waituntil <queue.list.size> <= 1 || <[time_now]> < <util.time_now.epoch_millis>
+    on script reload:
+      - ~run drustcraftt.load
+      - foreach <yaml[drustcraft_server].read[drustcraft.run.reload]||<list[]>>:
+        - execute as_server <[value]>
 
-        on script reload:
-            - event 'drustcraft preload'
-            - define time_now:<util.time_now.epoch_millis.add[5000]>
-            - waituntil <queue.list.size> <= 1 || <[time_now]> < <util.time_now.epoch_millis>
 
-            - event 'drustcraft load'
-            - define time_now:<util.time_now.epoch_millis.add[5000]>
-            - waituntil <queue.list.size> <= 1 || <[time_now]> < <util.time_now.epoch_millis>
+drustcraftt:
+  type: task
+  debug: false
+  script:
+    - determine <empty>
+  
+  load:
+    - if <yaml.list.contains[drustcraft_server]>:
+      - ~yaml unload id:drustcraft_server
 
-            - narrate '<&e>Server scripts have been reloaded' targets:<server.online_players.filter[in_group[builder]]>
-
-        on drustcraft preload priority:-10:
-            - if <yaml.list.contains[drustcraft_server]>:
-                - ~yaml unload id:drustcraft_server
+    - if <server.has_file[/drustcraft_data/server.yml]>:
+      - yaml load:/drustcraft_data/server.yml id:drustcraft_server
+    - else:
+      - yaml create id:drustcraft_server
+      - yaml savefile:/drustcraft_data/server.yml id:drustcraft_server
     
-            - if <server.has_file[/drustcraft_data/server.yml]>:
-                - yaml load:/drustcraft_data/server.yml id:drustcraft_server
-            - else:
-                - yaml create id:drustcraft_server
-                - yaml savefile:/drustcraft_data/server.yml id:drustcraft_server
+    - foreach <server.notables>:
+      - note remove as:<[value].note_name>
