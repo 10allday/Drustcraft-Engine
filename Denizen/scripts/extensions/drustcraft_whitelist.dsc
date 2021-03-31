@@ -37,8 +37,11 @@ drustcraftw_whitelist:
                   - yaml id:drustcraft_whitelist savefile:drustcraft_whitelist.yml
                 - case sql:
                   - waituntil <server.sql_connections.contains[drustcraft_database]>
-                  - sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_linking_codes` WHERE `uuid` = "<player.uuid>";'
-                  - sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_linking_codes` (`uuid`,`playername`,`added_date`,`linking_code`) VALUES ("<player.uuid>", "<player.name>", <util.time_now.epoch_millis.div[1000].round>, "<[code]>");'
+                  - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_linking_codes` WHERE `uuid` = "<player.uuid>";'
+                  - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_linking_codes` (`uuid`,`playername`,`added_date`,`linking_code`) VALUES ("<player.uuid>", "<player.name>", <util.time_now.epoch_millis.div[1000].round>, "<[code]>");'
+
+                  - if <server.scripts.parse[name].contains[drustcraftw_bungee]>:
+                    - run drustcraftt_bungee.run def:whitelist_sync
             
               - run drustcraftt_whitelist.generate_new_code
           - else:
@@ -112,6 +115,10 @@ drustcraftt_whitelist:
       - run drustcraftt_tab_complete.completions def:whitelist|rem|_*players
       - run drustcraftt_tab_complete.completions def:whitelist|remove|_*players
       - run drustcraftt_tab_complete.completions def:whitelist|list|_*int
+
+    - if <server.scripts.parse[name].contains[drustcraftw_bungee]>:
+      - run drustcraftt_bungee.register def:whitelist_sync|drustcraftt_whitelist.sync
+    
         
   sync:
     - if <yaml.list.contains[drustcraft_whitelist]>:
