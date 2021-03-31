@@ -22,7 +22,7 @@ drustcraftw_plot:
       - if <context.item.is_book> && <context.item.book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
         - define plot_name:<context.item.lore.space_separated.after[id:]||<empty>>
         - if <[plot_name]> != <empty>:
-          - run drustcraftt_plot.abandon def:<[plot_name]>
+          - run drustcraftt_plot.drop def:<[plot_name]>
           - run drustcraftt_plot.save
 
 
