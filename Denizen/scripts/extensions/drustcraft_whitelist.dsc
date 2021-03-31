@@ -5,6 +5,7 @@
 drustcraftw_whitelist:
   type: world
   debug: false
+  version: 1
   events:
     on server start:
       - wait 2t
@@ -24,22 +25,22 @@ drustcraftw_whitelist:
             - if <[code]> == <empty>:
               - define code:<server.flag[drustcraft_whitelist_linking_code_next]||<empty>>
             
-          - define msg:<server.flag[drustcraft_whitelist_linking_message]||<empty>>
-          - define msg:<[msg].replace_text[$CODE$].with[<[code]>]>
+            - define msg:<server.flag[drustcraft_whitelist_linking_message]||<empty>>
+            - define msg:<[msg].replace_text[$CODE$].with[<[code]>]>
             
-          - determine passively KICKED:<&nl><&nl><[msg]>
+            - determine passively KICKED:<&nl><&nl><[msg]>
           
-          - if <[code]> != <empty> && <[code]> == <server.flag[drustcraft_whitelist_linking_code_next]||<empty>>:
-            - yaml id:drustcraft_whitelist set whitelist.linking_codes.<player.uuid>:<[code]>
-            - choose <server.flag[drustcraft_whitelist_storage]||<empty>>:
-              - case yaml:
-                - yaml id:drustcraft_whitelist savefile:drustcraft_whitelist.yml
-              - case sql:
-                - waituntil <server.sql_connections.contains[drustcraft_database]>
-                - sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_linking_codes` WHERE `uuid` = "<player.uuid>";'
-                - sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_linking_codes` (`uuid`,`playername`,`added_date`,`linking_code`) VALUES ("<player.uuid>", "<player.name>", <util.time_now.epoch_millis.div[1000].round>, "<[code]>");'
-          
-            - run drustcraftt_whitelist.generate_new_code
+            - if <[code]> != <empty> && <[code]> == <server.flag[drustcraft_whitelist_linking_code_next]||<empty>>:
+              - yaml id:drustcraft_whitelist set whitelist.linking_codes.<player.uuid>:<[code]>
+              - choose <server.flag[drustcraft_whitelist_storage]||<empty>>:
+                - case yaml:
+                  - yaml id:drustcraft_whitelist savefile:drustcraft_whitelist.yml
+                - case sql:
+                  - waituntil <server.sql_connections.contains[drustcraft_database]>
+                  - sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_linking_codes` WHERE `uuid` = "<player.uuid>";'
+                  - sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_linking_codes` (`uuid`,`playername`,`added_date`,`linking_code`) VALUES ("<player.uuid>", "<player.name>", <util.time_now.epoch_millis.div[1000].round>, "<[code]>");'
+            
+              - run drustcraftt_whitelist.generate_new_code
           - else:
             - determine KICKED:<&nl><&nl><server.flag[drustcraft_whitelist_kick_message]||<empty>>
         - else:
