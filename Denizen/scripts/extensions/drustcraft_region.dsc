@@ -37,7 +37,10 @@ drustcraftw_region:
         - if <[show_title]>:
           - define title:<proc[drustcraftp_region.title].context[<[world_name]>|<[region_name]>]>
           - if <[title]> != <empty>:
-            - title subtitle:<&e><[title]>
+            - if <player.name.starts_with[*]>:
+              - narrate <&e><[title]>
+            - else:
+              - title subtitle:<&e><[title]>
 
     on system time minutely every:20:
       - run drustcraftt_region.spawner.update_all
