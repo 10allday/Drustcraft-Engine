@@ -97,10 +97,6 @@ drustcraftt_plot:
         - if <[npc_id]> != 0:
           - ~run drustcraftt_npc.interactor def:<[npc_id]>|drustcraftt_plot_interactor
         
-        - define plot_region:<yaml[drustcraft_plot].read[plots.<[value]>.region]||<empty>>
-        - if <[plot_region]> != <empty>:
-          - note <[plot_region]> as:drustcraft_plot_<[value]>
-
       - if <server.scripts.parse[name].contains[drustcraftw_tab_complete]>:
         - wait 2t
         - waituntil <yaml.list.contains[drustcraft_tab_complete]>
