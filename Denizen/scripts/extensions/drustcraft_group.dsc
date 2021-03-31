@@ -32,14 +32,14 @@ drustcraftt_group:
         - if <server.scripts.parse[name].contains[drustcraftw_tab_complete]>:
           - waituntil <yaml.list.contains[drustcraft_tab_complete]>
     
-          - run drustcraft.tab_complete.completions def:group|create
-          - run drustcraft.tab_complete.completions def:group|remove|_*groups
-          - run drustcraft.tab_complete.completions def:group|list|_*pageno
-          - run drustcraft.tab_complete.completions def:group|info|_*quests
-          - run drustcraft.tab_complete.completions def:group|addmember|_*groups|_^players
-          - run drustcraft.tab_complete.completions def:group|remmember|_*groups|_^players
-          - run drustcraft.tab_complete.completions def:group|addowner|_*groups|_^players
-          - run drustcraft.tab_complete.completions def:group|remowner|_*groups|_^players
+          - run drustcraftt_tab_complete.completions def:group|create
+          - run drustcraftt_tab_complete.completions def:group|remove|_*groups
+          - run drustcraftt_tab_complete.completions def:group|list|_*pageno
+          - run drustcraftt_tab_complete.completions def:group|info|_*quests
+          - run drustcraftt_tab_complete.completions def:group|addmember|_*groups|_^players
+          - run drustcraftt_tab_complete.completions def:group|remmember|_*groups|_^players
+          - run drustcraftt_tab_complete.completions def:group|addowner|_*groups|_^players
+          - run drustcraftt_tab_complete.completions def:group|remowner|_*groups|_^players
       - else:
         - debug log 'Drustcraft Groups requires Drustcraft Chat Paginate installed'
     - else:
