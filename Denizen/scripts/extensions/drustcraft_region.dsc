@@ -510,8 +510,8 @@ drustcraftp_region:
       - determine true
 
     - foreach <yaml[drustcraft_regions].read[regions.<[target_region].world.name>.<[target_region].id>.members.groups]||<list[]>>:
-      - if <proc[drustcraftp_region.player.in_group].context[<[value]>|<[target_player]>]>:
-          - determine true
+      - if <proc[drustcraftp_group.in_group].context[<[value]>|<[target_player]>]>:
+        - determine true
     
     - determine false
       
@@ -523,7 +523,7 @@ drustcraftp_region:
       - determine true
 
     - foreach <yaml[drustcraft_regions].read[regions.<[target_region].world.name>.<[target_region].id>.owners.groups]||<list[]>>:
-      - if <proc[drustcraftp_region.player.in_group].context[<[value]>|<[target_player]>]>:
+      - if <proc[drustcraftp_group.in_group].context[<[value]>|<[target_player]>]>:
           - determine true
 
     - determine false
