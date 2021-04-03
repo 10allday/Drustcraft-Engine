@@ -12,6 +12,10 @@ drustcraftw_sql:
     on script reload:
       - run drustcraftt_sql.load
 
+    on system time minutely:
+      - if <server.sql_connections.contains[drustcraft_database]> == false:
+        - run drustcraftt_sql.load
+
     on player logs in:
       - waituntil <server.sql_connections.contains[drustcraft_database]>
       - sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_players` (`uuid`,`name`) VALUES("<player.uuid>","<player.name>") ON DUPLICATE KEY UPDATE `name`="<player.name>";'
