@@ -54,7 +54,7 @@ drustcraftw_quest:
 
 
     on player changes gamemode to SURVIVAL:
-      - run drustcraftt_quest.update_markers def:true
+      - run drustcraftt_quest.update_markers def:<player>|true
 
 
     on player breaks block priority:100:
@@ -71,7 +71,7 @@ drustcraftw_quest:
 
 
     on entity dies priority:100:
-      - if <context.damager.object_type> == PLAYER:
+      - if <context.damager.object_type||<empty>> == PLAYER:
         - define name:<empty>
         - if <context.entity.is_mythicmob>:
           - define name:<context.entity.mythicmob.internal_name||<empty>>
@@ -457,7 +457,7 @@ drustcraftt_quest:
         - foreach <[give_map]>:
           - give <[target_player]> <[key]> quantity:<[value]>
         
-        - run drustcraftt_quest.update_markers def:true
+        - run drustcraftt_quest.update_markers def:<[target_player]>|true
         - run drustcraftt_quest.save
     
   done:
@@ -468,7 +468,7 @@ drustcraftt_quest:
       - if <yaml[drustcraft_quests].read[player.<[target_player].uuid>.quests.done].contains[<[quest_id]>]||false> == false:
         - yaml id:drustcraft_quests set player.<[target_player].uuid>.quests.done:->:<[quest_id]>
       
-      - run drustcraftt_quest.update_markers def:true
+      - run drustcraftt_quest.update_markers def:<[target_player]>|true
       - run drustcraftt_quest.save
     
   completed:
@@ -492,7 +492,7 @@ drustcraftt_quest:
       - define target_npc:<npc[<yaml[drustcraft_quests].read[quests.<[quest_id]>.npc_start]||0>]||<empty>>
       - narrate <proc[drustcraftp.format_chat].context[<npc>|<[end_speak]>]>
     
-    - run drustcraftt_quest.update_markers def:true
+    - run drustcraftt_quest.update_markers def:<[target_player]>|true
     - run drustcraftt_quest.save
   
   abandon:
@@ -510,7 +510,7 @@ drustcraftt_quest:
       - if <[done]>:
         - narrate '<&e>Quest abandoned: <yaml[drustcraft_quests].read[quests.<[quest_id]>.title]||<empty>>'
       
-      - run drustcraftt_quest.update_markers def:true
+      - run drustcraftt_quest.update_markers def:<[target_player]>|true
       - run drustcraftt_quest.save
   
   objective_event:
@@ -520,67 +520,71 @@ drustcraftt_quest:
     - define event_location:<[4]||<empty>>
     - define changes:false
     
-    - foreach <yaml[drustcraft_quests].list_keys[player.<[event_player].uuid>.quests.active]||<list[]>>:
-      - define quest_id:<[value]>
-      - define objective_list:<yaml[drustcraft_quests].list_keys[player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives]||<list[]>>
-
-      - foreach <[objective_list]>:
-        - define objective_id:<[value]>
-        - if <yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.type]> == <[event_type]>:
-          - define objective_data:<yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.data]||<empty>>
-          - if <[objective_data]> == <empty> || <[objective_data]> == * || <[objective_data]> == <[event_data]>:
-            - define objective_region:<yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.region]||<empty>>
-            - if <[objective_region]> == <empty> || <[event_location].regions.parse[id].contains[<[objective_region]>]||false>:
-              - define objective_value:<yaml[drustcraft_quests].read[player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>]||0>
-              - define objective_value:++
-              - define changes:true
-
-              - if <[objective_value]> >= <yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.quantity]||0>:
-                - ~yaml id:drustcraft_quests set player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>:!
-              - else:
-                - ~yaml id:drustcraft_quests set player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>:<[objective_value]>
-
-      - if <yaml[drustcraft_quests].list_keys[player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives].size||0> <= 0:
-        - run drustcraftt_quest.done def:<[event_player]>|<[quest_id]>
-    
-    - if <[changes]>:
-      - run drustcraftt_quest.update_markers def:true
-      - run drustcraftt_quest.inventory_update def:<[event_player]>
-    
-    - determine <[changes]>
+    - if <[event_player].object_type||<empty>> == PLAYER:
+      - foreach <yaml[drustcraft_quests].list_keys[player.<[event_player].uuid>.quests.active]||<list[]>>:
+        - define quest_id:<[value]>
+        - define objective_list:<yaml[drustcraft_quests].list_keys[player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives]||<list[]>>
+  
+        - foreach <[objective_list]>:
+          - define objective_id:<[value]>
+          - if <yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.type]> == <[event_type]>:
+            - define objective_data:<yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.data]||<empty>>
+            - if <[objective_data]> == <empty> || <[objective_data]> == * || <[objective_data]> == <[event_data]>:
+              - define objective_region:<yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.region]||<empty>>
+              - if <[objective_region]> == <empty> || <[event_location].regions.parse[id].contains[<[objective_region]>]||false>:
+                - define objective_value:<yaml[drustcraft_quests].read[player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>]||0>
+                - define objective_value:++
+                - define changes:true
+  
+                - if <[objective_value]> >= <yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.quantity]||0>:
+                  - ~yaml id:drustcraft_quests set player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>:!
+                - else:
+                  - ~yaml id:drustcraft_quests set player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>:<[objective_value]>
+  
+        - if <yaml[drustcraft_quests].list_keys[player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives].size||0> <= 0:
+          - run drustcraftt_quest.done def:<[event_player]>|<[quest_id]>
+      
+      - if <[changes]>:
+        - run drustcraftt_quest.update_markers def:<[event_player]>|true
+        - run drustcraftt_quest.inventory_update def:<[event_player]>
+      
+      - determine <[changes]>
+    - determine false
     
   update_markers:
-    - define force:<[1]||false>
+    - define target_player:<[1]||<empty>>
+    - define force:<[2]||false>
 
-    - if <[force]> == true || <util.time_now.is_after[<player.flag[drustcraft_quest_update_makers]||<util.time_now.sub[5s]>>]>:
-      - flag player drustcraft_quest_update_makers:<util.time_now.add[5s]>
-
-      - foreach <player.fake_entities>:
-        - fakespawn <[value]> cancel
-
-      - define npc_list:<player.location.find.npcs.within[30]>
-      
-      - foreach <[npc_list]>:
-        - define target_npc:<[value]>
-        - define title:<empty>
-
-        - define quest_list:<proc[drustcraftp_quest.npc.list_available].context[<[target_npc]>|<player>]||<list[]>>
-        - if <[quest_list].as_list.size||0> > 0:
-          - define 'title:<&e>  ?  '
-          
-          - foreach <[quest_list]>:
-            - if <yaml[drustcraft_quests].read[quests.<[value]>.repeatable]||false> == true:
-              - define 'title:<&b>  ?  '
-          
-        - if <proc[drustcraftp_quest.npc.list_done].context[<[target_npc]>|<player>].as_list.size||0> > 0:
-          - define 'title:  !  '
+    - if <[target_player].object_type||<empty>> == PLAYER:
+      - if <[force]> == true || <util.time_now.is_after[<[target_player].flag[drustcraft_quest_update_makers]||<util.time_now.sub[5s]>>]>:
+        - flag <[target_player]> drustcraft_quest_update_makers:<util.time_now.add[5s]>
+  
+        - foreach <[target_player].fake_entities>:
+          - fakespawn <[value]> cancel
+  
+        - define npc_list:<[target_player].location.find.npcs.within[30]>
+        
+        - foreach <[npc_list]>:
+          - define target_npc:<[value]>
+          - define title:<empty>
+  
+          - define quest_list:<proc[drustcraftp_quest.npc.list_available].context[<[target_npc]>|<[target_player]>]||<list[]>>
+          - if <[quest_list].as_list.size||0> > 0:
+            - define 'title:<&e>  ?  '
             
-        - if <[title]> != <empty>:
-          - define height:0.1
-          - if <player.name.starts_with[*]>:
-            - define height:2.1
-          
-          - fakespawn 'armor_stand[visible=false;custom_name=<&e><[title]>;custom_name_visibility=true;gravity=false]' <[target_npc].location.up[<[height]>]> save:newhologram d:10m players:<player>
+            - foreach <[quest_list]>:
+              - if <yaml[drustcraft_quests].read[quests.<[value]>.repeatable]||false> == true:
+                - define 'title:<&b>  ?  '
+            
+          - if <proc[drustcraftp_quest.npc.list_done].context[<[target_npc]>|<[target_player]>].as_list.size||0> > 0:
+            - define 'title:  !  '
+              
+          - if <[title]> != <empty>:
+            - define height:0.1
+            - if <[target_player].name.starts_with[*]>:
+              - define height:2.1
+            
+            - fakespawn 'armor_stand[visible=false;custom_name=<&e><[title]>;custom_name_visibility=true;gravity=false]' <[target_npc].location.up[<[height]>]> save:newhologram d:10m players:<[target_player]>
   
   inventory_update:
     - define target_player:<[1]||<empty>>
