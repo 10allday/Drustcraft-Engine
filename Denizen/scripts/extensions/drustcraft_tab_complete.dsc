@@ -169,9 +169,9 @@ drustcraftp_tab_complete_npcs:
 
 
 drustcraftp_tab_complete_hostile:
-  type: task
+  type: procedure
   debug: false
   script:
     - if <server.has_flag[drustcraft_tab_complete_hostile_mobs]>:
-      - determine <server.flag[drustcraft_tab_complete_hostile_mobs]>
+      - determine <server.flag[drustcraft_tab_complete_hostile_mobs].as_list>
     - determine <list[]>
