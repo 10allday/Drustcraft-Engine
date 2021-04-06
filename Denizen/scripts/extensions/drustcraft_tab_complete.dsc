@@ -25,6 +25,20 @@ drustcraftt_tab_complete:
     - if <yaml.list.contains[drustcraft_tab_complete]>:
       - ~yaml unload id:drustcraft_tab_complete
     - yaml create id:drustcraft_tab_complete
+    
+    - if <server.has_flag[drustcraft_tab_complete_hostile_mobs]>:
+      - flag server drustcraft_tab_complete_hostile_mobs:!
+    
+    - foreach <server.list_files[../MythicMobs/Mobs]||<list[]>> as:file:
+      - ~yaml load:../MythicMobs/Mobs/<[file]> id:mythicmob
+      - foreach <yaml[mythicmob].list_keys[]> as:key:
+        - if <yaml[mythicmob].contains[<[key]>.damage]>:
+          - flag server drustcraft_tab_complete_hostile_mobs:|:<[key]>
+      - ~yaml unload id:mythicmob
+
+    - if <server.has_flag[drustcraft_tab_complete_hostile_mobs]> == false:
+      - flag server drustcraft_tab_complete_hostile_mobs:<list[]>
+
 
   completions:
     - yaml id:drustcraft_tab_complete set <queue.definition_map.exclude[raw_context].values.separated_by[.]>:end
@@ -152,3 +166,12 @@ drustcraftp_tab_complete_npcs:
   debug: false
   script:
     - determine <server.npcs.parse[id]>
+
+
+drustcraftp_tab_complete_hostile:
+  type: task
+  debug: false
+  script:
+    - if <server.has_flag[drustcraft_tab_complete_hostile_mobs]>:
+      - determine <server.flag[drustcraft_tab_complete_hostile_mobs]>
+    - determine <list[]>
