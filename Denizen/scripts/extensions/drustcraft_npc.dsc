@@ -49,7 +49,8 @@ drustcraftw_npc:
           - wait 1t
           - lookclose <player.selected_npc> true range:10 realistic
           - assignment set script:drustcrafta_npc npc:<player.selected_npc>
-          - trait state:true sentinel to:<player.selected_npc>
+          - if <player.selected_npc.traits.contains[sentinel]> == false:
+            - trait state:true sentinel to:<player.selected_npc>
           - anchor add <player.selected_npc.location> id:spawn npc:<player.selected_npc>
           - execute as_player 'sentinel addtarget monsters'
           - execute as_player 'sentinel spawnpoint'

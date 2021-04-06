@@ -14,7 +14,7 @@ drustcraftw_analytics:
         - flag server drustcraft_analytics_uptime_id:!
         - waituntil <server.sql_connections.contains[drustcraft_database]>
             
-        - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_uptime` (`server`, `session_start`, `session_end`) VALUES("<bungee.server>", <util.time_now.epoch_millis.div[1000].round>, 0);' save:sql_result
+        - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_uptime` (`server`, `session_start`, `session_end`) VALUES("<bungee.server||<empty>>", <util.time_now.epoch_millis.div[1000].round>, 0);' save:sql_result
         - flag server drustcraft_analytics_uptime_id:<entry[sql_result].result.get[1].split[/].get[1]>
 
         - run drustcraftt_analytics.load
@@ -31,24 +31,24 @@ drustcraftw_analytics:
       - waituntil <server.sql_connections.contains[drustcraft_database]>
       
       # TPS
-      - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_tps` (`server`, `date`, `tps`, `players_online`, `ram_usage`, `entities`, `chunks_loaded`, `free_disk_space`) VALUES ("<bungee.server>", <util.time_now.epoch_millis.div[1000].round>, <server.recent_tps.get[1].round>, <server.online_players.size>, <server.ram_usage.div[1048576].round>, <server.worlds.parse[entities.size].sum>, <server.worlds.parse[loaded_chunks.size].sum>, <server.disk_free.div[1048576].round>);'
+      - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_tps` (`server`, `date`, `tps`, `players_online`, `ram_usage`, `entities`, `chunks_loaded`, `free_disk_space`) VALUES ("<bungee.server||<empty>>", <util.time_now.epoch_millis.div[1000].round>, <server.recent_tps.get[1].round>, <server.online_players.size>, <server.ram_usage.div[1048576].round>, <server.worlds.parse[entities.size].sum>, <server.worlds.parse[loaded_chunks.size].sum>, <server.disk_free.div[1048576].round>);'
       
       # Ping
       - define last_online:<list[]>
-      - ~sql id:drustcraft_database 'query:SELECT `player_uuid` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_sessions` WHERE (`server`="<bungee.server>" AND `session_end`=0);' save:sql_result
+      - ~sql id:drustcraft_database 'query:SELECT `player_uuid` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_sessions` WHERE (`server`="<bungee.server||<empty>>" AND `session_end`=0);' save:sql_result
       - foreach <entry[sql_result].result||<list[]>>:
           - define last_online:|:<[value].split[/].get[1]>
       
       - define date:<util.time_now.epoch_millis.div[1000].round>
       - foreach <server.online_players>:
         - define last_online:<-:<[value].uuid>
-        - sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_ping` (`player_uuid`, `server`, `date`, `ping`) VALUES ("<[value].uuid>", "<bungee.server>", <[date]>, <[value].ping||0>);'
+        - sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_ping` (`player_uuid`, `server`, `date`, `ping`) VALUES ("<[value].uuid>", "<bungee.server||<empty>>", <[date]>, <[value].ping||0>);'
       
       - foreach <[last_online]>:
-        - sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_sessions` SET `session_end`=<[date]> WHERE (`server`="<bungee.server>" AND `player_uuid`="<[value]>" AND `session_end`=0);'
+        - sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_sessions` SET `session_end`=<[date]> WHERE (`server`="<bungee.server||<empty>>" AND `player_uuid`="<[value]>" AND `session_end`=0);'
       
       # Uptime
-      - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_uptime` SET `session_end`=<[date]> WHERE (`server`="<bungee.server>" AND `id`=<server.flag[drustcraft_analytics_uptime_id]>);'
+      - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_uptime` SET `session_end`=<[date]> WHERE (`server`="<bungee.server||<empty>>" AND `id`=<server.flag[drustcraft_analytics_uptime_id]>);'
     
 
     on player changes world:
@@ -61,7 +61,7 @@ drustcraftw_analytics:
     after player joins:
       - waituntil <server.sql_connections.contains[drustcraft_database]>
       
-      - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_sessions` (`player_uuid`, `server`, `session_start`, `session_end`, `afk_time`) VALUES("<player.uuid>", "<bungee.server>", <util.time_now.epoch_millis.div[1000].round>, 0, 0);' save:sql_result
+      - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_sessions` (`player_uuid`, `server`, `session_start`, `session_end`, `afk_time`) VALUES("<player.uuid>", "<bungee.server||<empty>>", <util.time_now.epoch_millis.div[1000].round>, 0, 0);' save:sql_result
       - flag <player> drustcraft_analytics_session_id:<entry[sql_result].result.get[1].split[/].get[1]>
       - flag <player> drustcraft_analytics_session_afk_time:!
       
@@ -83,7 +83,7 @@ drustcraftw_analytics:
 
     on player kicked:
       - waituntil <server.sql_connections.contains[drustcraft_database]>
-      - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_kicked` (`session_id`, `server`, `date`, `reason`) VALUES(<player.flag[drustcraft_analytics_session_id]>, "<bungee.server>", <util.time_now.epoch_millis.div[1000].round>, "<context.reason||<empty>>");'
+      - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_kicked` (`session_id`, `server`, `date`, `reason`) VALUES(<player.flag[drustcraft_analytics_session_id]>, "<bungee.server||<empty>>", <util.time_now.epoch_millis.div[1000].round>, "<context.reason||<empty>>");'
 
 
     on player goes afk:
@@ -194,17 +194,17 @@ drustcraftt_analytics:
         - define seconds:<util.time_now.duration_since[<[target_player].flag[drustcraft_analytics_session_gamemode_time]||<util.time_now>>].in_seconds||0>
         
         - if <[target_player].flag[drustcraft_analytics_session_id]||0> > 0 && <[gamemode]> != <empty> && <[world_name]> != <empty> && <[seconds]> != 0:
-          - ~sql id:drustcraft_database 'query:SELECT `id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_worlds` WHERE (`world_name`="<[world_name]>" AND `server`="<bungee.server>")' save:sql_result
+          - ~sql id:drustcraft_database 'query:SELECT `id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_worlds` WHERE (`world_name`="<[world_name]>" AND `server`="<bungee.server||<empty>>")' save:sql_result
           - define world_id:<entry[sql_result].result.get[1].split[/].get[1]||0>
           - if <[world_id]> == 0:
-            - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_worlds` (`world_name`, `server`) VALUES("<[world_name]>","<bungee.server>")' save:sql_result
+            - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_worlds` (`world_name`, `server`) VALUES("<[world_name]>","<bungee.server||<empty>>")' save:sql_result
             - define world_id:<entry[sql_result].result.get[1].split[/].get[1]||0>
           
           - if <[world_id]> != 0:
             - define gamemode_field:<[gamemode].to_lowercase>_time
-            - ~sql id:drustcraft_database 'query:SELECT `id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_world_times` WHERE (`world_id`="<[world_id]>" AND `server`="<bungee.server>" AND `session_id`=<[target_player].flag[drustcraft_analytics_session_id]>)' save:sql_result
+            - ~sql id:drustcraft_database 'query:SELECT `id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_world_times` WHERE (`world_id`="<[world_id]>" AND `server`="<bungee.server||<empty>>" AND `session_id`=<[target_player].flag[drustcraft_analytics_session_id]>)' save:sql_result
             - define world_time_id:<entry[sql_result].result.get[1].split[/].get[1]||0>
             - if <[world_time_id]> != 0:
               - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_world_times` SET `<[gamemode_field]>`=`<[gamemode_field]>`+<[seconds]> WHERE `id`=<[world_time_id]>;'
             - else:
-              - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_world_times` (`world_id`, `session_id`, `server`, `<[gamemode_field]>`) VALUES(<[world_id]>, <[target_player].flag[drustcraft_analytics_session_id]>, "<bungee.server>", <[seconds]>);'
+              - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_world_times` (`world_id`, `session_id`, `server`, `<[gamemode_field]>`) VALUES(<[world_id]>, <[target_player].flag[drustcraft_analytics_session_id]>, "<bungee.server||<empty>>", <[seconds]>);'

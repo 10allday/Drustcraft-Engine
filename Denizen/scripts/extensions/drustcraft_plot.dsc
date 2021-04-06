@@ -88,8 +88,10 @@ drustcraftt_plot:
       
       - foreach <yaml[drustcraft_plot].list_keys[plots]||<list[]>>:
         - define npc_id:<yaml[drustcraft_plot].read[plots.<[value]>.npc]||0>
+        - define owner:<yaml[drustcraft_plot].read[plots.<[value]>.owner]||<empty>>
         - if <[npc_id]> != 0:
           - ~run drustcraftt_npc.interactor def:<[npc_id]>|drustcraftt_plot_interactor
+        - run drustcraftt_plot.owner def:<[value]>|<[owner]>
         
       - if <server.scripts.parse[name].contains[drustcraftw_tab_complete]>:
         - wait 2t
@@ -102,6 +104,7 @@ drustcraftt_plot:
         - run drustcraftt_tab_complete.completions def:plot|npc|_*plot_names|_*npcs
         - run drustcraftt_tab_complete.completions def:plot|cost|_*plot_names|_*int
         - run drustcraftt_tab_complete.completions def:plot|sign
+      
 
     - else:
       - debug log 'Drustcraft Plots requires Drustcraft NPC installed'
@@ -457,8 +460,8 @@ drustcraftt_plot_interactor:
           - if <yaml[drustcraft_plot].read[plots.<[plot_name]>.npc]||0> == <[target_npc].id> && <proc[drustcraftp_plot.owner].context[<[plot_name]>]> == <empty> && <proc[drustcraftp_plot.address].context[<[plot_name]>]> != <empty>:
             - define 'book_title:<&3>Plot Deed<&co> <proc[drustcraftp_plot.address].context[<[plot_name]>]>'
             - define book_author:<&e><[target_npc].name>
-            - define 'book_pages:<list_single[<&3><bold>Congratulations<p><&3><bold>Land Owner!<p><&0>You are the proud owner of <&6><proc[drustcraftp_plot.address].context[<[plot_name]>]><p>|<&0>As long as you hold this deed, only you can build, destory, and open items on this plot.<p>If you give this deed to someone else, then they are the new owners!]>'
-            - define 'lore:<&nl>Only holder of this deed is able to build and open items in this plot<element[<&0>id:<[plot_name]>].split_lines[40]||<empty>>'
+            - define 'book_pages:<list_single[<&3><bold>Congratulations<&nl>Land Owner!<p><&0>You are the proud owner of:<p><&6><proc[drustcraftp_plot.address].context[<[plot_name]>]><p>|<&c><bold>Owners notice<p><&0>As long as you hold this deed, only you can build, destory, and open items such as chests and doors on this plot.<p>If you give this deed to someone else, then they become the new plot owners!]>'
+            - define 'lore:<&nl>Only holder of this deed is able<&nl>to buildand open items in this plot<&nl><element[<&0>id:<[plot_name]>].split_lines[40]||<empty>>'
               
             - define book_map:<map.with[title].as[<[book_title]>].with[author].as[<[book_author]>].with[pages].as[<[book_pages]>]>
             - define plotdeed:<item[drustcraft_plotdeed[book=<[book_map]>;lore=<[lore]>]]>

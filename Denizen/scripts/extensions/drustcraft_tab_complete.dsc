@@ -38,7 +38,7 @@ drustcraftp_tab_complete:
     - define raw_args:<[raw_args]||<empty>>
     - define path:<[command]>
     - define 'args:|:<[raw_args].split[ ]>'
-    - if <[args].get[1]> == <empty>:
+    - if <[args].get[1]||<empty>> == <empty>:
       - define args:!|:<[args].remove[1]>
     - define argsSize:<[args].size>
     - define newArg:<[raw_args].ends_with[<&sp>].or[<[raw_args].is[==].to[<empty>]>]>

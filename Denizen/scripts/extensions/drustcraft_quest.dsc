@@ -53,6 +53,10 @@ drustcraftw_quest:
             - run drustcraftt_quest.start def:<player>|<[quest_id]>
 
 
+    on player changes gamemode to SURVIVAL:
+      - run drustcraftt_quest.update_markers def:true
+
+
     on player breaks block priority:100:
 			- run drustcraftt_quest.objective_event def:block_break|<context.material.name>|<context.location>
     
@@ -86,6 +90,7 @@ drustcraftt_quest:
       - run drustcraftt_tab_complete.completions def:quest|npcstart|_*quests|_*npcs
       - run drustcraftt_tab_complete.completions def:quest|npcend|_*quests|_*npcs
       - run drustcraftt_tab_complete.completions def:quest|endspeak|_*quests
+      - run drustcraftt_tab_complete.completions def:quest|title|_*quests
       - run drustcraftt_tab_complete.completions def:quest|addreq|_*quests|_^quests
       - run drustcraftt_tab_complete.completions def:quest|remreq|_*quests|_^quests
       - run drustcraftt_tab_complete.completions def:quest|clrreq|_*quests|_^quests
@@ -95,6 +100,9 @@ drustcraftt_quest:
       - run drustcraftt_tab_complete.completions def:quest|remrew|_*quests|_*materials
       - run drustcraftt_tab_complete.completions def:quest|reload
       - run drustcraftt_tab_complete.completions def:quest|save
+      - run drustcraftt_tab_complete.completions def:quest|addgive|_*quests|_*materials|_*int
+      - run drustcraftt_tab_complete.completions def:quest|editgive|_*quests|_*materials|_*int
+      - run drustcraftt_tab_complete.completions def:quest|remgive|_*quests|_*materials
 
     - if <yaml.list.contains[drustcraft_quests]>:
       - ~yaml unload id:drustcraft_quests
@@ -375,6 +383,43 @@ drustcraftt_quest:
       
         - run drustcraftt_quest.save
   
+  add_give:
+    - define quest_id:<[1]||<empty>>
+    - define give_item:<[2]||<empty>>
+    - define give_quantity:<[3]||1>
+      
+    - if <[quest_id]> != <empty> && <[reward_item]> != <empty> && <[give_quantity]> > 0:
+      - if <yaml[drustcraft_quests].list_keys[quests].contains[<[quest_id]>]||false>:
+        - if <yaml[drustcraft_quests].read[quests.<[quest_id]>.gives].contains[<[reward_item]>]||false>:
+          - yaml id:drustcraft_quests set quests.<[quest_id]>.gives.<[give_item]>:+:<[give_quantity]>
+        - else:
+          - yaml id:drustcraft_quests set quests.<[quest_id]>.gives.<[give_item]>:<[give_quantity]>
+      
+        - run drustcraftt_quest.save
+
+  remove_give:
+    - define quest_id:<[1]||<empty>>
+    - define give_item:<[2]||<empty>>
+      
+    - if <[quest_id]> != <empty> && <[reward_item]> != <empty>:
+      - if <yaml[drustcraft_quests].list_keys[quests].contains[<[quest_id]>]||false>:
+        - yaml id:drustcraft_quests set quests.<[quest_id]>.gives.<[give_item]>:!      
+        - run drustcraftt_quest.save
+
+  update_give:
+    - define quest_id:<[1]||<empty>>
+    - define give_item:<[2]||<empty>>
+    - define give_quantity:<[3]||1>
+      
+    - if <[quest_id]> != <empty> && <[give_item]> != <empty>:
+      - if <yaml[drustcraft_quests].list_keys[quests].contains[<[quest_id]>]||false>:
+        - if <[give_quantity]> > 0:
+          - yaml id:drustcraft_quests set quests.<[quest_id]>.gives.<[give_item]>:<[give_quantity]>
+        - else:
+          - yaml id:drustcraft_quests set quests.<[quest_id]>.gives.<[give_item]>:!
+      
+        - run drustcraftt_quest.save
+
   start:
     - define target_player:<[1]||<empty>>
     - define quest_id:<[2]||<empty>>
@@ -389,6 +434,11 @@ drustcraftt_quest:
             - yaml id:drustcraft_quests set player.<[target_player].uuid>.quests.active.<[quest_id]>.objectives.<[value]>:0
         
         - narrate '<&e>Quest accepted: <yaml[drustcraft_quests].read[quests.<[quest_id]>.title]||<empty>>'
+        
+        - define give_map:<yaml[drustcraft_quests].read[quests.<[quest_id]>.gives]||<map[]>>
+        - foreach <[give_map]>:
+          - give <[target_player]> <[key]> quantity:<[value]>
+        
         - run drustcraftt_quest.update_markers def:true
         - run drustcraftt_quest.save
     
@@ -565,7 +615,7 @@ drustcraftp_quest:
     - define quest_id:<[1]||<empty>>
     - define quest_info:<map[]>
     
-    - foreach <yaml[drustcraft_quests].list_deep_keys[quests.<[quest_id]>]>:
+    - foreach <yaml[drustcraft_quests].list_deep_keys[quests.<[quest_id]>]||<list[]>>:
       - define quest_info:<[quest_info].with[<[value]>].as[<yaml[drustcraft_quests].read[quests.<[quest_id]>.<[value]>]>]>
     
     - determine <[quest_info]>
@@ -673,7 +723,19 @@ drustcraftp_quest:
       
       - define 'book_title:<&2>Quest<&co> <yaml[drustcraft_quests].read[quests.<[quest_id]>.title]>'
       - define book_author:<&e><[npc_name]>
-      - define lore:<&nl><yaml[drustcraft_quests].read[quests.<[quest_id]>.description].split_lines[40]||<empty>>
+
+      - define gives:<element[]>
+#      - define gives:<list[]>
+#      - define give_map:<yaml[drustcraft_quests].read[quests.<[quest_id]>.gives]||<map[]>>
+#       - foreach <[give_map]>:
+#         - define 'gives:|: - <material[<[key]>].translated_name||<[key]>> x <[value]>'
+# 
+#       - if <[gives].size> > 0:
+#         - define 'gives:<&nl>You will receive:<&nl><[gives].separated_by[<&nl>]>'
+#       - else:
+#         - define gives:<element[]>
+        
+      - define lore:<&nl><yaml[drustcraft_quests].read[quests.<[quest_id]>.description].split_lines[40]||<empty>><[gives]>
             
       - define objectives:<empty>
       - foreach <yaml[drustcraft_quests].list_keys[quests.<[quest_id]>.objectives]||<list[]>>:
@@ -718,7 +780,7 @@ drustcraftp_quest:
       #<item[drustcraft_questbook[book=map@title/<&4>Quest: My quest|author/nomadjimbob|pages/li@el@page 1&amppipeel@page 2]]>'
       - define book_map:<map.with[title].as[<[book_title]>].with[author].as[<[book_author]>].with[pages].as[<[book_pages]>]>
       - define questbook:<item[drustcraft_questbook[book=<[book_map]>;lore=<[lore]>]]>
-
+      
     - determine <[questbook]>
 
 
@@ -830,6 +892,23 @@ drustcraftc_quest:
         - narrate <[row]>
 
         - define pretitle:<empty>
+        - define title:<[quest_map].get[gives]||<empty>>
+        - if <[title]> != <empty>:
+          - define 'give_list:<list[ ]>'
+          - foreach <[title]>:
+            - define 'txt_events:<element[<&7><&lb>Edit<&rb>].on_click[/quest editgiv <[quest_id]> <[key]> <[value]>].type[SUGGEST_COMMAND].on_hover[Click to edit item]> '
+            - define 'txt_events:<[txt_events]><element[<&c><&lb>Rem<&rb>].on_click[/quest remgive <[quest_id]> <[key]> ].type[SUGGEST_COMMAND].on_hover[Click to remove item]> '
+            - define 'give_list:->:  <&e><[key]> <&6><[value]> <[txt_events]>'
+          
+          - define 'title:<[give_list].separated_by[<&nl>]>'
+        - else:
+          - define 'pretitle:<&c>(none) '
+        - define 'txt_events:<element[<&a><&lb>Add<&rb>].on_click[/quest addgive <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to add item]> '
+        - define 'row:<&9>Gives: <[pretitle]><[txt_events]> <[title]>'
+        - narrate <[row]>
+
+
+        - define pretitle:<empty>
         - define title:<[quest_map].get[objectives]||<empty>>
         - if <[title]> != <empty>:
           - define 'objective_list:<list[ ]>'
@@ -923,8 +1002,11 @@ drustcraftc_quest:
             - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
               - if <context.args.size> > 2:
                 - define quest_title:<context.args.remove[1|2].space_separated>
-                - run drustcraftt_quest.title def:<[quest_id]>|<[quest_title]>
-                - narrate '<&e>The title for Quest ID <&sq><[quest_id]><&sq> was changed'
+                - if <[quest_title].length> <= 20:
+                  - run drustcraftt_quest.title def:<[quest_id]>|<[quest_title]>
+                  - narrate '<&e>The title for Quest ID <&sq><[quest_id]><&sq> was changed'
+                - else:
+                  - narrate '<&c>The quest title must be 20 or less characters'
               - else:
                 - narrate '<&c>No Quest title was entered'
             - else:
@@ -1242,6 +1324,63 @@ drustcraftc_quest:
         - else:
           - narrate '<&e>A Quest ID was not entered to change'
       
+##
+      - case addgive:
+        - define quest_id:<context.args.get[2]||<empty>>
+        - if <[quest_id]> != <empty>:
+          - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
+            - define item:<context.args.get[3]||<empty>>
+            - define quantity:<context.args.get[4]||1>
+            - if <[item]> != <empty>:
+              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+                - run drustcraftt_quest.add_give def:<[quest_id]>|<[item]>|<[quantity]>
+                - narrate '<&e>The give items for Quest ID <&sq><[quest_id]><&sq> was updated'
+              - else:
+                - narrate '<&e>You do not have permission to change this quest'
+            - else:
+              - narrate '<&e>No give item was entered'
+          - else:
+            - narrate '<&e>Quest ID <&sq><[quest_id]><&sq> was not found on the server'
+        - else:
+          - narrate '<&e>A Quest ID was not entered to change'
+      
+      - case editgive:
+        - define quest_id:<context.args.get[2]||<empty>>
+        - if <[quest_id]> != <empty>:
+          - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
+            - define item:<context.args.get[3]||<empty>>
+            - define quantity:<context.args.get[4]||1>
+            - if <[item]> != <empty>:
+              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+                - run drustcraftt_quest.update_give def:<[quest_id]>|<[item]>|<[quantity]>
+                - narrate '<&e>The give item for Quest ID <&sq><[quest_id]><&sq> was updated'
+              - else:
+                - narrate '<&e>You do not have permission to change this quest'
+            - else:
+              - narrate '<&e>No give item was entered'
+          - else:
+            - narrate '<&e>Quest ID <&sq><[quest_id]><&sq> was not found on the server'
+        - else:
+          - narrate '<&e>A Quest ID was not entered to change'
+      
+      - case remgive removegive:
+        - define quest_id:<context.args.get[2]||<empty>>
+        - if <[quest_id]> != <empty>:
+          - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
+            - define item:<context.args.get[3]||<empty>>
+            - if <[item]> != <empty>:
+              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+                - run drustcraftt_quest.remove_give def:<[quest_id]>|<[item]>
+                - narrate '<&e>The give items for Quest ID <&sq><[quest_id]><&sq> was updated'
+              - else:
+                - narrate '<&e>You do not have permission to change this quest'
+            - else:
+              - narrate '<&e>No give item was entered'
+          - else:
+            - narrate '<&e>Quest ID <&sq><[quest_id]><&sq> was not found on the server'
+        - else:
+          - narrate '<&e>A Quest ID was not entered to change'
+          
       - default:
         - narrate '<&c>Unknown option. Try <queue.script.data_key[usage].parsed>'
         

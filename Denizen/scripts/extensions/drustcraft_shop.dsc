@@ -252,7 +252,7 @@ drustcraftc_shop:
                 - define item:<context.args.get[4]||<empty>>
                 - if <[item]> != <empty>:
                   - if <server.material_types.parse[name].contains[<[item]>]>:
-                    - if <yaml[drustcraft_shop].read[shop.<[shop_name]>.items].contains[<item]>]||false> == false:
+                    - if <yaml[drustcraft_shop].read[shop.<[shop_name]>.items].contains[<[item]>]||false> == false:
                       - yaml id:drustcraft_shop set shop.<[shop_name]>.items:->:<[item]>
                       - run drustcraftt_shop.save
                       - narrate '<&e>The shop <&f><[shop_name]> <&e>now sells <&f><[item]>'
@@ -331,7 +331,7 @@ drustcraftt_shop_interactor:
               
               - define item_value:<[item_value].div[1.2].round_down_to_precision[0.01]>
               - if <[item_value]> < 1:
-                - define item_qty:<element[1].div[<[item_value]>].round>
+                - define item_qty:<element[1].div[<[item_value]>].round||1>
               - else:
                 - define emerald_qty:<[item_value]>
                 - while <[emerald_qty].round> != <[emerald_qty]>:
