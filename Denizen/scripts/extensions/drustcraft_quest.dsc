@@ -58,16 +58,29 @@ drustcraftw_quest:
 
 
     on player breaks block priority:100:
-			- run drustcraftt_quest.objective_event def:block_break|<context.material.name>|<context.location>
+			- run drustcraftt_quest.objective_event def:<player>|block_break|<context.material.name>|<context.location>
     
     
     on player places block priority:100:
-			- run drustcraftt_quest.objective_event def:block_place|<context.material.name>|<context.location>
+			- run drustcraftt_quest.objective_event def:<player>|block_place|<context.material.name>|<context.location>
       
     
     on player enters cuboid priority:100:
       - define region_name:<context.area.note_name||<empty>>
-      - run drustcraftt_quest.objective_event def:enter_region|<[region_name]>
+      - run drustcraftt_quest.objective_event def:<player>|enter_region|<[region_name]>
+
+
+    on entity dies priority:100:
+      - if <context.damager.object_type> == PLAYER:
+        - define name:<empty>
+        - if <context.entity.is_mythicmob>:
+          - define name:<context.entity.mythicmob.internal_name||<empty>>
+        - else:
+          - define name:<context.entity.name||<empty>>
+        
+        - if <[name]> != <empty>:
+  			  - run drustcraftt_quest.objective_event def:<context.damager>|kill|<[name]>|<context.entity.location>
+    
 
 
 drustcraftt_quest:
@@ -132,6 +145,11 @@ drustcraftt_quest:
     - run drustcraftt_quest.type_register def:enter_region|drustcraftt_interactor_quest
     - run drustcraftt_tab_complete.completions def:quest|addobj|_*quests|enter_region|_*regions
     - run drustcraftt_tab_complete.completions def:quest|editobj|_*quests|_*int|enter_region|_*regions
+
+    - run drustcraftt_quest.type_register def:kill|drustcraftt_interactor_quest
+    - run drustcraftt_tab_complete.completions def:quest|addobj|_*quests|kill|_*hostile|_*int|_*regions
+    - run drustcraftt_tab_complete.completions def:quest|editobj|_*quests|_*int|kill|_*hostile|_*int|_*regions
+
 
     - define npc_list:<list[]>
 
@@ -496,14 +514,15 @@ drustcraftt_quest:
       - run drustcraftt_quest.save
   
   objective_event:
-    - define event_type:<[1]||<empty>>
-    - define event_data:<[2]||<empty>>
-    - define event_location:<[3]||<empty>>
+    - define event_player:<[1]||<empty>>
+    - define event_type:<[2]||<empty>>
+    - define event_data:<[3]||<empty>>
+    - define event_location:<[4]||<empty>>
     - define changes:false
     
-    - foreach <yaml[drustcraft_quests].list_keys[player.<player.uuid>.quests.active]||<list[]>>:
+    - foreach <yaml[drustcraft_quests].list_keys[player.<[event_player].uuid>.quests.active]||<list[]>>:
       - define quest_id:<[value]>
-      - define objective_list:<yaml[drustcraft_quests].list_keys[player.<player.uuid>.quests.active.<[quest_id]>.objectives]||<list[]>>
+      - define objective_list:<yaml[drustcraft_quests].list_keys[player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives]||<list[]>>
 
       - foreach <[objective_list]>:
         - define objective_id:<[value]>
@@ -512,21 +531,21 @@ drustcraftt_quest:
           - if <[objective_data]> == <empty> || <[objective_data]> == * || <[objective_data]> == <[event_data]>:
             - define objective_region:<yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.region]||<empty>>
             - if <[objective_region]> == <empty> || <[event_location].regions.parse[id].contains[<[objective_region]>]||false>:
-              - define objective_value:<yaml[drustcraft_quests].read[player.<player.uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>]||0>
+              - define objective_value:<yaml[drustcraft_quests].read[player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>]||0>
               - define objective_value:++
               - define changes:true
 
               - if <[objective_value]> >= <yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.quantity]||0>:
-                - ~yaml id:drustcraft_quests set player.<player.uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>:!
+                - ~yaml id:drustcraft_quests set player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>:!
               - else:
-                - ~yaml id:drustcraft_quests set player.<player.uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>:<[objective_value]>
+                - ~yaml id:drustcraft_quests set player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives.<[objective_id]>:<[objective_value]>
 
-      - if <yaml[drustcraft_quests].list_keys[player.<player.uuid>.quests.active.<[quest_id]>.objectives].size||0> <= 0:
-        - run drustcraftt_quest.done def:<player>|<[quest_id]>
+      - if <yaml[drustcraft_quests].list_keys[player.<[event_player].uuid>.quests.active.<[quest_id]>.objectives].size||0> <= 0:
+        - run drustcraftt_quest.done def:<[event_player]>|<[quest_id]>
     
     - if <[changes]>:
       - run drustcraftt_quest.update_markers def:true
-      - run drustcraftt_quest.inventory_update def:<player>
+      - run drustcraftt_quest.inventory_update def:<[event_player]>
     
     - determine <[changes]>
     
@@ -1496,6 +1515,19 @@ drustcraftt_interactor_quest:
                             - define npc_name:<npc[<[npc_end]>].name.strip_color||<[npc_name]>>
                         
                         - define 'status:Give <[npc_name]> <[current]>/<[quantity]> <material[<[data]>].translated_name||<[data]>>'
+
+                        - if <[region]> != <empty>:
+                            - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>
+                            - if <[region_title]> == <empty>:
+                                - define region_title:<[data]>
+                            - define 'status:<[status]> at <[region_title]>'
+
+                        - if <[current]> >= <[quantity]>:
+                            - define 'status:<[status]> <&2>√'
+                        
+                        - determine <[status]>
+                    - case kill:
+                        - define 'status:Kill <[current]>/<[quantity]> <[data]>'
 
                         - if <[region]> != <empty>:
                             - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>
