@@ -115,7 +115,7 @@ drustcraftp_group:
     - define group_name:<[1]||<empty>>
     - define target_player:<[2]||<player>>
 
-    - if <[target_player].type> == Player:
+    - if <[target_player].object_type> == Player:
       - determine <[target_player].in_group[<[group_name]>]||false>
     
     - determine false
@@ -130,7 +130,7 @@ drustcraftp_group:
     - define group_name:<[1]||<empty>>
     - define target_player:<[2]||<empty>>
 
-    - if <[group_name]> != <empty> && <[target_player].type> == Player:
+    - if <[group_name]> != <empty> && <[target_player].object_type> == Player:
       - if <proc[drustcraftp_group.is_owner].context[<[group_name]>|<[target_player]>]> || <proc[drustcraftp_group.is_member].context[<[group_name]>|<[target_player]>]>:
         - determine true
         

@@ -11,7 +11,7 @@ drustcraftw_sql:
 
     on script reload:
       - run drustcraftt_sql.load
-
+      
     on system time minutely:
       - if <server.sql_connections.contains[drustcraft_database]> == false:
         - run drustcraftt_sql.load

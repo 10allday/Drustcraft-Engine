@@ -15,7 +15,7 @@ drustcraftw_luckperms:
             - foreach <context.args>:
                 - if <[value].starts_with[*]>:
                     - define plist:<server.match_offline_player[<[value]>]||<empty>>
-                    - if <[plist].type> == Player && <[plist].name> == <[value]>:
+                    - if <[plist].object_type> == Player && <[plist].name> == <[value]>:
                         - define override:true
                         - define args:->:<[plist].uuid>
                     - else:

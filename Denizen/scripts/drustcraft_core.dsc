@@ -16,7 +16,6 @@ drustcraftw:
       - foreach <yaml[drustcraft_server].read[drustcraft.run.reload]||<list[]>>:
         - execute as_server <[value]>
 
-
 drustcraftt:
   type: task
   debug: false

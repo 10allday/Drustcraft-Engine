@@ -114,7 +114,12 @@ drustcraftt_quest:
     - run drustcraftt_tab_complete.completions def:quest|editobj|_*quests|_*int|block_break|_*materials|_*int|_*regions
           
     - run drustcraftt_quest.type_register def:block_place|drustcraftt_interactor_quest
+    - run drustcraftt_tab_complete.completions def:quest|addobj|_*quests|block_place|_*materials|_*int|_*regions
+    - run drustcraftt_tab_complete.completions def:quest|editobj|_*quests|_*int|block_place|_*materials|_*int|_*regions
+
     - run drustcraftt_quest.type_register def:give|drustcraftt_interactor_quest
+    - run drustcraftt_tab_complete.completions def:quest|addobj|_*quests|give|_*materials|_*int
+    - run drustcraftt_tab_complete.completions def:quest|editobj|_*quests|_*int|give|_*materials|_*int
     
     - run drustcraftt_quest.type_register def:enter_region|drustcraftt_interactor_quest
     - run drustcraftt_tab_complete.completions def:quest|addobj|_*quests|enter_region|_*regions
@@ -174,6 +179,15 @@ drustcraftt_quest:
         - yaml id:drustcraft_quests set quests.<[quest_id]>.description:<[description]>
         - run drustcraftt_quest.save
 
+  title:
+    - define quest_id:<[1]||<empty>>
+    - define title:<[2]||<empty>>
+    
+    - if <[quest_id]> != <empty> && <[title]> != <empty>:
+      - if <yaml[drustcraft_quests].list_keys[quests].contains[<[quest_id]>]||false>:
+        - yaml id:drustcraft_quests set quests.<[quest_id]>.title:<[title]>
+        - run drustcraftt_quest.save
+
   npc_start:
     - define quest_id:<[1]||<empty>>
     - define npc_id:<[2]||<empty>>
@@ -191,7 +205,7 @@ drustcraftt_quest:
     - if <[quest_id]> != <empty> && <[npc_id]> != <empty>:
       - if <yaml[drustcraft_quests].list_keys[quests].contains[<[quest_id]>]||false>:
         - yaml id:drustcraft_quests set quests.<[quest_id]>.npc_end:<[npc_id]>
-        - run drustcraft.interactor.npc def:<[npc_id]>|drustcraftt_interactor_quest
+        - run drustcraftt_npc.interactor def:<[npc_id]>|drustcraftt_interactor_quest
         - run drustcraftt_quest.save
 
   npc_end_speak:
@@ -680,7 +694,7 @@ drustcraftp_quest:
           - ~run <[task]> def:<empty>|<[target_player]>|text_status|<[type]>|<[data]>|<[quantity]>|<[region]>|<[current]>|<[quest_id]> save:result
           - define item:<entry[result].created_queue.determination.get[1]||<[item]>>
         
-        - define 'objectives:<[objectives]>- <[item]><&nl>'
+        - define 'objectives:<[objectives]><&0>- <[item]><&nl>'
       
       - define npc_start:<yaml[drustcraft_quests].read[quests.<[quest_id]>.npc_start]||<empty>>
       - define npc_end:<yaml[drustcraft_quests].read[quests.<[quest_id]>.npc_end]||<empty>>
@@ -903,12 +917,12 @@ drustcraftc_quest:
           - narrate '<&c>No Quest ID was entered to remove'
       
       - case title:
-        - define quest_id:<context.args.get[2]]||<empty>>
+        - define quest_id:<context.args.get[2]||<empty>>
         - if <[quest_id]> != <empty>:
           - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
             - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
               - if <context.args.size> > 2:
-                - define quest_title:<context.args.remove[1|2]>
+                - define quest_title:<context.args.remove[1|2].space_separated>
                 - run drustcraftt_quest.title def:<[quest_id]>|<[quest_title]>
                 - narrate '<&e>The title for Quest ID <&sq><[quest_id]><&sq> was changed'
               - else:
@@ -1311,6 +1325,19 @@ drustcraftt_interactor_quest:
                         - determine <[status]>
                     - case block_break:
                         - define 'status:Break <[current]>/<[quantity]> <material[<[data]>].translated_name||<[data]>>'
+
+                        - if <[region]> != <empty>:
+                            - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>
+                            - if <[region_title]> == <empty>:
+                                - define region_title:<[data]>
+                            - define 'status:<[status]> at <[region_title]>'
+
+                        - if <[current]> >= <[quantity]>:
+                            - define 'status:<[status]> <&2>√'
+                        
+                        - determine <[status]>
+                    - case block_place:
+                        - define 'status:Place <[current]>/<[quantity]> <material[<[data]>].translated_name||<[data]>>'
 
                         - if <[region]> != <empty>:
                             - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>

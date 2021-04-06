@@ -29,6 +29,7 @@ drustcraftw_npc:
       - run drustcraftt_npc.spawn_close def:<player.location>
 
 
+    #TODO this interferes with sentinel respawntime on death
     on system time secondly every:5:
       # Spawn NPCs that are within 25 blocks from a player
       - foreach <server.npcs.filter[location.find.entities[Player].within[50].size.is[OR_MORE].than[1]].filter[is_spawned.not]>:
@@ -37,7 +38,7 @@ drustcraftw_npc:
 
     on system time minutely:
       # Despawn NPCs that are spawned and further away then 25 blocks from a player - save server resources
-      - foreach <server.npcs.filter[location.find.entities[Player].within[50].size.is[==].to[0]].filter[is_spawned]>:
+      - foreach <server.npcs.filter[location.find.entities[Player].within[50].size.is[==].to[0]].filter[is_spawned].filter[not[is_navigating]]>:
         - despawn <[value]>
 
 
@@ -46,6 +47,13 @@ drustcraftw_npc:
       - choose <context.args.get[1]||<empty>>:
         - case create rename:
           - wait 1t
+          - lookclose <player.selected_npc> true range:10 realistic
+          - assignment set script:drustcrafta_npc npc:<player.selected_npc>
+          - trait state:true sentinel to:<player.selected_npc>
+          - anchor add <player.selected_npc.location> id:spawn npc:<player.selected_npc>
+          - execute as_player 'sentinel addtarget monsters'
+          - execute as_player 'sentinel spawnpoint'
+          
           - foreach <server.npcs>:
             - if <[value].name.starts_with[§]> == false:
               - adjust <[value]> name:<&e><[value].name>
