@@ -982,7 +982,7 @@ drustcraftc_quest:
           - foreach <[quest_ids]>:
             - define quest_id:<[value]>
             - define 'quest_title:<proc[drustcraftp_quest.info].context[<[quest_id]>].get[title]||<empty>> <&e>(ID: <[quest_id]>)'
-            - if <[quest_title].advanced_matches[<[query]>]>:
+            - if <[quest_title].advanced_matches_text[<[query]>]>:
               - define quest_map:<[quest_map].with[<[quest_id]>].as[<[quest_title]>]>
           
           - run drustcraftt_chat_paginate 'def:<list[Quests|<[page_no]>].include_single[<[quest_map]>].include[quest list|quest info]>'
