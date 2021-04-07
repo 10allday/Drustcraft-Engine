@@ -14,15 +14,6 @@ drustcraftw_quest:
     on script reload:
       - run drustcraftt_quest.load
     
-    on player death:
-      - determine passively KEEP_INV
-      - determine passively NO_DROPS
-      
-      - foreach <context.entity.inventory.map_slots>:
-        - if <[value].book_title.strip_color.starts_with[Quest:<&sp>]||false> == false:
-          - take <[value]> quantity:<[value].quantity> from:<context.entity.inventory>
-          - drop <[value]> <cuboid[<context.entity.location.add[-2,-2,-2]>|<context.entity.location.add[2,2,2]>].spawnable_blocks.random>
-    
 
     on player drops item:
       - if <context.item.is_book> && <context.item.book_title.strip_color.starts_with[Quest:<&sp>]>:
@@ -116,6 +107,9 @@ drustcraftt_quest:
       - run drustcraftt_tab_complete.completions def:quest|addgive|_*quests|_*materials|_*int
       - run drustcraftt_tab_complete.completions def:quest|editgive|_*quests|_*materials|_*int
       - run drustcraftt_tab_complete.completions def:quest|remgive|_*quests|_*materials
+
+    - wait 2t
+    - run drustcraftt_player.register_no_death_drop def:drustcraftp_quest.no_death_drop
 
     - if <yaml.list.contains[drustcraft_quests]>:
       - ~yaml unload id:drustcraft_quests
@@ -630,6 +624,11 @@ drustcraftp_quest:
   debug: false
   script:
     - determine <empty>
+    
+  no_death_drop:
+    - define item:<[1]>
+    - determine <[item].book_title.strip_color.starts_with[Quest:<&sp>]||false>
+
     
   list:
     - determine <yaml[drustcraft_quests].list_keys[quests]||<list[]>>
