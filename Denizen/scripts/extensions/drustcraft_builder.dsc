@@ -12,6 +12,7 @@ drustcraftw_builder:
           - define allow:false
 
         - if <context.to||<empty>> != <empty>:
+          - define allow:false
           - if <proc[drustcraftp_region.gamemode].context[<context.to>]||SURVIVAL> != CREATIVE:
             - foreach <context.to.regions||<list[]>> as:target_region:
               - if <proc[drustcraftp_region.is_member].context[<[target_region]>|<player>]||false>:
