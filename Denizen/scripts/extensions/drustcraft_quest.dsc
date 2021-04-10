@@ -49,11 +49,11 @@ drustcraftw_quest:
 
 
     on player breaks block priority:100:
-			- run drustcraftt_quest.objective_event def:<player>|block_break|<context.material.name>|<context.location>
+      - run drustcraftt_quest.objective_event def:<player>|block_break|<context.material.name>|<context.location>
     
     
     on player places block priority:100:
-			- run drustcraftt_quest.objective_event def:<player>|block_place|<context.material.name>|<context.location>
+      - run drustcraftt_quest.objective_event def:<player>|block_place|<context.material.name>|<context.location>
       
     
     on player enters cuboid priority:100:
@@ -64,13 +64,13 @@ drustcraftw_quest:
     on entity dies priority:100:
       - if <context.damager.object_type||<empty>> == PLAYER:
         - define name:<empty>
-        - if <context.entity.is_mythicmob>:
+        - if <context.entity.is_mythicmob||false>:
           - define name:<context.entity.mythicmob.internal_name||<empty>>
         - else:
           - define name:<context.entity.name||<empty>>
         
         - if <[name]> != <empty>:
-  			  - run drustcraftt_quest.objective_event def:<context.damager>|kill|<[name]>|<context.entity.location>
+          - run drustcraftt_quest.objective_event def:<context.damager>|kill|<[name]>|<context.entity.location>
     
 
 
@@ -93,7 +93,7 @@ drustcraftt_quest:
       - run drustcraftt_tab_complete.completions def:quest|setowner|_*quests|_*players
       - run drustcraftt_tab_complete.completions def:quest|npcstart|_*quests|_*npcs
       - run drustcraftt_tab_complete.completions def:quest|npcend|_*quests|_*npcs
-      - run drustcraftt_tab_complete.completions def:quest|endspeak|_*quests
+      - run drustcraftt_tab_complete.completions def:quest|npcendspeak|_*quests
       - run drustcraftt_tab_complete.completions def:quest|title|_*quests
       - run drustcraftt_tab_complete.completions def:quest|addreq|_*quests|_^quests
       - run drustcraftt_tab_complete.completions def:quest|remreq|_*quests|_^quests
@@ -107,6 +107,8 @@ drustcraftt_quest:
       - run drustcraftt_tab_complete.completions def:quest|addgive|_*quests|_*materials|_*int
       - run drustcraftt_tab_complete.completions def:quest|editgive|_*quests|_*materials|_*int
       - run drustcraftt_tab_complete.completions def:quest|remgive|_*quests|_*materials
+      - run drustcraftt_tab_complete.completions def:quest|removeplayer|_*quests|_*players
+      
 
     - wait 2t
     - run drustcraftt_player.register_no_death_drop def:drustcraftp_quest.no_death_drop
@@ -234,7 +236,7 @@ drustcraftt_quest:
     
     - if <[quest_id]> != <empty>:
       - if <yaml[drustcraft_quests].list_keys[quests].contains[<[quest_id]>]||false>:
-        - yaml id:drustcraft_quests set quests.<[quest_id]>.npc_end_speak:<[npc_id]>
+        - yaml id:drustcraft_quests set quests.<[quest_id]>.npc_end_speak:<[speak]>
         - run drustcraftt_quest.save
 
   add_requirement:
@@ -320,11 +322,11 @@ drustcraftt_quest:
     - define data:<[4]||<empty>>
     - define quantity:<[5]||<empty>>
     - define region:<[6]||<empty>>
-      
+    - define match:0
+    
     - if <[quest_id]> != <empty> && <[type]> != <empty>:
       - if <yaml[drustcraft_quests].list_keys[quests].contains[<[quest_id]>]||false>:
         - define exists:false
-        - define match:0
     
     - if <yaml[drustcraft_quests].list_keys[quests.<[quest_id]>.objectives].contains[<[objective_id]>]>:
       - define exists:true
@@ -336,11 +338,11 @@ drustcraftt_quest:
     
     - if <[match]> > 0:
       - yaml id:drustcraft_quests set quests.<[quest_id]>.objectives.<[objective_id]>:!
-    - if <[quantity]> != <empty>:
-      - yaml id:drustcraft_quests set quests.<[quest_id]>.objectives.<[match]>.quantity:+:<[quantity]>
-    - else:
-      - if <[exists]> == false:
-        - define objective_id:<yaml[drustcraft_quests].list_keys[quests.<[quest_id]>.objectives].highest.add[1]||1>
+      - if <[quantity]> != <empty>:
+        - yaml id:drustcraft_quests set quests.<[quest_id]>.objectives.<[match]>.quantity:+:<[quantity]>
+      - else:
+        - if <[exists]> == false:
+          - define objective_id:<yaml[drustcraft_quests].list_keys[quests.<[quest_id]>.objectives].highest.add[1]||1>
     
     - yaml id:drustcraft_quests set quests.<[quest_id]>.objectives.<[objective_id]>.type:<[type]>
     - if <[quantity]> != <empty>:
@@ -400,7 +402,7 @@ drustcraftt_quest:
     - define give_item:<[2]||<empty>>
     - define give_quantity:<[3]||1>
       
-    - if <[quest_id]> != <empty> && <[reward_item]> != <empty> && <[give_quantity]> > 0:
+    - if <[quest_id]> != <empty> && <[give_item]> != <empty> && <[give_quantity]> > 0:
       - if <yaml[drustcraft_quests].list_keys[quests].contains[<[quest_id]>]||false>:
         - if <yaml[drustcraft_quests].read[quests.<[quest_id]>.gives].contains[<[reward_item]>]||false>:
           - yaml id:drustcraft_quests set quests.<[quest_id]>.gives.<[give_item]>:+:<[give_quantity]>
@@ -413,7 +415,7 @@ drustcraftt_quest:
     - define quest_id:<[1]||<empty>>
     - define give_item:<[2]||<empty>>
       
-    - if <[quest_id]> != <empty> && <[reward_item]> != <empty>:
+    - if <[quest_id]> != <empty> && <[give_item]> != <empty>:
       - if <yaml[drustcraft_quests].list_keys[quests].contains[<[quest_id]>]||false>:
         - yaml id:drustcraft_quests set quests.<[quest_id]>.gives.<[give_item]>:!      
         - run drustcraftt_quest.save
@@ -484,7 +486,7 @@ drustcraftt_quest:
     - define end_speak:<yaml[drustcraft_quests].read[quests.<[quest_id]>.npc_end_speak]||<empty>>
     - if <[end_speak]> != <empty>:
       - define target_npc:<npc[<yaml[drustcraft_quests].read[quests.<[quest_id]>.npc_start]||0>]||<empty>>
-      - narrate <proc[drustcraftp.format_chat].context[<npc>|<[end_speak]>]>
+      - narrate <proc[drustcraftp_chat_format].context[<npc>|<[end_speak]>]>
     
     - run drustcraftt_quest.update_markers def:<[target_player]>|true
     - run drustcraftt_quest.save
@@ -521,7 +523,7 @@ drustcraftt_quest:
   
         - foreach <[objective_list]>:
           - define objective_id:<[value]>
-          - if <yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.type]> == <[event_type]>:
+          - if <yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.type]||<empty>> == <[event_type]>:
             - define objective_data:<yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.data]||<empty>>
             - if <[objective_data]> == <empty> || <[objective_data]> == * || <[objective_data]> == <[event_data]>:
               - define objective_region:<yaml[drustcraft_quests].read[quests.<[quest_id]>.objectives.<[objective_id]>.region]||<empty>>
@@ -568,7 +570,7 @@ drustcraftt_quest:
             
             - foreach <[quest_list]>:
               - if <yaml[drustcraft_quests].read[quests.<[value]>.repeatable]||false> == true:
-                - define 'title:<&b>  ?  '
+                - define 'title:<&9>  ?  '
             
           - if <proc[drustcraftp_quest.npc.list_done].context[<[target_npc]>|<[target_player]>].as_list.size||0> > 0:
             - define 'title:  !  '
@@ -636,11 +638,13 @@ drustcraftp_quest:
   info:
     - define quest_id:<[1]||<empty>>
     - define quest_info:<map[]>
-    
-    - foreach <yaml[drustcraft_quests].list_deep_keys[quests.<[quest_id]>]||<list[]>>:
-      - define quest_info:<[quest_info].with[<[value]>].as[<yaml[drustcraft_quests].read[quests.<[quest_id]>.<[value]>]>]>
-    
-    - determine <[quest_info]>
+  
+    - if <yaml[drustcraft_quests].list_keys[quests].contains[<[quest_id]>]||false>:
+      - foreach <yaml[drustcraft_quests].list_deep_keys[quests.<[quest_id]>]||<list[]>>:
+        - define quest_info:<[quest_info].with[<[value]>].as[<yaml[drustcraft_quests].read[quests.<[quest_id]>.<[value]>]>]>
+      
+      - determine <[quest_info]>
+    - determine <empty>
   
   is_owner:
     - define quest_id:<[1]||<empty>>
@@ -864,108 +868,111 @@ drustcraftc_quest:
         
         - define quest_map:<proc[drustcraftp_quest.info].context[<[quest_id]>]||<map[]>>
         
-        - define 'row:<&9>Title: <&6><[quest_map].get[title]||<&c>(none)> <element[<&7><&lb>Edit<&rb>].on_click[/quest title <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
-        - narrate <[row]>
-        
-        - define 'row:<&9>Description: <&6><[quest_map].get[description]||<&c>(none)> <element[<&7><&lb>Edit<&rb>].on_click[/quest description <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
-        - narrate <[row]>
-        
-        - define owner:<[quest_map].get[owner]||<empty>>
-        - define owner:<player[<[owner]>].name||<&c>(none)>
-        - define 'row:<&9>Owner: <&6><[owner]> <element[<&7><&lb>Edit<&rb>].on_click[/quest setowner <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
-        - narrate <[row]>
-
-        - define title:<[quest_map].get[requirements]||<empty>>
-        - if <[title]> != <empty>:
-          - foreach <[title]>:
-            - define req_quest_map:<proc[drustcraftp_quest.info].context[<[value]>]>
-            - define 'title:<[title].overwrite[<&e><[req_quest_map].get[title]||<empty>> (<[value]>)].at[<[loop_index]>]>'
+        - if <[quest_map]> != <empty>:
+          - define 'row:<&9>Title: <&6><[quest_map].get[title]||<&c>(none)> <element[<&7><&lb>Edit<&rb>].on_click[/quest title <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
+          - narrate <[row]>
           
-          - define 'title:<[title].separated_by[, ]>'
-        - else:
-          - define title:<&c>(none)
-        - define 'txt_events:<element[<&a><&lb>Add<&rb>].on_click[/quest addreq <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to add item]> '
-        - define 'txt_events:<[txt_events]><element[<&c><&lb>Rem<&rb>].on_click[/quest remreq <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to remove item]> '
-        - define 'txt_events:<[txt_events]><element[<&c><&lb>Clr<&rb>].on_click[/quest clrreq <[quest_id]>].type[SUGGEST_COMMAND].on_hover[Click to clear items]>'
-        - define 'row:<&9>Requires: <&6><[title]> <[txt_events]>'
-        - narrate <[row]>
-        
-        - define title:<[quest_map].get[repeatable]||false>
-        - define 'row:<&9>Repeatable: <&6><[title]> <element[<&7><&lb>Edit<&rb>].on_click[/quest repeatable <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
-        - narrate <[row]>
-
-        - define title:<[quest_map].get[npc_start]||<empty>>
-        - if <[title]> != <empty>:
-          - define 'title:<npc[<[title]>].name||<&c>(unknown)> <&e>(ID: <[title]>)'
-        - else:
-          - define title:<&c>(none)
-        - define 'row:<&9>NPC Start: <&6><[title]> <element[<&7><&lb>Edit<&rb>].on_click[/quest npcstart <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
-        - narrate <[row]>
-        
-        - define title:<[quest_map].get[npc_end]||<empty>>
-        - if <[title]> != <empty>:
-          - define 'title:<npc[<[title]>].name||<&c>(unknown)> <&e>(ID: <[title]>)'
-        - else:
-          - define title:<&c>(none)
-        - define 'row:<&9>NPC End: <&6><[title]> <element[<&7><&lb>Edit<&rb>].on_click[/quest npcend <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
-        - narrate <[row]>
-
-        - define 'row:<&9>NPC End Speak: <&6><[quest_map].get[npc_end_speak]||<&c>(none)> <element[<&7><&lb>Edit<&rb>].on_click[/quest npcendspeak <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
-        - narrate <[row]>
-
-        - define pretitle:<empty>
-        - define title:<[quest_map].get[gives]||<empty>>
-        - if <[title]> != <empty>:
-          - define 'give_list:<list[ ]>'
-          - foreach <[title]>:
-            - define 'txt_events:<element[<&7><&lb>Edit<&rb>].on_click[/quest editgiv <[quest_id]> <[key]> <[value]>].type[SUGGEST_COMMAND].on_hover[Click to edit item]> '
-            - define 'txt_events:<[txt_events]><element[<&c><&lb>Rem<&rb>].on_click[/quest remgive <[quest_id]> <[key]> ].type[SUGGEST_COMMAND].on_hover[Click to remove item]> '
-            - define 'give_list:->:  <&e><[key]> <&6><[value]> <[txt_events]>'
+          - define 'row:<&9>Description: <&6><[quest_map].get[description]||<&c>(none)> <element[<&7><&lb>Edit<&rb>].on_click[/quest description <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
+          - narrate <[row]>
           
-          - define 'title:<[give_list].separated_by[<&nl>]>'
-        - else:
-          - define 'pretitle:<&c>(none) '
-        - define 'txt_events:<element[<&a><&lb>Add<&rb>].on_click[/quest addgive <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to add item]> '
-        - define 'row:<&9>Gives: <[pretitle]><[txt_events]> <[title]>'
-        - narrate <[row]>
-
-
-        - define pretitle:<empty>
-        - define title:<[quest_map].get[objectives]||<empty>>
-        - if <[title]> != <empty>:
-          - define 'objective_list:<list[ ]>'
-          - define objective_ids:<[title].keys.numerical>
-          - foreach <[objective_ids]>:
-            - define 'objective_data: <[title].get[<[value]>].get[data]||<empty>>'
-            - define 'objective_quantity: <[title].get[<[value]>].get[quantity]||<empty>>'
-            - define 'objective_region: <[title].get[<[value]>].get[region]||<empty>>'
-
-            - define 'txt_events:<element[<&7><&lb>Edit<&rb>].on_click[/quest editobj <[quest_id]> <[value]> <[title].get[<[value]>].get[type]><[objective_data]><[objective_quantity]><[objective_region]>].type[SUGGEST_COMMAND].on_hover[Click to edit item]> '
-            - define 'txt_events:<[txt_events]><element[<&c><&lb>Rem<&rb>].on_click[/quest remobj <[quest_id]> <[value]> ].type[SUGGEST_COMMAND].on_hover[Click to remove item]> '
-            - define 'objective_list:->:  <&f><[value]>: <&e><[title].get[<[value]>].get[type]><&f><[objective_data]><&6><[objective_quantity]><&3><[objective_region]> <[txt_events]>'
+          - define owner:<[quest_map].get[owner]||<empty>>
+          - define owner:<player[<[owner]>].name||<&c>(none)>
+          - define 'row:<&9>Owner: <&6><[owner]> <element[<&7><&lb>Edit<&rb>].on_click[/quest setowner <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
+          - narrate <[row]>
+  
+          - define title:<[quest_map].get[requirements]||<empty>>
+          - if <[title]> != <empty>:
+            - foreach <[title]>:
+              - define req_quest_map:<proc[drustcraftp_quest.info].context[<[value]>]>
+              - define 'title:<[title].overwrite[<&e><[req_quest_map].get[title]||<empty>> (<[value]>)].at[<[loop_index]>]>'
+            
+            - define 'title:<[title].separated_by[, ]>'
+          - else:
+            - define title:<&c>(none)
+          - define 'txt_events:<element[<&a><&lb>Add<&rb>].on_click[/quest addreq <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to add item]> '
+          - define 'txt_events:<[txt_events]><element[<&c><&lb>Rem<&rb>].on_click[/quest remreq <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to remove item]> '
+          - define 'txt_events:<[txt_events]><element[<&c><&lb>Clr<&rb>].on_click[/quest clrreq <[quest_id]>].type[SUGGEST_COMMAND].on_hover[Click to clear items]>'
+          - define 'row:<&9>Requires: <&6><[title]> <[txt_events]>'
+          - narrate <[row]>
           
-          - define 'title:<[objective_list].separated_by[<&nl>]>'
-        - else:
-          - define 'pretitle:<&c>(none) '
-        - define 'txt_events:<element[<&a><&lb>Add<&rb>].on_click[/quest addobj <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to add item]> '
-        - define 'row:<&9>Objectives: <[pretitle]><[txt_events]> <[title]>'
-        - narrate <[row]>
-
-        - define pretitle:<empty>
-        - define title:<[quest_map].get[rewards]||<empty>>
-        - if <[title]> != <empty>:
-          - define 'reward_list:<list[ ]>'
-          - foreach <[title]>:
-            - define 'txt_events:<element[<&7><&lb>Edit<&rb>].on_click[/quest editrew <[quest_id]> <[key]> <[value]>].type[SUGGEST_COMMAND].on_hover[Click to edit item]> '
-            - define 'txt_events:<[txt_events]><element[<&c><&lb>Rem<&rb>].on_click[/quest remrew <[quest_id]> <[key]> ].type[SUGGEST_COMMAND].on_hover[Click to remove item]> '
-            - define 'reward_list:->:  <&e><[key]> <&6><[value]> <[txt_events]>'
+          - define title:<[quest_map].get[repeatable]||false>
+          - define 'row:<&9>Repeatable: <&6><[title]> <element[<&7><&lb>Edit<&rb>].on_click[/quest repeatable <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
+          - narrate <[row]>
+  
+          - define title:<[quest_map].get[npc_start]||<empty>>
+          - if <[title]> != <empty>:
+            - define 'title:<npc[<[title]>].name||<&c>(unknown)> <&e>(ID: <[title]>)'
+          - else:
+            - define title:<&c>(none)
+          - define 'row:<&9>NPC Start: <&6><[title]> <element[<&7><&lb>Edit<&rb>].on_click[/quest npcstart <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
+          - narrate <[row]>
           
-          - define 'title:<[reward_list].separated_by[<&nl>]>'
+          - define title:<[quest_map].get[npc_end]||<empty>>
+          - if <[title]> != <empty>:
+            - define 'title:<npc[<[title]>].name||<&c>(unknown)> <&e>(ID: <[title]>)'
+          - else:
+            - define title:<&c>(none)
+          - define 'row:<&9>NPC End: <&6><[title]> <element[<&7><&lb>Edit<&rb>].on_click[/quest npcend <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
+          - narrate <[row]>
+  
+          - define 'row:<&9>NPC End Speak: <&6><[quest_map].get[npc_end_speak]||<&c>(none)> <element[<&7><&lb>Edit<&rb>].on_click[/quest npcendspeak <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
+          - narrate <[row]>
+  
+          - define pretitle:<empty>
+          - define title:<[quest_map].get[gives]||<empty>>
+          - if <[title]> != <empty>:
+            - define 'give_list:<list[ ]>'
+            - foreach <[title]>:
+              - define 'txt_events:<element[<&7><&lb>Edit<&rb>].on_click[/quest editgiv <[quest_id]> <[key]> <[value]>].type[SUGGEST_COMMAND].on_hover[Click to edit item]> '
+              - define 'txt_events:<[txt_events]><element[<&c><&lb>Rem<&rb>].on_click[/quest remgive <[quest_id]> <[key]> ].type[SUGGEST_COMMAND].on_hover[Click to remove item]> '
+              - define 'give_list:->:  <&e><[key]> <&6><[value]> <[txt_events]>'
+            
+            - define 'title:<[give_list].separated_by[<&nl>]>'
+          - else:
+            - define 'pretitle:<&c>(none) '
+          - define 'txt_events:<element[<&a><&lb>Add<&rb>].on_click[/quest addgive <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to add item]> '
+          - define 'row:<&9>Gives: <[pretitle]><[txt_events]> <[title]>'
+          - narrate <[row]>
+  
+  
+          - define pretitle:<empty>
+          - define title:<[quest_map].get[objectives]||<empty>>
+          - if <[title]> != <empty>:
+            - define 'objective_list:<list[ ]>'
+            - define objective_ids:<[title].keys.numerical>
+            - foreach <[objective_ids]>:
+              - define 'objective_data: <[title].get[<[value]>].get[data]||<empty>>'
+              - define 'objective_quantity: <[title].get[<[value]>].get[quantity]||<empty>>'
+              - define 'objective_region: <[title].get[<[value]>].get[region]||<empty>>'
+  
+              - define 'txt_events:<element[<&7><&lb>Edit<&rb>].on_click[/quest editobj <[quest_id]> <[value]> <[title].get[<[value]>].get[type]||<empty>><[objective_data]><[objective_quantity]><[objective_region]>].type[SUGGEST_COMMAND].on_hover[Click to edit item]> '
+              - define 'txt_events:<[txt_events]><element[<&c><&lb>Rem<&rb>].on_click[/quest remobj <[quest_id]> <[value]> ].type[SUGGEST_COMMAND].on_hover[Click to remove item]> '
+              - define 'objective_list:->:  <&f><[value]>: <&e><[title].get[<[value]>].get[type]||<empty>><&f><[objective_data]><&6><[objective_quantity]><&9><[objective_region]> <[txt_events]>'
+            
+            - define 'title:<[objective_list].separated_by[<&nl>]>'
+          - else:
+            - define 'pretitle:<&c>(none) '
+          - define 'txt_events:<element[<&a><&lb>Add<&rb>].on_click[/quest addobj <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to add item]> '
+          - define 'row:<&9>Objectives: <[pretitle]><[txt_events]> <[title]>'
+          - narrate <[row]>
+  
+          - define pretitle:<empty>
+          - define title:<[quest_map].get[rewards]||<empty>>
+          - if <[title]> != <empty>:
+            - define 'reward_list:<list[ ]>'
+            - foreach <[title]>:
+              - define 'txt_events:<element[<&7><&lb>Edit<&rb>].on_click[/quest editrew <[quest_id]> <[key]> <[value]>].type[SUGGEST_COMMAND].on_hover[Click to edit item]> '
+              - define 'txt_events:<[txt_events]><element[<&c><&lb>Rem<&rb>].on_click[/quest remrew <[quest_id]> <[key]> ].type[SUGGEST_COMMAND].on_hover[Click to remove item]> '
+              - define 'reward_list:->:  <&e><[key]> <&6><[value]> <[txt_events]>'
+            
+            - define 'title:<[reward_list].separated_by[<&nl>]>'
+          - else:
+            - define 'pretitle:<&c>(none) '
+          - define 'txt_events:<element[<&a><&lb>Add<&rb>].on_click[/quest addrew <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to add item]> '
+          - define 'row:<&9>Rewards: <[pretitle]><[txt_events]> <[title]>'
+          - narrate <[row]>
         - else:
-          - define 'pretitle:<&c>(none) '
-        - define 'txt_events:<element[<&a><&lb>Add<&rb>].on_click[/quest addrew <[quest_id]> ].type[SUGGEST_COMMAND].on_hover[Click to add item]> '
-        - define 'row:<&9>Rewards: <[pretitle]><[txt_events]> <[title]>'
-        - narrate <[row]>
+          - narrate '<&8><&l>[<&4><&l>x<&8><&l>] <&c>The Quest ID is invalid'
 
       - case find:
         - define query:<context.args.get[2]||<empty>>
@@ -987,6 +994,39 @@ drustcraftc_quest:
           - run drustcraftt_chat_paginate 'def:<list[Quests|<[page_no]>].include_single[<[quest_map]>].include[quest list|quest info]>'
         - else:
           - narrate '<&c>No query text was entered'
+
+      - case removeplayer:
+        - define quest_id:<context.args.get[2]||<empty>>
+        - define target_player:<context.args.get[3]||<empty>>
+  
+        - if <[quest_id]> != <empty>:
+          - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
+            - if <[target_player]> != <empty>:
+              - define found_player:<server.match_offline_player[<[target_player]>]>
+              - if <[found_player].name||<empty>> == <[target_player]>:
+                - yaml id:drustcraft_quests set player.<[found_player].uuid>.quests.active.<[quest_id]>:!
+                - yaml id:drustcraft_quests set player.<[found_player].uuid>.quests.done:<-:<[quest_id]>
+                - yaml id:drustcraft_quests set player.<[found_player].uuid>.quests.completed:<-:<[quest_id]>
+
+                # remove from inv
+                - foreach <[found_player].inventory.map_slots>:
+                  - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Quest:<&sp>]>:
+                    - define book_quest_id:<proc[drustcraftp_quest.title_to_id].context[<[value].book_title.after[Quest:<&sp>]>]||0>
+                    - if <[book_quest_id]> == <[quest_id]>:
+                      - inventory set slot:<[key]> o:air d:<[found_player].inventory>
+
+                - run drustcraftt_quest.update_markers def:<[found_player]>|true
+                - run drustcraftt_quest.save
+                - narrate '<&e>The quest was removed from the player'
+              - else:
+                - narrate '<&c>A player named <[target_player].name||<empty>> was not found'
+            - else:
+              - narrate '<&c>No player was entered'
+          - else:
+            - narrate '<&c>The quest ID <[quest_id]> doesnt exist'
+        - else:
+          - narrate '<&c>No quest ID was entered'
+
 
       - case create:
         - define title:<context.args.remove[1].space_separated||<empty>>
@@ -1127,7 +1167,8 @@ drustcraftc_quest:
           - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
             - define speak:<context.args.remove[1|2].space_separated||<empty>>
             - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
-              #- run drustcraftt_quest.npc_end_speak def:<[quest_id]>|<[npc_id]>
+              - define quest_end_speak:<context.args.remove[1|2].space_separated>
+              - run drustcraftt_quest.npc_end_speak def:<[quest_id]>|<[quest_end_speak]>
               - narrate '<&e>Quest ID <&sq><[quest_id]><&sq> has been updated'
             - else:
               - narrate '<&e>You do not have permission to change this quest'
@@ -1408,141 +1449,141 @@ drustcraftc_quest:
         
 
 drustcraftt_interactor_quest:
-    type: task
-    debug: false
-    script:
-		- define target_npc:<[1]>
-		- define target_player:<[2]>
-		- define action:<[3]>
-		
-        - choose <[action]||<empty>>:
-            - case click:
-                - note 'in@generic[size=45;title=<npc[<[1]>].name.strip_color>]' as:drustcraft_npc_<player.uuid>
-                - define inventory_name:drustcraft_npc_<player.uuid>
+  type: task
+  debug: false
+  script:
+  - define target_npc:<[1]>
+  - define target_player:<[2]>
+  - define action:<[3]>
+  
+  - choose <[action]||<empty>>:
+    - case click:
+      - note 'in@generic[size=45;title=<npc[<[1]>].name.strip_color>]' as:drustcraft_npc_<[target_player].uuid>
+      - define inventory_name:drustcraft_npc_<[target_player].uuid>
 
-                # Give items in players hand to NPC if they are wanted
-                - define gave_items:false
-                - while true:
-                    - ~run drustcraftt_quest.objective_event def:give|<player.item_in_hand.material.name> save:result
-                    - if <entry[result].created_queue.determination.get[1]||true>:
-                        - define gave_items:true
-                        - take item_in_hand quantity:1
-                    - else:
-                        - while stop
-                
-                # Check if there are done quests and take them from the players inventory
-                - define quests_done:<proc[drustcraftp_quest.npc.list_done].context[<[target_npc]>|<[target_player]>]>
-                - foreach <proc[drustcraftp_quest.player_inventory].context[<[target_player]>]>:
-                    - if <[quests_done].contains[<[key]>]>:
-                        - define gave_items:true
-                        - inventory set slot:<[value]> o:air d:<player.inventory>
-                        - ~run drustcraftt_quest.completed def:<player>|<[key]>
-                        - run drustcraftt_quest.update_markers def:true
+      # Give items in players hand to NPC if they are wanted
+      - define gave_items:false
+      - while true:
+        - ~run drustcraftt_quest.objective_event def:<[target_player]>|give|<[target_player].item_in_hand.material.name> save:result
+        - if <entry[result].created_queue.determination.get[1]||true>:
+          - define gave_items:true
+          - take item_in_hand quantity:1 player:<[target_player]>
+        - else:
+          - while stop
+      
+      # Check if there are done quests and take them from the players inventory
+      - define quests_done:<proc[drustcraftp_quest.npc.list_done].context[<[target_npc]>|<[target_player]>]>
+      - foreach <proc[drustcraftp_quest.player_inventory].context[<[target_player]>]>:
+        - if <[quests_done].contains[<[key]>]>:
+          - define gave_items:true
+          - inventory set slot:<[value]> o:air d:<[target_player].inventory>
+          - ~run drustcraftt_quest.completed def:<[target_player]>|<[key]>
+          - run drustcraftt_quest.update_markers def:true
 
-                - if <[gave_items]>:
-                    - run drustcraftt_quest.update_markers def:true
-                    - determine cancelled
+      - if <[gave_items]>:
+        - run drustcraftt_quest.update_markers def:true
+        - determine cancelled
 
-                # add quest items to inventory
-                - if <[inventory_name]> != <empty>:
-                    - define quest_list:<proc[drustcraftp_quest.npc.list_available].context[<[target_npc]>|<[target_player]>]>
-                    - if <[quest_list].size> > 0:
-                        - foreach <[quest_list]>:
-                            - define quest_id:<[value]>
-                            - define slot:<inventory[<[inventory_name]>].first_empty>
-                            - if <[slot]> == -1:
-                                - foreach stop
+      # add quest items to inventory
+      - if <[inventory_name]> != <empty>:
+        - define quest_list:<proc[drustcraftp_quest.npc.list_available].context[<[target_npc]>|<[target_player]>]>
+        - if <[quest_list].size> > 0:
+          - foreach <[quest_list]>:
+            - define quest_id:<[value]>
+            - define slot:<inventory[<[inventory_name]>].first_empty>
+            - if <[slot]> == -1:
+              - foreach stop
 
-                            - define questbook:<proc[drustcraftp_quest.questbook].context[<[quest_id]>|<player>|true]>
-                            - if <[questbook]> != <empty>:
-                                - inventory set d:<inventory[<[inventory_name]>]> slot:<[slot]> o:<[questbook]>
-                                
-                        - inventory open d:in@drustcraft_npc_<player.uuid>
-                        - determine false
-                
-                - determine true
-            
-            - case entry:
-                - run drustcraftt_quest.update_markers
-            
-            - case text_status:
-                - define type:<[4]>
-                - define data:<[5]>
-                - define quantity:<[6]>
-                - define region:<[7]>
-                - define current:<[8]>
-                - define quest_id:<[9]>
-                
-                - choose <[type]>:
-                    - case enter_region:                
-                        - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[data]>]>
-                        - if <[region_title]> == <empty>:
-                            - define region_title:<[data]>
-                        
-                        - define 'status:Visit <[region_title]>'
-                        - if <[current]> == 1:
-                            - define 'status:<[status]> <&2>√'
-                        
-                        - determine <[status]>
-                    - case block_break:
-                        - define 'status:Break <[current]>/<[quantity]> <material[<[data]>].translated_name||<[data]>>'
+            - define questbook:<proc[drustcraftp_quest.questbook].context[<[quest_id]>|<player>|true]>
+            - if <[questbook]> != <empty>:
+              - inventory set d:<inventory[<[inventory_name]>]> slot:<[slot]> o:<[questbook]>
+                  
+          - inventory open d:in@drustcraft_npc_<player.uuid>
+          - determine false
+      
+      - determine true
+    
+    - case entry:
+      - run drustcraftt_quest.update_markers
+    
+    - case text_status:
+      - define type:<[4]>
+      - define data:<[5]>
+      - define quantity:<[6]>
+      - define region:<[7]>
+      - define current:<[8]>
+      - define quest_id:<[9]>
+      
+      - choose <[type]>:
+        - case enter_region:                
+          - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[data]>]>
+          - if <[region_title]> == <empty>:
+            - define region_title:<[data]>
+          
+          - define 'status:Visit <[region_title]>'
+          - if <[current]> == 1:
+            - define 'status:<[status]> <&2>√'
+          
+          - determine <[status]>
+        - case block_break:
+          - define 'status:Break <[current]>/<[quantity]> <material[<[data]>].translated_name||<[data]>>'
 
-                        - if <[region]> != <empty>:
-                            - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>
-                            - if <[region_title]> == <empty>:
-                                - define region_title:<[data]>
-                            - define 'status:<[status]> at <[region_title]>'
+          - if <[region]> != <empty>:
+            - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>
+            - if <[region_title]> == <empty>:
+              - define region_title:<[data]>
+            - define 'status:<[status]> at <[region_title]>'
 
-                        - if <[current]> >= <[quantity]>:
-                            - define 'status:<[status]> <&2>√'
-                        
-                        - determine <[status]>
-                    - case block_place:
-                        - define 'status:Place <[current]>/<[quantity]> <material[<[data]>].translated_name||<[data]>>'
+          - if <[current]> >= <[quantity]>:
+            - define 'status:<[status]> <&2>√'
+          
+          - determine <[status]>
+        - case block_place:
+          - define 'status:Place <[current]>/<[quantity]> <material[<[data]>].translated_name||<[data]>>'
 
-                        - if <[region]> != <empty>:
-                            - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>
-                            - if <[region_title]> == <empty>:
-                                - define region_title:<[data]>
-                            - define 'status:<[status]> at <[region_title]>'
+          - if <[region]> != <empty>:
+            - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>
+            - if <[region_title]> == <empty>:
+              - define region_title:<[data]>
+            - define 'status:<[status]> at <[region_title]>'
 
-                        - if <[current]> >= <[quantity]>:
-                            - define 'status:<[status]> <&2>√'
-                        
-                        - determine <[status]>
-                    - case give:
-                        - define npc_end:<yaml[drustcraft_quests].read[quests.<[quest_id]>.npc_end]||0>
-                        - define npc_name:Unknown
-                        
-                        - if <[npc_end]> != 0:
-                            - define npc_name:<npc[<[npc_end]>].name.strip_color||<[npc_name]>>
-                        
-                        - define 'status:Give <[npc_name]> <[current]>/<[quantity]> <material[<[data]>].translated_name||<[data]>>'
+          - if <[current]> >= <[quantity]>:
+            - define 'status:<[status]> <&2>√'
+          
+          - determine <[status]>
+        - case give:
+          - define npc_end:<yaml[drustcraft_quests].read[quests.<[quest_id]>.npc_end]||0>
+          - define npc_name:Unknown
+          
+          - if <[npc_end]> != 0:
+            - define npc_name:<npc[<[npc_end]>].name.strip_color||<[npc_name]>>
+          
+          - define 'status:Give <[npc_name]> <[current]>/<[quantity]> <material[<[data]>].translated_name||<[data]>>'
 
-                        - if <[region]> != <empty>:
-                            - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>
-                            - if <[region_title]> == <empty>:
-                                - define region_title:<[data]>
-                            - define 'status:<[status]> at <[region_title]>'
+          - if <[region]> != <empty>:
+              - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>
+              - if <[region_title]> == <empty>:
+                - define region_title:<[data]>
+              - define 'status:<[status]> at <[region_title]>'
 
-                        - if <[current]> >= <[quantity]>:
-                            - define 'status:<[status]> <&2>√'
-                        
-                        - determine <[status]>
-                    - case kill:
-                        - define 'status:Kill <[current]>/<[quantity]> <[data]>'
+          - if <[current]> >= <[quantity]>:
+            - define 'status:<[status]> <&2>√'
+          
+          - determine <[status]>
+        - case kill:
+          - define 'status:Kill <[current]>/<[quantity]> <[data]>'
 
-                        - if <[region]> != <empty>:
-                            - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>
-                            - if <[region_title]> == <empty>:
-                                - define region_title:<[data]>
-                            - define 'status:<[status]> at <[region_title]>'
+          - if <[region]> != <empty>:
+            - define region_title:<proc[drustcraftp.region.title].context[<[target_player].location.world.name>|<[region]>]>
+            - if <[region_title]> == <empty>:
+              - define region_title:<[data]>
+            - define 'status:<[status]> at <[region_title]>'
 
-                        - if <[current]> >= <[quantity]>:
-                            - define 'status:<[status]> <&2>√'
-                        
-                        - determine <[status]>
-                        
+          - if <[current]> >= <[quantity]>:
+            - define 'status:<[status]> <&2>√'
+          
+          - determine <[status]>
+
 drustcraftp_tab_complete_quests:
   type: procedure
   debug: false

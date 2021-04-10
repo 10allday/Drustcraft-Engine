@@ -38,8 +38,6 @@ drustcraftt_player:
     - if <yaml.list.contains[drustcraft_player]>:
       - ~yaml unload id:drustcraft_player
     - yaml create id:drustcraft_player
-    - narrate cleared!
   
   register_no_death_drop:
-    - narrate register-<[1]>
     - yaml id:drustcraft_player set no_death_drop:|:<[1]>

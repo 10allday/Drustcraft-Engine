@@ -69,7 +69,7 @@ drustcraftp_shop:
     - define shop_name:<[1]||<empty>>
     - define shop_info:<map[]>
 
-    - define shop_info:<[shop_info].with[owner].as[<yaml[drustcraft_shop].read[shop.<[shop_name]>.owner]>]||<empty>>
+    - define shop_info:<[shop_info].with[owner].as[<yaml[drustcraft_shop].read[shop.<[shop_name]>.owner]||<empty>>]||<empty>>
     - determine <[shop_info]>
   
   list:
@@ -267,7 +267,7 @@ drustcraftc_shop:
                 - define item:<context.args.get[4]||<empty>>
                 - if <[item]> != <empty>:
                   - if <server.material_types.parse[name].contains[<[item]>]>:
-                    - if <yaml[drustcraft_shop].read[shop.<[shop_name]>.items].contains[<item]>]||false>:
+                    - if <yaml[drustcraft_shop].read[shop.<[shop_name]>.items].contains[<[item]>]||false>:
                       - yaml id:drustcraft_shop set shop.<[shop_name]>.items:<-:<[item]>
                       - run drustcraftt_shop.save
                       - narrate '<&e>The shop <&f><[shop_name]> <&e>no longer sells <&f><[item]>'

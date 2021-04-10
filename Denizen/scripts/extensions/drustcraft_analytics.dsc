@@ -114,7 +114,7 @@ drustcraftw_analytics:
         - define entity_type:0
         - define entity_id:<context.entity.name||unknown>
         
-        - if <context.entity.is_player>:
+        - if <context.entity.is_player||false>:
           - define entity_type:1
           - define entity_id:<context.entity.uuid>
         - else if <context.entity.is_npc>:
