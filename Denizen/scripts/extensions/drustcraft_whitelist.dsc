@@ -37,7 +37,7 @@ drustcraftw_whitelist:
                   - yaml id:drustcraft_whitelist savefile:drustcraft_whitelist.yml
                 - case sql:
                   - waituntil <server.sql_connections.contains[drustcraft_database]>
-                  - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts` (`uuid`,`playername`,`added_date`,`linking_code`) VALUES ("<player.uuid>", "<player.name>", <util.time_now.epoch_millis.div[1000].round>, "<[code]>");'
+                  - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`uuid`,`playername`,`added_date`,`linking_code`) VALUES ("<player.uuid>", "<player.name>", <util.time_now.epoch_millis.div[1000].round>, "<[code]>");'
 
                   - if <server.scripts.parse[name].contains[drustcraftw_bungee]>:
                     - run drustcraftt_bungee.run def:whitelist_sync
@@ -79,16 +79,17 @@ drustcraftt_whitelist:
       - if <server.scripts.parse[name].contains[drustcraftw_sql]>:
         - waituntil <server.sql_connections.contains[drustcraft_database]>
         - define create_tables:true
-        - ~sql id:drustcraft_database 'query:SELECT version FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_version WHERE name="drustcraft_whitelist";' save:sql_result
+        - ~sql id:drustcraft_database 'query:SELECT version FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_version WHERE `name`="drustcraft_whitelist";' save:sql_result
         - if <entry[sql_result].result.size||0> >= 1:
-          - define row:<entry[sql_result].result.get[1].split[/]||0>
+          - define row:<entry[sql_result].result.get[1].split[/].get[1]||0>
           - define create_tables:false
           - if <[row]> == 1:
             - debug log 'Upgrading Whitelist table from version 1 to version 2'
             
             - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_version` WHERE `name`="drustcraft_whitelist";'
             - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_version` (`name`,`version`) VALUES ("drustcraft_whitelist",2);'
-            - ~sql id:drustcraft_database 'update:ALTER TABLE `<server.flag[drustcraft_database_table_prefix]>drustcraft_version` ADD `linking_code` VARCHAR(6) DEFAULT "", `reset_code` VARCHAR(6) DEFAULT "", `reset_code_timeout` INT DEFAULT 0;'
+            - ~sql id:drustcraft_database 'update:ALTER TABLE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts` RENAME TO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist`;'
+            - ~sql id:drustcraft_database 'update:ALTER TABLE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` MODIFY `added_uuid` VARCHAR(36) DEFAULT "", ADD `linking_code` VARCHAR(6) DEFAULT "", ADD `reset_code` VARCHAR(6) DEFAULT "", ADD `reset_code_timeout` INT DEFAULT 0;'
             
             # move linking_codes to updated accounts table
             - ~sql id:drustcraft_database 'query:SELECT uuid,playername,added_date,linking_code FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_linking_codes WHERE 1;' save:sql_result_linking_code
@@ -102,7 +103,7 @@ drustcraftt_whitelist:
                 
                 - ~sql id:drustcraft_database 'query:SELECT uuid FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts WHERE `uuid`="<[uuid]>";' save:sql_result_whitelist
                 - if <entry[sql_result_whitelist].result.size||0> >= 1:
-                  - sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts` SET `linking_code`="<[linking_code]>" WHERE `uuid` = "<[uuid]>";'
+                  - sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` SET `linking_code`="<[linking_code]>" WHERE `uuid` = "<[uuid]>";'
             
             # move password_reset to updated accounts table
             - ~sql id:drustcraft_database 'query:SELECT playername,timeout,reset_code FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_password_reset WHERE 1;' save:sql_result_password_reset
@@ -115,25 +116,26 @@ drustcraftt_whitelist:
                 
                 - ~sql id:drustcraft_database 'query:SELECT playername FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts WHERE `playername`="<[playername]>";' save:sql_result_whitelist
                 - if <entry[sql_result_whitelist].result.size||0> >= 1:
-                  - sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts` SET `reset_code`="<[reset_code]>", `reset_code_timeout`=<[timeout]> WHERE `playername` = "<[playername]>";'
+                  - sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` SET `reset_code`="<[reset_code]>", `reset_code_timeout`=<[timeout]> WHERE `playername` = "<[playername]>";'
 
             - ~sql id:drustcraft_database 'update:DROP TABLE IF EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_linking_codes`;'
             - ~sql id:drustcraft_database 'update:DROP TABLE IF EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_password_reset`;'
             
           - else if <[row]> == 2:
             # nothing to do
+            - define nothing:true
           - else:
-            - debug log 'Whitelist table version installed is unsupported by this version of Drustcraft Whitelist'
+            - debug log 'Whitelist table version <[row]> is unsupported by this version of Drustcraft Whitelist'
             - stop
   
         - if <[create_tables]>:
           - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_version` (`name`,`version`) VALUES ("drustcraft_whitelist",2);'
-          - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts` (`uuid` VARCHAR(36), `playername` VARCHAR(255), `added_date` INT NOT NULL, `added_uuid` VARCHAR(36) NOT NULL);'
+          - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`uuid` VARCHAR(36), `playername` VARCHAR(255), `added_date` INT NOT NULL, `added_uuid` VARCHAR(36) NOT NULL`linking_code` VARCHAR(6) DEFAULT "", `reset_code` VARCHAR(6) DEFAULT "", `reset_code_timeout` INT DEFAULT 0);'
         - else:
           # cleanup database
           - define timeout:<util.time_now.epoch_millis.div[1000].round>
           
-          - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts` SET `reset_code`="", `reset_code_timeout`=0 WHERE `reset_code_timeout` <= <[timeout]>;'
+          - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` SET `reset_code`="", `reset_code_timeout`=0 WHERE `reset_code_timeout` <&lt>= <[timeout]>;'
       - else:
         - debug log 'Drustcraft Whitelist in SQL storage mode requires the Drustcraft SQL script installed'
         - stop
@@ -169,7 +171,7 @@ drustcraftt_whitelist:
         - waituntil <server.sql_connections.contains[drustcraft_database]>
         - yaml id:drustcraft_whitelist create
         
-        - ~sql id:drustcraft_database 'query:SELECT `uuid`,`playername` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts` WHERE 1;' save:sql_result
+        - ~sql id:drustcraft_database 'query:SELECT `uuid`,`playername` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE 1;' save:sql_result
         - if <entry[sql_result].result.size||0> > 0:  
           - foreach <entry[sql_result].result>:
             - define row:<[value].split[/]||<list[]>>
@@ -181,7 +183,7 @@ drustcraftt_whitelist:
               - if <[playername]> != <empty> && <[playername]> != 'null':
                 - yaml id:drustcraft_whitelist set whitelist.players:->:<[playername]>
             
-        - ~sql id:drustcraft_database 'query:SELECT `uuid`,`linking_code` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts` WHERE `linking_code` <> "";' save:sql_result
+        - ~sql id:drustcraft_database 'query:SELECT `uuid`,`linking_code` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE `linking_code`!="";' save:sql_result
         - if <entry[sql_result].result.size||0> > 0:
           - foreach <entry[sql_result].result>:
             - define row:<[value].split[/]||<list[]>>
@@ -201,7 +203,7 @@ drustcraftt_whitelist:
       
       - while <[found]>:
         - define code:<[characters].random><[characters].random><[characters].random><[characters].random><[characters].random><[characters].random>
-        - ~sql id:drustcraft_database 'query:SELECT `uuid`,`linking_code` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts` WHERE `linking_code` = "<[code]>";' save:sql_result
+        - ~sql id:drustcraft_database 'query:SELECT `uuid`,`linking_code` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE `linking_code`="<[code]>";' save:sql_result
         - if <entry[sql_result].result.size||0> == 0:
           - flag server drustcraft_whitelist_linking_code_next:<[code]>
           - define found:false
@@ -218,7 +220,7 @@ drustcraftt_whitelist:
         - yaml id:drustcraft_whitelist savefile:drustcraft_whitelist.yml
       - case sql:
         - waituntil <server.sql_connections.contains[drustcraft_database]>
-        - sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts` SET `uuid` = "<[target_player].uuid>" WHERE `playername` = "<[target_player].name>";'
+        - sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` SET `uuid` = "<[target_player].uuid>" WHERE `playername` = "<[target_player].name>";'
       
     
 
@@ -319,11 +321,12 @@ drustcraftc_whitelist_resetpassword:
         - define reset_code:<util.random.int[10000].to[999999]>
         - define timeout:<util.time_now.epoch_millis.div[1000].round_down.add[259200]>
         
-        - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist_accounts` (`reset_code`,`reset_code_timeout`) VALUES (<[reset_code]>,<[timeout]>) WHERE `uuid`="<player.uuid>";'
+        - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` set `reset_code`="<[reset_code]>", `reset_code_timeout`=<[timeout]> WHERE `uuid`="<player.uuid>";'
         
-        - narrate '<&c>Your website password reset code is <&f><[reset_code]>'
-        - narrate '<&c>DO NOT share this code with any players, else they will have access to your account'
-        - narrate '<&c>This code is only valid for the next 3 days'
+        - narrate '<&e>'
+        - narrate '<&8><&l>[<&a><&l>+<&8><&l>] <&r><&2>Your website password reset code is <&f><[reset_code]>'
+        - narrate '<&8><&l>[<&6><&l>!<&8><&l>] <&r><&6>DO NOT share this code with anyone else they will have access to your account. This code is valid for 72 hours'
+        - narrate '<&e>'
       - else:
         - narrate '<&c>This command can only be run by a player'
     - else:
