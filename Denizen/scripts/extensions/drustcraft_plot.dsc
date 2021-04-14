@@ -122,6 +122,7 @@ drustcraftt_plot:
         - yaml id:drustcraft_plot set plots.<[plot_name]>.owner:<element[]>
         - yaml id:drustcraft_plot set plots.<[plot_name]>.region:<[plot_region_name]>
         - yaml id:drustcraft_plot set plots.<[plot_name]>.world:<[plot_region_world]>
+        - run drustcraftt_plot.save
   
 
   npc:
@@ -130,6 +131,7 @@ drustcraftt_plot:
     - if <[plot_name]> != <empty> && <[plot_npc_id].is_integer>:
       - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false>:
         - yaml id:drustcraft_plot set plots.<[plot_name]>.npc:<[plot_npc_id]>
+        - run drustcraftt_plot.save
   
 
   address:
@@ -138,6 +140,8 @@ drustcraftt_plot:
     - if <[plot_name]> != <empty> && <[plot_address]> != <empty>:
       - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false>:
         - yaml id:drustcraft_plot set plots.<[plot_name]>.address:<[plot_address]>
+        - run drustcraftt.sign_update def:<[plot_name]>
+        - run drustcraftt_plot.save
   
   
   sign:
@@ -145,7 +149,27 @@ drustcraftt_plot:
     - define plot_sign:<[2]||<empty>>
     - if <[plot_name]> != <empty> && <[plot_sign]> != <empty>:
       - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false>:
-        - yaml id:drustcraft_plot set plots.<[plot_name]>.sign:<[plot_sign].round>
+        - run drustcraftt.sign_update def:<[plot_name]>|true
+        - ~yaml id:drustcraft_plot set plots.<[plot_name]>.sign:<[plot_sign].round>
+        - run drustcraftt.sign_update def:<[plot_name]>
+        - run drustcraftt_plot.save
+  
+  
+  sign_update:
+    - define plot_name:<[1]||<empty>>
+    - define clear:<[2]||false>
+    
+    - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false>:
+      - define plot_info:<proc[drustcraftp_plot.info].context[<[plot_name]>]>
+      
+      - if <[plot_info].get[sign]> != <empty>:
+        - if <[clear]> == false:
+          - if <[plot_info].get[owner]> != <empty>:
+            - sign type:automatic '<&6><[plot_info].get[address]>| |<&7>Owner|<player[<[plot_info].get[owner]>].name>' <[plot_info].get[sign]>
+          - else:
+            - sign type:automatic '<&6>For Sale|<[plot_info].get[address]>| |<[plot_info].get[cost]> emeralds' <[plot_info].get[sign]>
+        - else:
+          - sign type:automatic '| | | ' <[plot_info].get[sign]>
   
 
   cost:
@@ -154,6 +178,8 @@ drustcraftt_plot:
     - if <[plot_name]> != <empty> && <[plot_cost].is_integer>:
       - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false>:
         - yaml id:drustcraft_plot set plots.<[plot_name]>.cost:<[plot_cost]>
+        - run drustcraftt.sign_update def:<[plot_name]>
+        - run drustcraftt_plot.save
   
 
   owner:
@@ -172,15 +198,9 @@ drustcraftt_plot:
           - execute as_server 'rg removemember <[plot_region]> -w <[plot_world]> -a'
             
           - define info:<proc[drustcraftp_plot.info].context[<[plot_name]>]>
+          - run drustcraftt.sign_update def:<[plot_name]>
+          - run drustcraftt_plot.save
         
-          - if <[plot_owner]> != <empty>:
-            - execute as_server 'rg addmember <[plot_region]> -w <[plot_world]> <[plot_owner]>'
-            - if <[info].get[sign]> != <empty>:
-              - sign type:automatic '<&6><[info].get[address]>| |<&7>Owner|<player[<[info].get[owner]>].name>' <[info].get[sign]>
-          - else:
-            - if <[info].get[sign]> != <empty>:
-              - sign type:automatic '<&6>For Sale|<[info].get[address]>| |<[info].get[cost]> emeralds' <[info].get[sign]>
-
   
   drop:
     - define plot_name:<[1]||<empty>>
@@ -188,6 +208,7 @@ drustcraftt_plot:
     - if <[plot_name]> != <empty>:
       - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false>:
         - yaml id:drustcraft_plot set plots.<[plot_name]>.drop:<util.time_now.epoch_millis.div[1000].round>
+        - run drustcraftt_plot.save
   
   
   update:
