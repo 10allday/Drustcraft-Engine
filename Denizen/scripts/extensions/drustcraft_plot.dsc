@@ -28,6 +28,15 @@ drustcraftw_plot:
           - run drustcraftt_plot.save
 
 
+    on player opens inventory:
+      - foreach <context.inventory.map_slots>:
+        - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
+          - define plot_name:<[value].lore.space_separated.after[id:]||<empty>>
+          - if <[plot_name]> != <empty>:
+            - if <proc[drustcraft_plot.list].contains[<[plot_name]>]||false> == false:
+              - inventory set slot:<[key]> o:air d:<context.inventory>
+              
+
     on player closes inventory:
       - foreach <context.inventory.map_slots>:
         - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
@@ -122,6 +131,15 @@ drustcraftt_plot:
         - yaml id:drustcraft_plot set plots.<[plot_name]>.owner:<element[]>
         - yaml id:drustcraft_plot set plots.<[plot_name]>.region:<[plot_region_name]>
         - yaml id:drustcraft_plot set plots.<[plot_name]>.world:<[plot_region_world]>
+        - run drustcraftt_plot.save
+  
+  
+  remove:
+    - define plot_name:<[1]||<empty>>
+    - if <[plot_name]> != <empty>:
+      - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false> == false:
+        - run drustcraftt_plot.sign_update def:<[plot_name]>|true
+        - yaml id:drustcraft_plot set plots.<[plot_name]>:!
         - run drustcraftt_plot.save
   
 
@@ -348,6 +366,19 @@ drustcraftc_plot:
             - narrate '<&e>A unique name is required when creating a plot'
         - else:
           - narrate '<&e>A unique name is required when creating a plot'
+        
+        
+      - case remove:
+        - define plot_name:<context.args.get[2]||<empty>>
+        - if <[plot_name]> != <empty>:
+          - if <proc[drustcraft_plot.list].contains[<[plot_name]>]||false> == true:
+            - run drustcraftt_plot.remove def:<[plot_name]>
+            - narrate '<&e>The plot has been removed'
+            - narrate '<&e>No changes have been made to the plots WorldGuard region'
+          - else:
+            - narrate '<&e>That plot does not exist'
+        - else:
+          - narrate '<&e>A plot name is required when removing a plot'
         
         
       # todo
