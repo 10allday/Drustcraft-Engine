@@ -18,8 +18,8 @@ drustcraftw_region:
     
     after player joins:
       - adjust <player> gamemode:<proc[drustcraftp_region.gamemode].context[<player.location>]||SURVIVAL>
-      #- if <proc[drustcraftp_region.gamemode].context[<player.location>]> == CREATIVE:
-      #  - adjust <player> gamemode:CREATIVE
+      - if <proc[drustcraftp_region.gamemode].context[<player.location>]> == CREATIVE:
+        - adjust <player> gamemode:CREATIVE
   
     on player enters cuboid:
       - define region_name:<context.area.note_name||<empty>>
