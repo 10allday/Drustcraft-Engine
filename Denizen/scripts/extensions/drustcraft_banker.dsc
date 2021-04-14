@@ -21,7 +21,6 @@ drustcraftw_banker:
         - run drustcraftt_banker.save
 
 
-
 drustcraftt_banker:
   type: task
   debug: false
@@ -29,14 +28,17 @@ drustcraftt_banker:
     - determine <empty>
   
   load:
+    - if <yaml.list.contains[drustcraft_banker]>:
+      - ~yaml unload id:drustcraft_banker
+
     - if <server.scripts.parse[name].contains[drustcraftw_tab_complete]>:
       - waituntil <yaml.list.contains[drustcraft_tab_complete]>
 
       - run drustcraftt_tab_complete.completions def:banker|npc|add|_*npcs
-      - run drustcraftt_tab_complete.completions def:banker|npc|remove|_*npcs      
+      - run drustcraftt_tab_complete.completions def:banker|npc|remove|_*npcs
+      - run drustcraftt_tab_complete.completions def:banker|reload
+      - run drustcraftt_tab_complete.completions def:banker|save
 
-    - if <yaml.list.contains[drustcraft_banker]>:
-      - ~yaml unload id:drustcraft_banker
 
     - if <server.has_file[/drustcraft_data/banker.yml]>:
       - yaml load:/drustcraft_data/banker.yml id:drustcraft_banker
@@ -58,6 +60,7 @@ drustcraftt_banker:
     add:
       - define npc_id:<[1]||<empty>>
       
+      - waituntil <yaml.list.contains[drustcraft_banker]>
       - if <server.npcs.parse[id].contains[<[npc_id]>]>:
         - if <yaml[drustcraft_banker].read[npcs].contains[<[npc_id]>]> == false:
           - yaml id:drustcraft_banker set npcs:->:<[npc_id]>
@@ -67,10 +70,22 @@ drustcraftt_banker:
     remove:
       - define npc_id:<[1]||<empty>>
       
+      - waituntil <yaml.list.contains[drustcraft_banker]>
       - if <yaml[drustcraft_banker].read[npcs].contains[<[npc_id]>]> == false:
         - yaml id:drustcraft_banker set npcs:<-:<[npc_id]>
         - run drustcraftt_npc.interactor def:<[npc_id]>
         - run drustcraftt_banker.save
+
+
+drustcraftp_banker:
+  type: procedure
+  debug: false
+  script:
+    - determine <empty>
+
+  npc:
+    list:
+      - determine <yaml[drustcraft_banker].read[npcs]||<list[]>>
 
 
 drustcraftc_banker:
