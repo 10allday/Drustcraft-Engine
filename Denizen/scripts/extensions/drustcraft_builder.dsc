@@ -59,6 +59,13 @@ drustcraftw_builder:
         - if <[can_build]> == false:
           - narrate "<&c>You cannot build in this location"
           - determine cancelled
+          
+    on system time minutely:
+      - foreach <server.online_players.filter[location.find.npcs.within[50].size.is_more_than[20]].filter[gamemode.equals[CREATIVE]]>:
+        - define npc_count:<[value].location.find.npcs.within[50].size>
+        - narrate '<&8><&l>[<&6>!<&8><&l>] <&6>There is <&f><[npc_count]> <&6>NPCs within 50 blocks of your location.' targets:<[value]>
+        - narrate '<&8><&l>[<&6>!<&8><&l>] <&6>This is higher than the recommended limit of <&f>10<&6>.' targets:<[value]>
+        - narrate '<&8><&l>[<&6>!<&8><&l>] <&6>Space out some NPCs to reduce the chance of server lag and some NPCs being hidden' targets:<[value]>
 
 
 drustcraftc_builder:
