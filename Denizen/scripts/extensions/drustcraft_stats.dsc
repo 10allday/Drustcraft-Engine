@@ -18,7 +18,7 @@ drustcraftc_stats:
     - narrate '<&6>Memory: <&a><server.ram_usage.div[1073741824].round_to[2]> GB <&6>(<&a><server.ram_free.div[1073741824].round_to[2]> GB <&6>free)'
     - narrate '<&6>Script count: <&a><server.scripts.size>'
     - narrate '<&6>Region count: <&a><server.notables.size>'
-    - narrate '<&6>NPCs count: <&a><server.npcs.size>'
+    - narrate '<&6>NPCs count: <&a><server.npcs.size> (<server.npcs.filter[is_spawned].size> spawned)'
     
     - foreach <server.worlds>:
       - narrate '<&e><[value].name>: <&a><[value].entities.size> <&e>entities, <&a><[value].loaded_chunks.size> <&e>chunks'
