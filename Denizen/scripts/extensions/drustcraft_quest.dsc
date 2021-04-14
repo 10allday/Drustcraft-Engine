@@ -451,7 +451,7 @@ drustcraftt_quest:
         
         - define give_map:<yaml[drustcraft_quests].read[quests.<[quest_id]>.gives]||<map[]>>
         - foreach <[give_map]>:
-          - give <[target_player]> <[key]> quantity:<[value]>
+          - give <[key]> quantity:<[value]> to:<[target_player].inventory>
         
         - run drustcraftt_quest.update_markers def:<[target_player]>|true
         - run drustcraftt_quest.save
@@ -480,7 +480,7 @@ drustcraftt_quest:
       - narrate '<&e>Quest completed: <yaml[drustcraft_quests].read[quests.<[quest_id]>.title]>'
   
       - foreach <yaml[drustcraft_quests].read[quests.<[quest_id]>.rewards]||<map[]>>:
-        - give <[key]> quantity:<[value]> player:<[target_player]>
+        - give <[key]> quantity:<[value]> to:<[target_player].inventory>
         - narrate '<&e>You received <material[<[key]>].translated_name||<[key]>> x <[value]>'
 
     - define end_speak:<yaml[drustcraft_quests].read[quests.<[quest_id]>.npc_end_speak]||<empty>>
