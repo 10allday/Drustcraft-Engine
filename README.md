@@ -1,4 +1,4 @@
-<img src="https://drustcraft.com.au/img/drustcraft-logo-full.png" alt="Drustcraft" width="600"/>
+<img src="https://drustcraft.com.au/images/drustcraft-logo-full.png" alt="Drustcraft" width="600"/>
 
 
 [![License: GPL-3.0](https://img.shields.io/github/license/Drustcraft/Drustcraft?color=blue)](LICENSE)
