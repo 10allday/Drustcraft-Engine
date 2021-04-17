@@ -14,7 +14,7 @@ The ultimate goal of this project is to create a free-play, safe and open world 
 
 **Please note, this project is still a work in progress. Expect bugs!**
 
-#### Currently supporting Minecraft Bedrock v1.16.200 and Minecraft Java v1.16.4 - v1.16.5.
+#### Currently supporting Minecraft Bedrock v1.16.220 and Minecraft Java v1.16.5.
 
 ## Setting Up
 Take a look [here](https://github.com/Drustcraft/Drustcraft/wiki#Setup) for how to set up Drustcraft.
