@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Common Issues
+    url: https://github.com/Drustcraft/Drustcraft-Engine/wiki/Common-Issues
+    about: Check the common issues to see if you are not alone with that issue and see how you can fix them.
+  - name: Frequently Asked Questions
+    url: https://github.com/Drustcraft/Drustcraft-Engine/wiki/FAQ
+    about: Look at the FAQ page for answers to frequently asked questions.
+  - name: Get help on the Drustcraft Discord server
+    url: https://drustcraft.com.au/discord
+    about: If your issue seems like it could possibly be an easy fix, please hop on our Discord.

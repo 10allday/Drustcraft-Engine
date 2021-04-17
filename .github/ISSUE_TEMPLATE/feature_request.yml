@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest an idea for this project
+labels: "Feature Request"
+body:
+- type: markdown
+  attributes:
+    value: |
+      Thanks for taking the time to fill out this bug report for the *Drustcraft Engine*! Fill out the following form to your best ability to help us fix the problem.
+      Only use this if you're absolutely sure that you found a bug and can reproduce it. For anything else, use: [our Discord server](https://drustcraft.com.au/discord), [the FAQ](https://github.com/Drustcraft/Drustcraft-Engine/wiki/FAQ) or the [Common Issues](https://github.com/Drustcraft/Drustcraft-Engine/wiki/Common-Issues).
+- type: textarea
+  attributes:
+    label: What feature do you want to see added?
+    description: A clear and concise description of your feature request.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Are there any alternatives?
+    description: List any alternatives you might have tried
+  validations:
+    required: true
