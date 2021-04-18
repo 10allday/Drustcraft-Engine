@@ -195,15 +195,15 @@ drustcraftt_analytics:
         
         - if <[target_player].flag[drustcraft_analytics_session_id]||0> > 0 && <[gamemode]> != <empty> && <[world_name]> != <empty> && <[seconds]> != 0:
           - ~sql id:drustcraft_database 'query:SELECT `id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_worlds` WHERE (`world_name`="<[world_name]>" AND `server`="<bungee.server||<empty>>")' save:sql_result
-          - define world_id:<entry[sql_result].result.get[1].split[/].get[1]||0>
+          - define world_id:<entry[sql_result].result.get[1].split[/].get[1].unescaped||0>
           - if <[world_id]> == 0:
             - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_worlds` (`world_name`, `server`) VALUES("<[world_name]>","<bungee.server||<empty>>")' save:sql_result
-            - define world_id:<entry[sql_result].result.get[1].split[/].get[1]||0>
+            - define world_id:<entry[sql_result].result.get[1].split[/].get[1].unescaped||0>
           
           - if <[world_id]> != 0:
             - define gamemode_field:<[gamemode].to_lowercase>_time
             - ~sql id:drustcraft_database 'query:SELECT `id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_world_times` WHERE (`world_id`="<[world_id]>" AND `server`="<bungee.server||<empty>>" AND `session_id`=<[target_player].flag[drustcraft_analytics_session_id]>)' save:sql_result
-            - define world_time_id:<entry[sql_result].result.get[1].split[/].get[1]||0>
+            - define world_time_id:<entry[sql_result].result.get[1].split[/].get[1].unescaped||0>
             - if <[world_time_id]> != 0:
               - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_world_times` SET `<[gamemode_field]>`=`<[gamemode_field]>`+<[seconds]> WHERE `id`=<[world_time_id]>;'
             - else:

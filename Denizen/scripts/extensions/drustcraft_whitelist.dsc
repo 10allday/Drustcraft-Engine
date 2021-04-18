@@ -81,7 +81,7 @@ drustcraftt_whitelist:
         - define create_tables:true
         - ~sql id:drustcraft_database 'query:SELECT version FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_version WHERE `name`="drustcraft_whitelist";' save:sql_result
         - if <entry[sql_result].result.size||0> >= 1:
-          - define row:<entry[sql_result].result.get[1].split[/].get[1]||0>
+          - define row:<entry[sql_result].result.get[1].split[/].get[1].unescaped||0>
           - define create_tables:false
           - if <[row]> == 1:
             - debug log 'Upgrading Whitelist table from version 1 to version 2'
