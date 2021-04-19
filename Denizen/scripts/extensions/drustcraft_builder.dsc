@@ -35,7 +35,7 @@ drustcraftw_builder:
             - adjust <player> gamemode:SURVIVAL
                         
     on player places block:
-      - if <player.gamemode> == CREATIVE && <player.in_group[developer]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != CREATIVE:
+      - if <player.in_group[developer]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:
         - define can_build:false
 
         - foreach <context.location.regions||<list[]>> as:target_region:
@@ -44,11 +44,14 @@ drustcraftw_builder:
             - foreach stop
 
         - if <[can_build]> == false:
-          - narrate "<&c>You cannot build in this location"
+          - narrate "<&8><&l>[<&4>-<&8><&l>] <&c>You can't place blocks in this location"
           - determine cancelled
 
     on player breaks block:
-      - if <player.gamemode> == CREATIVE && <player.in_group[developer]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != CREATIVE:
+      - if <player.in_group[developer]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:
+        - narrate "Location: <proc[drustcraftp_region.gamemode].context[<context.location>]>"
+        - narrate "Player: <player.gamemode>"
+        
         - define can_build:false
         
         - foreach <context.location.regions||<list[]>> as:target_region:
@@ -57,15 +60,13 @@ drustcraftw_builder:
             - foreach stop
 
         - if <[can_build]> == false:
-          - narrate "<&c>You cannot build in this location"
+          - narrate "<&8><&l>[<&4>-<&8><&l>] <&c>You can't break blocks in this location"
           - determine cancelled
-          
+
     on system time minutely:
       - foreach <server.online_players.filter[location.find.npcs.within[50].size.is_more_than[20]].filter[gamemode.equals[CREATIVE]]>:
         - define npc_count:<[value].location.find.npcs.within[50].size>
-        - narrate '<&8><&l>[<&6>!<&8><&l>] <&6>There is <&f><[npc_count]> <&6>NPCs within 50 blocks of your location.' targets:<[value]>
-        - narrate '<&8><&l>[<&6>!<&8><&l>] <&6>This is higher than the recommended limit of <&f>10<&6>.' targets:<[value]>
-        - narrate '<&8><&l>[<&6>!<&8><&l>] <&6>Space out some NPCs to reduce the chance of server lag and some NPCs being hidden' targets:<[value]>
+        - narrate '<&8><&l>[<&6>!<&8><&l>] <&6>There is currently <&f><[npc_count]> <&6>NPCs within 50 blocks of your location. This is higher than the recommended limit of <&f>20<&6>. Try spacing out some NPCs to reduce the chance of server lag' targets:<[value]>
 
 
 drustcraftc_builder:
