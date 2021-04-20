@@ -37,7 +37,8 @@ drustcraftt_realtime:
     - determine <empty>
   
   load:
-    - flag server drustcraft_realtime_enabled:true
+    - if <server.has_flag[drustcraft_realtime_enabled]> == false:
+      - flag server drustcraft_realtime_enabled:true
     
     - if <server.scripts.parse[name].contains[drustcraftw_tab_complete]>:
       - waituntil <yaml.list.contains[drustcraft_tab_complete]>
