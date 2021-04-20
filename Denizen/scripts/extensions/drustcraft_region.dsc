@@ -298,14 +298,14 @@ drustcraftw_region:
                 - run drustcraftt_region.save
             
             - case info:
-              - if <player.has_permission[worldguard.region.info.*]>:
+              - if <player.has_permission[worldguard.region.info.*]||<context.server>>:
                 - wait 1t
                 
                 - define region_name:<empty>
                 - if <[args].size> >= 2:
                   - define region_name:<[args].get[2]||<empty>>
                 - else:
-                  - define regions:<player.location.regions>
+                  - define regions:<player.location.regions||<list[]>>
                   - if <[regions].size> == 1:
                     - define region_name:<[regions].get[1].id>
                 
