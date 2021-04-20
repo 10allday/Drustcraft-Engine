@@ -48,10 +48,7 @@ drustcraftw_builder:
           - determine cancelled
 
     on player breaks block:
-      - if <player.in_group[developer]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:
-        - narrate "Location: <proc[drustcraftp_region.gamemode].context[<context.location>]>"
-        - narrate "Player: <player.gamemode>"
-        
+      - if <player.in_group[developer]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:        
         - define can_build:false
         
         - foreach <context.location.regions||<list[]>> as:target_region:
