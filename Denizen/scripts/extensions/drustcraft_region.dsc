@@ -36,11 +36,21 @@ drustcraftw_region:
   
         - if <[show_title]>:
           - define title:<proc[drustcraftp_region.title].context[<[world_name]>|<[region_name]>]>
+          
           - if <[title]> != <empty>:
+            - define subtitle:<element[]>
+            - define type:<proc[drustcraftp_region.is_type].context[<[world_name]>|<[region_name]>]>
+            - define prefix:<&e>
+
+            - if <[type]> == creative:
+              - define prefix:<&2>
+              - define 'subtitle:Creative area'
+            
             - if <player.name.starts_with[*]>:
-              - narrate <&e><[title]>
+              - actionbar '<[prefix]><[title]>: <[subtitle]>'
             - else:
-              - title subtitle:<&e><[title]>
+              - title subtitle:<[prefix]><[title]>
+              - actionbar <[prefix]><[subtitle]>
 
     on system time minutely every:20:
       - run drustcraftt_region.spawner.update_all
@@ -571,10 +581,18 @@ drustcraftp_region:
 
   gamemode:
     - define target_location:<[1]||<empty>>
+    - define region_name:<[2]||<empty>>
 
     - if <[target_location]> != <empty>:
-      - define region_name:<proc[drustcraftp_region.find].context[<[target_location]>]>
-      - determine <yaml[drustcraft_regions].read[regions.<[target_location].world.name||<empty>>.<[region_name]>.gamemode]||SURVIVAL>
+      - define world_name:<empty>
+      
+      - if <[target_location].object_type> == location:
+        - define region_name:<proc[drustcraftp_region.find].context[<[target_location]>]>
+        - define world_name:<[target_location].world.name||<empty>>
+      - else:
+        - define world_name:<[target_location]>
+      
+      - determine <yaml[drustcraft_regions].read[regions.<[world_name]>.<[region_name]>.gamemode]||SURVIVAL>
     
     - determine SURVIVAL
 
@@ -596,4 +614,12 @@ drustcraftp_region:
     
     - if <[target_world]> != <empty> && <[target_region]> != <empty>:
       - determine <yaml[drustcraft_regions].read[regions.<[target_world]>.<[target_region]>.title]||<empty>>
+    - determine <empty>
+
+  is_type:
+    - define target_world:<[1]||<empty>>
+    - define target_region:<[2]||<empty>>
+    
+    - if <[target_world]> != <empty> && <[target_region]> != <empty> && <yaml[drustcraft_regions].read[regions.<[target_world]>.<[target_region]>.title]||<empty>> != <empty>:
+      - determine <yaml[drustcraft_regions].read[regions.<[target_world]>.<[target_region]>.type]||pin>
     - determine <empty>
