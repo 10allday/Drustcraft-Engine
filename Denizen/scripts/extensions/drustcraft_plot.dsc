@@ -38,11 +38,18 @@ drustcraftw_plot:
               
 
     on player closes inventory:
-      - foreach <context.inventory.map_slots>:
-        - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
-          - define plot_name:<[value].lore.space_separated.after[id:]||<empty>>
-          - if <[plot_name]> != <empty>:
-            - if <context.inventory.inventory_type> == MERCHANT:
+      # todo remove NPC trading_with flag
+      
+      - if <context.inventory.inventory_type> == MERCHANT:
+        - if <player.has_flag[drustcraft_trading_with]>:
+          - define target_npc:<player.flag[drustcraft_trading_with]>
+          - flag <player> drustcraft_trading_with:!
+          - flag <[target_npc]> drustcraft_trading_with:!
+
+        - foreach <context.inventory.map_slots>:
+          - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
+            - define plot_name:<[value].lore.space_separated.after[id:]||<empty>>
+            - if <[plot_name]> != <empty>:
               - define owner_uuid:<proc[drustcraftp_plot.owner].context[<[plot_name]>]>
               - if <[owner_uuid]> != <empty> && <[owner_uuid]> != <player.uuid>:
                 - narrate '<&e>That plot has already been purchased by <&f><player[<[owner_uuid]>].name>'
@@ -51,24 +58,6 @@ drustcraftw_plot:
                 # todo refund purchase
               - else:
                 - run drustcraftt_plot.owner def:<[plot_name]>|<player.uuid>
-            - else:
-              - run drustcraftt_plot.owner def:<[plot_name]>|<player.uuid>
-      
-      - foreach <player.inventory.map_slots>:
-        - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
-          - define plot_name:<[value].lore.space_separated.after[id:]||<empty>>
-          - if <[plot_name]> != <empty>:
-            - if <context.inventory.inventory_type> == MERCHANT:
-              - define owner_uuid:<proc[drustcraftp_plot.owner].context[<[plot_name]>]>
-              - if <[owner_uuid]> != <empty> && <[owner_uuid]> != <player.uuid>:
-                - narrate '<&e>That plot has already been purchased by <&f><player[<[owner_uuid]>].name>'
-                - inventory set slot:<[key]> o:air d:<player.inventory>
-                - give emerald quantity:10 to:<player.inventory>
-                # todo refund purchase
-              - else:
-                - run drustcraftt_plot.owner def:<[plot_name]>|<player.uuid>
-            - else:
-              - run drustcraftt_plot.owner def:<[plot_name]>|<player.uuid>
       
       - run drustcraftt_plot.save
     
@@ -158,7 +147,7 @@ drustcraftt_plot:
     - if <[plot_name]> != <empty> && <[plot_address]> != <empty>:
       - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false>:
         - yaml id:drustcraft_plot set plots.<[plot_name]>.address:<[plot_address]>
-        - run drustcraftt.sign_update def:<[plot_name]>
+        - run drustcraftt_plot.sign_update def:<[plot_name]>
         - run drustcraftt_plot.save
   
   
@@ -167,9 +156,9 @@ drustcraftt_plot:
     - define plot_sign:<[2]||<empty>>
     - if <[plot_name]> != <empty> && <[plot_sign]> != <empty>:
       - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false>:
-        - run drustcraftt.sign_update def:<[plot_name]>|true
+        - run drustcraftt_plot.sign_update def:<[plot_name]>|true
         - ~yaml id:drustcraft_plot set plots.<[plot_name]>.sign:<[plot_sign].round>
-        - run drustcraftt.sign_update def:<[plot_name]>
+        - run drustcraftt_plot.sign_update def:<[plot_name]>
         - run drustcraftt_plot.save
   
   
@@ -196,7 +185,7 @@ drustcraftt_plot:
     - if <[plot_name]> != <empty> && <[plot_cost].is_integer>:
       - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false>:
         - yaml id:drustcraft_plot set plots.<[plot_name]>.cost:<[plot_cost]>
-        - run drustcraftt.sign_update def:<[plot_name]>
+        - run drustcraftt_plot.sign_update def:<[plot_name]>
         - run drustcraftt_plot.save
   
 
@@ -216,7 +205,7 @@ drustcraftt_plot:
           - execute as_server 'rg removemember <[plot_region]> -w <[plot_world]> -a'
             
           - define info:<proc[drustcraftp_plot.info].context[<[plot_name]>]>
-          - run drustcraftt.sign_update def:<[plot_name]>
+          - run drustcraftt_plot.sign_update def:<[plot_name]>
           - run drustcraftt_plot.save
         
   
@@ -351,7 +340,7 @@ drustcraftc_plot:
         - if <[plot_name]> != <empty>:
           - if <proc[drustcraft_plot.list].contains[<[plot_name]>]||false> == false:
             - define plot_region:<context.args.get[3]||<empty>>
-            - if <[plot_region]> != <empty>:
+            - if <[plot_region]> != <empty>: # check region exists!
               - run drustcraftt_plot.create def:<[plot_name]>|<[plot_region]>|<player.location.world.name>
               - run drustcraftt_plot.save
               - execute as_server 'rg flag <[plot_region]> -w <player.location.world.name> -g nonmembers build deny'
@@ -424,7 +413,7 @@ drustcraftc_plot:
               - if <[npc_id].is_integer>:
                 - if <server.npcs.parse[id].contains[<[npc_id]>]>:
                   - run drustcraftt_plot.npc def:<[plot_name]>|<[npc_id]>
-                  - run drustcraftt_npc.interactor def:<[npc_id]>|drustcraftt_shop_interactor                  
+                  - run drustcraftt_npc.interactor def:<[npc_id]>|drustcraftt_plot_interactor                  
                   - run drustcraftt_plot.save
                   - narrate '<&e>The NPC now sells the plot <&f><[plot_name]>'
                 - else:
@@ -506,6 +495,15 @@ drustcraftt_plot_interactor:
       - case click:
         - define items:<list[]>
 
+        - if <[target_npc].has_flag[drustcraft_trading_with]> && <server.online_players.contains[<[target_npc].flag[drustcraft_trading_with]>]>:
+          - define player_name:<[target_npc].flag[drustcraft_trading_with].name>
+          - define greetings:<list[]>
+          - define 'greetings:|:Hey, Im talking to <[player_name]>'
+          - define 'greetings:|:One sec, Im trading with <[player_name]> first'
+          
+          - narrate <proc[drustcraftp_chat_format].context[<[target_npc]>|<[greetings].random>]>
+          - determine false
+        
         - foreach <yaml[drustcraft_plot].list_keys[plots]||<list[]>>:
           - define plot_name:<[value]>
 
@@ -527,6 +525,8 @@ drustcraftt_plot_interactor:
             - define items:|:<[trade_item]>
               
         - if <[items].size> > 0:
+          - flag <[target_npc]> drustcraft_trading_with:<[target_player]>
+          - flag <[target_player]> drustcraft_trading_with:<[target_npc]>
           - opentrades <[items]>
         - else:
           - define greetings:<list[]>
