@@ -18,18 +18,23 @@ drustcraftw_event:
       - define mins:<element[60].sub[<util.time_now.minute>]>
       
       - foreach <proc[drustcraftp_event.running]>:
-        - define title:<[key]>
-        - define duration:<[value].sub[1]>
-        
-        - define 'remaining:<[mins]> minutes'
-        - if <[duration]> > 0:
-          - define hours_txt:hours
-          - if <[duration]> == 1:
-            - define hours_txt:hour
-            
-          - define 'remaining:<[duration]> <[hours_txt]> <[remaining]>'
-        
-        - narrate '<&8><&l>[<&b>+<&8><&l>] <&b>The <[title]> event ends in <[remaining]>'
+        - define title:<proc[drustcraftp_event.title].context[<[key]>]>
+        - if <[title]> != <empty>:
+          - define duration:<[value].sub[1]>
+          
+          - define 'remaining:<[mins]> minutes'
+          - if <[duration]> > 0:
+            - if <[mins]> == 60:
+              - define remaining:<element[]>
+              - define duration:<[duration].add[1]>
+           
+            - define hours_txt:hours
+            - if <[duration]> == 1:
+              - define hours_txt:hour
+              
+            - define 'remaining:<[duration]> <[hours_txt]> <[remaining]>'
+          
+          - narrate '<&8><&l>[<&b>+<&8><&l>] <&b>The <[title]> event ends in <[remaining]>'
       
 
     on system time hourly:

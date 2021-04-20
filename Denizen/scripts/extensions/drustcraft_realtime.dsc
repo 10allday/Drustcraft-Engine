@@ -37,9 +37,6 @@ drustcraftt_realtime:
     - determine <empty>
   
   load:
-    - if <server.has_flag[drustcraft_realtime_enabled]> == false:
-      - flag server drustcraft_realtime_enabled:true
-    
     - if <server.scripts.parse[name].contains[drustcraftw_tab_complete]>:
       - waituntil <yaml.list.contains[drustcraft_tab_complete]>
 
@@ -49,7 +46,7 @@ drustcraftt_realtime:
     - flag server drustcraft_realtime_enabled:true
   
   disable:
-    - flag server drustcraft_realtime_enabled:false
+    - flag server drustcraft_realtime_enabled:!
 
 
 drustcraftp_realtime:
@@ -57,7 +54,7 @@ drustcraftp_realtime:
   debug: false
 
   enabled:
-    - determine <server.flag[drustcraft_realtime_enabled]||false>
+    - determine <server.has_flag[drustcraft_realtime_enabled]||false>
 
 
 drustcraftc_realtime:
@@ -80,10 +77,11 @@ drustcraftc_realtime:
       - case false:
         - run drustcraftt_realtime.disable
         - narrate '<&8><&l>[<&a><&l>+<&8><&l>] <&r><&2>Realtime game time is now <&f>DISABLED'
-      - case <empty>:
-        - if <proc[drustcraftp_realtime.enabled]>:
-          - narrate '<&8><&l>[<&a><&l>+<&8><&l>] <&r><&2>Realtime game time is currently <&f>ENABLED'
-        - else:
-          - narrate '<&8><&l>[<&a><&l>+<&8><&l>] <&r><&2>Realtime game time is currently <&f>DISABLED'
       - default:
-        - narrate '<&8><&l>[<&4><&l>x<&8><&l>] <&r><&c>Unknown option. Try <queue.script.data_key[usage].parsed>'
+        - if <context.args.get[1]||<empty>> == <empty>:
+          - if <proc[drustcraftp_realtime.enabled]>:
+            - narrate '<&8><&l>[<&a><&l>+<&8><&l>] <&r><&2>Realtime game time is currently <&f>ENABLED'
+          - else:
+            - narrate '<&8><&l>[<&a><&l>+<&8><&l>] <&r><&2>Realtime game time is currently <&f>DISABLED'
+        - else:
+          - narrate '<&8><&l>[<&4><&l>x<&8><&l>] <&r><&c>Unknown option. Try <queue.script.data_key[usage].parsed>'
