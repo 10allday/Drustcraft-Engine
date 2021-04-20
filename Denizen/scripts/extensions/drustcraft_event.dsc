@@ -4,7 +4,7 @@
 
 drustcraftw_event:
   type: world
-  debug: true
+  debug: false
   events:
     on server start:
       - run drustcraftt_event.load
@@ -38,7 +38,7 @@ drustcraftw_event:
 
 drustcraftt_event:
   type: task
-  debug: true
+  debug: false
   script:
     - determine <empty>
   
