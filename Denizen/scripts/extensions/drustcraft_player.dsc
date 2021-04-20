@@ -32,8 +32,8 @@ drustcraftw_player:
       - define cake_day:false
       - flag player drustcraft_player_cakeday:false
       
-      - if <player.first_played_time.month> == <[time_now].month> && <player.first_played_time.year> == <[time_now].year>
-        - if <[time_now].month> == 2 && <[time_now].day == 28> && <[time_now].days_in_month> != 29 && <player.first_played_time.day> == 29:
+      - if <player.first_played_time.month> == <[time_now].month> && <player.first_played_time.year> == <[time_now].year>:
+        - if <[time_now].month> == 2 && <[time_now].day> == 28 && <[time_now].days_in_month> != 29 && <player.first_played_time.day> == 29:
           - define cake_day:true
         - else:
           - if <player.first_played_time.day> == <[time_now].day>:
