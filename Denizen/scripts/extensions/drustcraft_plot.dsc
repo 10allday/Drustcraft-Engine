@@ -126,7 +126,7 @@ drustcraftt_plot:
   remove:
     - define plot_name:<[1]||<empty>>
     - if <[plot_name]> != <empty>:
-      - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false> == false:
+      - if <yaml[drustcraft_plot].list_keys[plots].contains[<[plot_name]>]||false>:
         - run drustcraftt_plot.sign_update def:<[plot_name]>|true
         - yaml id:drustcraft_plot set plots.<[plot_name]>:!
         - run drustcraftt_plot.save
@@ -340,15 +340,27 @@ drustcraftc_plot:
         - if <[plot_name]> != <empty>:
           - if <proc[drustcraft_plot.list].contains[<[plot_name]>]||false> == false:
             - define plot_region:<context.args.get[3]||<empty>>
-            - if <[plot_region]> != <empty>: # check region exists!
-              - run drustcraftt_plot.create def:<[plot_name]>|<[plot_region]>|<player.location.world.name>
-              - run drustcraftt_plot.save
-              - execute as_server 'rg flag <[plot_region]> -w <player.location.world.name> -g nonmembers build deny'
-              - execute as_server 'rg removemember <[plot_region]> -w <player.location.world.name> -a'
-              - execute as_server 'rg removeowner <[plot_region]> -w <player.location.world.name> -a'
-              - narrate '<&e>The plot <&f><[plot_name]> <&e>was created'
-              - narrate '<&e>The build flag for non members has been set to deny for the region <&f><[plot_name]>'
-              - narrate '<&e>Removed all members from the region <&f><[plot_name]>'
+            - define plot_world:<context.args.get[4]||<empty>>
+            
+            - if <[plot_region]> != <empty>: 
+              - if <[plot_world]> == <empty>:
+                - if <player||<empty>> != <empty>:
+                  - define plot_world:<player.location.world.name>
+                - else:
+                  - narrate '<&e>A world name is required when creating a plot from the console'
+              
+              - if <[plot_world]> != <empty>:
+                - if <proc[drustcraftp_region.list].context[<[plot_world]>].contains[<[plot_region]>]>:
+                  - run drustcraftt_plot.create def:<[plot_name]>|<[plot_region]>|<player.location.world.name>
+                  - run drustcraftt_plot.save
+                  - execute as_server 'rg flag <[plot_region]> -w <player.location.world.name> -g nonmembers build deny'
+                  - execute as_server 'rg removemember <[plot_region]> -w <player.location.world.name> -a'
+                  - execute as_server 'rg removeowner <[plot_region]> -w <player.location.world.name> -a'
+                  - narrate '<&e>The plot <&f><[plot_name]> <&e>was created'
+                  - narrate '<&e>The build flag for non members has been set to deny for the region <&f><[plot_name]>'
+                  - narrate '<&e>Removed all members from the region <&f><[plot_name]>'
+                - else:
+                  - narrate '<&e>The plot region name <[plot_region]> was not found in world <[plot_world]>'
             - else:
               - narrate '<&e>A plot region name is required when creating a plot'
           - else:
@@ -360,7 +372,7 @@ drustcraftc_plot:
       - case remove:
         - define plot_name:<context.args.get[2]||<empty>>
         - if <[plot_name]> != <empty>:
-          - if <proc[drustcraft_plot.list].contains[<[plot_name]>]||false> == true:
+          - if <proc[drustcraftp_plot.list].contains[<[plot_name]>]||false> == true:
             - run drustcraftt_plot.remove def:<[plot_name]>
             - narrate '<&e>The plot has been removed'
             - narrate '<&e>No changes have been made to the plots WorldGuard region'
