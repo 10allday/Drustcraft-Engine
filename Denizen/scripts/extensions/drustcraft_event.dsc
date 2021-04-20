@@ -32,7 +32,7 @@ drustcraftw_event:
         - narrate '<&8><&l>[<&b>+<&8><&l>] <&b>The <[title]> event ends in <[remaining]>'
       
 
-    on system time minutely every:15:
+    on system time hourly:
       - run drustcraftt_event.cycle
 
 
