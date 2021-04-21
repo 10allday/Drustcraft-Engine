@@ -17,10 +17,12 @@ drustcraftw_mobs:
       - if <context.damager.object_type||<empty>> == PLAYER:
         - define exp:0
         - define drop_list:<list[]>
+        - define mod_list:<map[]>
 
         - foreach <yaml[drustcraft_mobs].list_keys[drops.<context.entity.name>]||<list[]>> as:index:
           - define conditions:<yaml[drustcraft_mobs].read[drops.<context.entity.name>.<[index]>.conditions]||<map[]>>
           - define drops:<yaml[drustcraft_mobs].read[drops.<context.entity.name>.<[index]>.drops]||<map[]>>
+          - define mods:<yaml[drustcraft_mobs].read[drops.<context.entity.name>.<[index]>.mods]||<map[]>>
           
           - define pass:true
           
@@ -73,7 +75,23 @@ drustcraftw_mobs:
                     - define drop_list:->:<[item]>
                 - else:
                   - define exp:+:<[qty]>
-                  
+            
+            - foreach <[mods]>:
+              - define mod_list:<[mod_list].with[<[key]>].as[<[value]>]>
+        
+        - foreach <[mod_list]>:
+          - choose <[key]>:
+            - case doubledrops:
+              - if <[value]> == true:
+                - define new_drop_list:<list[]>
+                - foreach <[drop_list]>:
+                  - define new_quantity:<[value].quantity.mul[2]||1>
+                  - define new_drop_list:->:<item[<[value].material.name>[quantity=<[new_quantity]>]]>
+                - define drop_list:<[new_drop_list]>
+            - case doublexp:
+              - define exp:<[exp].mul[2]>
+            
+        
         - if <[exp]> > 0:
           - determine passively <[exp]>
         - else:
