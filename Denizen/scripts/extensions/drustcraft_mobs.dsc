@@ -56,6 +56,9 @@ drustcraftw_mobs:
                   - define qty:<[range]>
   
                 - if <[key]> != exp:
+                  - if <[key].contains[$]>:
+                    - define key:<[key].replace_text[$COLOR$].with[<context.entity.color||<empty>>]>
+                  
                   - define item:<item[<[key]>[quantity=<[qty]>]]||<empty>>
                   - if <[item]> != <empty>:
                     - define drop_list:->:<[item]>
