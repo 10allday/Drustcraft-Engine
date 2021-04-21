@@ -24,6 +24,12 @@ drustcraftw_mobs:
           
           - define pass:true
           
+          - define has_equipment:false
+          - foreach <context.entity.equipment||<list>>:
+            - if <[value].object_type> == item && <[value].name||air> != air:
+              - define has_equipment:true
+              - define drop_list:->:<[value]>
+
           - if <[conditions].size> > 0:
             - foreach <[conditions]>:
               - choose <[key]>:
@@ -35,6 +41,9 @@ drustcraftw_mobs:
                     - define pass:false
                 - case baby:
                   - if <context.entity.is_baby||false> != <[value]>:
+                    - define pass:false
+                - case equipment:
+                  - if <[has_equipment]> != <[value]>:
                     - define pass:false
                 - case event:
                   - if <proc[drustcraftp_event.is_running].context[<[value]>]> == false:
@@ -64,11 +73,7 @@ drustcraftw_mobs:
                     - define drop_list:->:<[item]>
                 - else:
                   - define exp:+:<[qty]>
-          
-          - foreach <context.entity.equipment||<list>>:
-            - if <[value].object_type> == item && <[value].name||air> != air:
-              - define drop_list:->:<[value]>
-        
+                  
         - if <[exp]> > 0:
           - determine passively <[exp]>
         - else:
