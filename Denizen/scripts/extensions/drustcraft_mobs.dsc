@@ -64,6 +64,10 @@ drustcraftw_mobs:
                     - define drop_list:->:<[item]>
                 - else:
                   - define exp:+:<[qty]>
+          
+          - foreach <context.entity.equipment||<list>>:
+            - if <[value].object_type> == item && <[value].name||air> != air:
+              - define drop_list:->:<[value]>
         
         - if <[exp]> > 0:
           - determine passively <[exp]>
