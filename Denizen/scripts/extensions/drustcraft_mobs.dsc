@@ -18,14 +18,14 @@ drustcraftw_mobs:
         - define exp:0
         - define drop_list:<list[]>
 
-        - foreach <yaml[drustcraft_mobs].list_keys[drops.<context.entity.name>]> as:index:
+        - foreach <yaml[drustcraft_mobs].list_keys[drops.<context.entity.name>]||<list[]>> as:index:
           - define conditions:<yaml[drustcraft_mobs].read[drops.<context.entity.name>.<[index]>.conditions]||<map[]>>
           - define drops:<yaml[drustcraft_mobs].read[drops.<context.entity.name>.<[index]>.drops]||<map[]>>
           
           - define pass:true
           
           - define has_equipment:false
-          - foreach <context.entity.equipment||<list>>:
+          - foreach <context.entity.equipment||<list[]>>:
             - if <[value].object_type> == item && <[value].name||air> != air:
               - define has_equipment:true
               - define drop_list:->:<[value]>
