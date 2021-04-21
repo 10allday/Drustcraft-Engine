@@ -30,6 +30,12 @@ drustcraftw_mobs:
                 - case onfire:
                   - if <context.entity.on_fire||false> != <[value]>:
                     - define pass:false
+                - case sheared:
+                  - if <context.entity.is_sheared||false> != <[value]>:
+                    - define pass:false
+                - case baby:
+                  - if <context.entity.is_baby||false> != <[value]>:
+                    - define pass:false
                 - case event:
                   - if <proc[drustcraftp_event.is_running].context[<[value]>]> == false:
                     - define pass:false
