@@ -19,18 +19,31 @@ drustcraftw_whitelist:
 
     on player logs in:
       - if <yaml.list.contains[drustcraft_whitelist]>:
-        - if <yaml[drustcraft_whitelist].read[whitelist.players].contains[<player.uuid>]||false> == false:
-          - if <server.flag[drustcraft_whitelist_linking_codes]||false> == true:
-            - define code:<yaml[drustcraft_whitelist].read[whitelist.linking_codes.<player.uuid>]||<empty>>
-            - if <[code]> == <empty>:
-              - define code:<server.flag[drustcraft_whitelist_linking_code_next]||<empty>>
+        - define whitelisted:<yaml[drustcraft_whitelist].read[whitelist.players].contains[<player.uuid>]||false>
+        
+        - if <server.flag[drustcraft_whitelist_linking_codes]||false> == false:
+          # server IS NOT using linking codes
+          - if <[whitelisted]> == false:
+            # player IS NOT in whitelist
+            - determine 'KICKED:<&nl><&nl><server.flag[drustcraft_whitelist_kick_message]||<empty>>'
+        - else:
+          # server IS using linking codes
+          - define linking_code:<empty>
+          
+          - if <[whitelisted]> == false:
+            # player IS NOT in whitelist
+            - define linking_code:<server.flag[drustcraft_whitelist_linking_code_next]||<empty>>
             
+          - else:
+            # player IS in whitelist - check for linking code
+            - define linking_code:<yaml[drustcraft_whitelist].read[whitelist.linking_codes.<player.uuid>]||<empty>>
+          
+          - if <[linking_code]> != <empty>:
             - define msg:<server.flag[drustcraft_whitelist_linking_message]||<empty>>
-            - define msg:<[msg].replace_text[$CODE$].with[<[code]>]>
-            
+            - define msg:<[msg].replace_text[$CODE$].with[<[linking_code]>]>
             - determine passively KICKED:<&nl><&nl><[msg]>
           
-            - if <[code]> != <empty> && <[code]> == <server.flag[drustcraft_whitelist_linking_code_next]||<empty>>:
+            - if <[whitelisted]> == false:
               - yaml id:drustcraft_whitelist set whitelist.linking_codes.<player.uuid>:<[code]>
               - choose <server.flag[drustcraft_whitelist_storage]||<empty>>:
                 - case yaml:
@@ -43,13 +56,9 @@ drustcraftw_whitelist:
                     - run drustcraftt_bungee.run def:whitelist_sync
             
               - run drustcraftt_whitelist.generate_new_code
-          - else:
-            - determine KICKED:<&nl><&nl><server.flag[drustcraft_whitelist_kick_message]||<empty>>
-        - else:
-          - run drustcraftt_whitelist.transfer_player def:<player>
           
       - else:
-        - determine 'KICKED:<&nl><&nl><&e>This server is currently not available to due to a whitelist error'
+        - determine 'KICKED:<&nl><&nl><&e>This server is currently not available as it is restarting'
     
     on system time minutely every:5:
       - run drustcraftt_whitelist.sync
