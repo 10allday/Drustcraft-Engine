@@ -13,6 +13,10 @@ drustcraftw_mobs:
     on script reload:
       - run drustcraftt_mobs.load
 
+    on entity damaged by player:
+      - define loc:<context.entity.location.left[<list[-1|1].random>]>
+      - fakespawn 'armor_stand[visible=false;custom_name=<&c><context.final_damage.round_down>;custom_name_visibility=true;gravity=false]' <[loc]> save:newhologram d:2s players:<context.entity.location.find.players.within[20]>
+
 drustcraftt_mobs:
   type: task
   debug: false
