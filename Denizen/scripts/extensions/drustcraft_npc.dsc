@@ -202,7 +202,21 @@ drustcrafti_npc:
               - if <player.gamemode> == SURVIVAL:
                 - define gamemode:<empty>
               
-              - ~run <[task_name]> def:<npc>|<player>|entry<[gamemode]>
+              - ~run <[task_name]> def:<npc>|<player>|entry<[gamemode]> save:result
+              - define show_greeting:<entry[result].created_queue.determination.get[1]||<empty>>
+              - if <[show_greeting]> != <empty>:
+                - if <player.flag[drustcraft_npc_last_entry].from_now.in_seconds||99> > 5:
+                  - flag <player> drustcraft_npc_last_entry:<util.time_now>
+                  
+                  - if <[show_greeting].object_type> == LIST:
+                    - flag <player> drustcraft_npc_entry:<npc.id>
+                    - foreach <[show_greeting]>:
+                      - narrate <proc[drustcraftp_chat_format].context[<npc>|<[value]>]>
+                      - wait 5s
+                      - if <player.flag[drustcraft_npc_entry]||0> != <npc.id>:
+                        - foreach stop
+                  - else:
+                    - narrate <proc[drustcraftp_chat_format].context[<npc>|<[show_greeting]>]>
 
         exit:
           script:
