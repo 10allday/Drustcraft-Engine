@@ -21,36 +21,15 @@ drustcraftw_region:
       - if <proc[drustcraftp_region.gamemode].context[<player.location>]> == CREATIVE:
         - adjust <player> gamemode:CREATIVE
   
-    on player enters cuboid:
-      - define region_name:<context.area.note_name||<empty>>
-      - if <[region_name]> != <empty> && <context.area.note_name.starts_with[drustcraft_region_]>:
-        - define world_name:<context.area.note_name.after_last[_]>
-        - define region_id:<context.area.note_name.after[drustcraft_region_].before_last[_]>
-  
-        - if <[region_id].after_last[_].is_integer>:
-          - define region_name:<[region_id].before_last[_]>
-        - else:
-          - define region_name:<[region_id]>
-        
-        - define show_title:true
-  
-        - if <[show_title]>:
-          - define title:<proc[drustcraftp_region.title].context[<[world_name]>|<[region_name]>]>
-          
-          - if <[title]> != <empty>:
-            - define subtitle:<element[]>
-            - define type:<proc[drustcraftp_region.is_type].context[<[world_name]>|<[region_name]>]>
-            - define prefix:<&e>
+    on player enters polygon:
+      - run drustcraftt_region.show_title def:<context.area.note_name||<empty>>|<player>
 
-            - if <[type]> == creative:
-              - define prefix:<&2>
-              - define 'subtitle:Creative area'
-            
-            - if <player.name.starts_with[*]>:
-              - actionbar '<[prefix]><[title]>: <[subtitle]>'
-            - else:
-              - title subtitle:<[prefix]><[title]>
-              - actionbar <[prefix]><[subtitle]>
+    on player enters cuboid:
+      - run drustcraftt_region.show_title def:<context.area.note_name||<empty>>|<player>
+    
+    # on player enters polygon:
+    #   - define region_name:<context.area.note_name||<empty>>
+    #   - narrate <[region_name]>__ targets:<server.online_players>
 
     on system time minutely every:20:
       - run drustcraftt_region.spawner.update_all
@@ -353,12 +332,18 @@ drustcraftt_region:
     
     - if <[only_permissions]> == false:
       - if <server.plugins.parse[name].contains[dynmap]>:
-        - execute as_server 'dmarker deleteset id:towns'
-        - execute as_server 'dmarker addset id:towns Towns hide:false prio:0'
-        - execute as_server 'dmarker deleteset id:areas'
-        - execute as_server 'dmarker addset id:areas Areas hide:false prio:0'
+        - execute as_server 'dmarker deleteset id:town'
+        - execute as_server 'dmarker addset id:town Towns hide:false prio:0'
+        - execute as_server 'dmarker deleteset id:region'
+        - execute as_server 'dmarker addset id:region Regions hide:false prio:0'
         - execute as_server 'dmarker deleteset id:creative'
         - execute as_server 'dmarker addset id:creative Creative hide:false prio:0'
+        - execute as_server 'dmarker deleteset id:dungeon'
+        - execute as_server 'dmarker addset id:dungeon Dungeon hide:false prio:0'
+        - execute as_server 'dmarker deleteset id:battleground'
+        - execute as_server 'dmarker addset id:battleground Battlegrounds hide:false prio:0'
+        - execute as_server 'dmarker deleteset id:point'
+        - execute as_server 'dmarker addset id:point Points hide:false prio:0'
 
     - foreach <server.list_worlds> as:target_world:
       - define wg_yml_id:<empty>
@@ -367,29 +352,67 @@ drustcraftt_region:
         - define wg_yml_id:<util.random.duuid>
         - yaml load:<[path]> id:<[wg_yml_id]>
 
-        - foreach <[target_world].list_regions> as:target_region:
+        - foreach <[target_world].list_regions||<list[]>> as:target_region:
           - define target_cuboid:<[target_region].cuboid||<empty>>
+          - define target_notable:<[target_cuboid]>
+          - define target_poly:<list[]>
+          
+          # check if this is a polygon instead of a cuboid
+          - if <[target_cuboid]> == <empty> && <yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.type]||<empty>> == poly2d:
+            - define target_poly:<yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.points]||<list[]>>
+            
+            - if <[target_poly].size> >= 3:
+              - define min_y:<yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.min-y]||0>
+              - define max_y:<yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.max-y]||120>
+              - define poly:<list[<location[<[target_poly].get[1].as_map.get[x]>,<[min_y]>,<[target_poly].get[1].as_map.get[z]>]>,<[target_world].name>].to_polygon.include_y[<[max_y]>]>
+
+              - foreach <yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.points].remove[1]||<list[]>>:
+                - define loc:<location[<[value].as_map.get[x]>,<[min_y]>,<[value].as_map.get[z]>,<[target_world].name>]>
+                - define poly:<[poly].with_corner[<[loc]>].include_y[<[min_y]>]>
+                
+              - define target_cuboid:<[poly].bounding_box>
+              - define target_notable:<[poly]>
+                # - note remove as:<[target_region].id>_polygon
+                # - note <[poly]> as:<[target_region].id>_polygon
+          
           - if <[target_cuboid]> != <empty>:
             - if <[only_permissions]> == false:
-              - note <[target_region].cuboid> as:drustcraft_region_<[target_region].id>_<[target_world].name>
-
+              # - note <[target_region].cuboid> as:drustcraft_region_<[target_region].id>_<[target_world].name>
+              - note <[target_notable]> as:drustcraft_region_<[target_region].id>_<[target_world].name>
+              
               - define region_title:<yaml[drustcraft_regions].read[regions.<[target_world].name>.<[target_region].id>.title]||<empty>>
               - define region_type:<yaml[drustcraft_regions].read[regions.<[target_world].name>.<[target_region].id>.type]||pin>
 
               - if <[region_title]> != <empty>:
                 - choose <[region_type]>:
                   - case town:
-                    - define region_map_set:towns
-                    - define region_map_icon:default
+                    - define region_map_set:town
+                    - define region_map_icon:tower
                   - case creative:
                     - define region_map_set:creative
                     - define region_map_icon:hammer
+                  - case dungeon:
+                    - define region_map_set:dungeon
+                    - define region_map_icon:skull
+                  - case region:
+                    - define region_map_set:region
+                    - define region_map_icon:tree
+                  - case battleground:
+                    - define region_map_set:battleground
+                    - define region_map_icon:theater
                   - default:
-                    - define region_map_set:areas
+                    - define region_map_set:point
                     - define region_map_icon:pin
 
-                - if <server.plugins.parse[name].contains[dynmap]>:
-                  - execute as_server 'dmarker add id:<[target_region].id>_<[target_world].name> "<[region_title]>" icon:<[region_map_icon]> set:<[region_map_set]> x:<[target_region].cuboid.center.x.round> y:64 z:<[target_region].cuboid.center.z.round> world:<[target_region].cuboid.center.world.name>'
+                # - if <server.plugins.parse[name].contains[dynmap]>:
+                #   - if <[target_poly].size> >= 3:
+                #     - execute as_server 'dmarker clearcorners'
+                #     - foreach <[target_poly]||<list[]>>:
+                #       - execute as_server 'dmarker addcorner <[value].as_map.get[x]> 64 <[value].as_map.get[z]> <[target_world].name>'
+                #     - execute as_server 'dmarker addarea id:<[target_region].id>_<[target_world].name> "<[region_title]>" icon:<[region_map_icon]>'
+                #   - else:
+                - execute as_server 'dmarker add id:<[target_region].id>_<[target_world].name> "<[region_title]>" icon:<[region_map_icon]> set:<[region_map_set]> x:<[target_cuboid].center.x.round> y:64 z:<[target_cuboid].center.z.round> world:<[target_cuboid].center.world.name>'
+                
 
               - define drustcraft_region_list:->:drustcraft_region_<[target_region].id>_<[target_world].name>
 
@@ -411,6 +434,7 @@ drustcraftt_region:
 						
 						# to keep the entry around if it doesn't have any data
             - yaml id:drustcraft_regions set regions.<[target_world].name>.<[target_region].id>.id:<[target_region].id>
+              
 
         - if <[wg_yml_id]> != <empty>:
           - yaml unload id:<[wg_yml_id]>
@@ -424,6 +448,59 @@ drustcraftt_region:
 
   save:
     - yaml id:drustcraft_regions savefile:/drustcraft_data/regions.yml
+
+  show_title:
+    - define region_name:<[1]>
+    - define target_player:<[2]>
+    - if <[region_name]> != <empty> && <[region_name].starts_with[drustcraft_region_]>:
+      - define world_name:<[region_name].after_last[_]>
+      - define region_id:<[region_name].after[drustcraft_region_].before_last[_]>
+
+      - if <[region_id].after_last[_].is_integer>:
+        - define region_name:<[region_id].before_last[_]>
+      - else:
+        - define region_name:<[region_id]>
+      
+      - define show_title:true
+
+      - if <[show_title]>:
+        - define title:<proc[drustcraftp_region.title].context[<[world_name]>|<[region_name]>]>
+        
+        - if <[title]> != <empty>:
+          - define subtitle:<element[]>
+          - define type:<proc[drustcraftp_region.is_type].context[<[world_name]>|<[region_name]>]>
+          - define prefix:<&f>
+
+          - choose <[type]>:
+            - case town:
+              - define prefix:<&e>
+              - if <[target_player].flag[drustcraft_firstspawn_region_info_town]||1> < 3:
+                - narrate '<&e>You are entering a town. You cannot modify blocks or PVP in this region' targets:<[target_player]>
+                - flag <[target_player]> drustcraft_firstspawn_region_info_town:++
+            - case creative:
+              - define prefix:<&2>
+              - define 'subtitle:Creative area'
+            - case dungeon:
+              - define prefix:<&c>
+              - define subtitle:Dungeon
+              - if <[target_player].flag[drustcraft_firstspawn_region_info_dungeon]||1> < 3:
+                - narrate '<&c>You are entering a dungeon area. You cannot modify blocks in this region' targets:<[target_player]>
+                - flag <[target_player]> drustcraft_firstspawn_region_info_dungeon:++              
+            - case battleground:
+              - playsound <[target_player].location> sound:UI_TOAST_CHALLENGE_COMPLETE
+              - define prefix:<&6>
+              - define subtitle:Battleground
+              #- narrate '<&f><[target_player].name> <[prefix]>has entered the battleground <&f><[title]>' targets:<server.online_players.exclude[<[target_player]>]>
+              - if <[target_player].flag[drustcraft_firstspawn_region_info_battleground]||1> < 3:
+                - narrate '<[prefix]>You are entering a battleground area. Earn rewards for PVP kills in this region' targets:<[target_player]>
+                - flag <[target_player]> drustcraft_firstspawn_region_info_battleground:++
+          
+          - if <player.name.starts_with[*]>:
+            - actionbar '<[prefix]><[title]>: <[subtitle]>'
+          - else:
+            - title subtitle:<[prefix]><[title]>
+            - actionbar <[prefix]><[subtitle]>
+
 
   spawner:
     add:
@@ -529,7 +606,7 @@ drustcraftp_region:
     - define target_region:<[1]||<empty>>
     - define target_player:<[2]||<empty>>
     
-    - if <[target_region].owners.contains[<player>]>:
+    - if <[target_region].owners.contains[<[target_player]>]>:
       - determine true
 
     - foreach <yaml[drustcraft_regions].read[regions.<[target_region].world.name>.<[target_region].id>.owners.groups]||<list[]>>:
