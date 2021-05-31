@@ -19,16 +19,6 @@ drustcraftw_npc:
       #- run drustcraftt_npc.spawn_close def:<context.destination>
       
 
-    # on npc death:
-    #   - determine passively NO_DROPS
-    #   - determine passively NO_XP
-    #   - determine passively KEEP_INV
-    
-    on entity death:
-      - if <context.damager.object_type||<empty>> != PLAYER:
-        - determine NO_XP
-    
-
     on player respawns:
       # Spawn NPCs that are within 25 blocks from the location
       - run drustcraftt_npc.spawn_close def:<context.location>
