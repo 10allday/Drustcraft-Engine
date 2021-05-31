@@ -44,13 +44,13 @@ drustcraftw_whitelist:
             - determine passively KICKED:<&nl><&nl><[msg]>
           
             - if <[whitelisted]> == false:
-              - yaml id:drustcraft_whitelist set whitelist.linking_codes.<player.uuid>:<[code]>
+              - yaml id:drustcraft_whitelist set whitelist.linking_codes.<player.uuid>:<[linking_code]>
               - choose <server.flag[drustcraft_whitelist_storage]||<empty>>:
                 - case yaml:
                   - yaml id:drustcraft_whitelist savefile:drustcraft_whitelist.yml
                 - case sql:
                   - waituntil <server.sql_connections.contains[drustcraft_database]>
-                  - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`uuid`,`playername`,`added_date`,`linking_code`) VALUES ("<player.uuid>", "<player.name>", <util.time_now.epoch_millis.div[1000].round>, "<[code]>");'
+                  - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`uuid`,`playername`,`added_date`,`linking_code`) VALUES ("<player.uuid>", "<player.name>", <util.time_now.epoch_millis.div[1000].round>, "<[linking_code]>");'
 
                   - if <server.scripts.parse[name].contains[drustcraftw_bungee]>:
                     - run drustcraftt_bungee.run def:whitelist_sync
