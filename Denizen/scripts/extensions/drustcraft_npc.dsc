@@ -59,6 +59,10 @@ drustcraftw_npc:
           - foreach <server.npcs>:
             - if <[value].name.starts_with[§]> == false:
               - adjust <[value]> name:<&e><[value].name>
+    
+    on entity death:
+      - if <context.damager.object_type||<empty>> != PLAYER:
+        - determine NO_XP
 
 
 drustcraftt_npc:
