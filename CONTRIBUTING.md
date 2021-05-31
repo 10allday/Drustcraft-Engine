@@ -17,4 +17,4 @@ We have some general notes that should be applied throughout the code:
   - Make sure to comment your code where possible.
 
 
-We have a rundown of all you need to know to develop over on our [wiki](https://github.com/Drustcraft/Drustcraft/wiki/Developer-Guide). If you have any questions, please feel free to reach out to our [Discord](https://discord.drustcraft.com.au)!
+We have a rundown of all you need to know to develop over on our [wiki](https://drustcraft.com.au/wiki/Developer-Guide). If you have any questions, please feel free to reach out to our [Discord](https://discord.drustcraft.com.au)!

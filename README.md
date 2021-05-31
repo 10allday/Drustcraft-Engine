@@ -1,9 +1,8 @@
-<img src="https://drustcraft.com.au/images/drustcraft-logo-full.png" alt="Drustcraft" width="600"/>
+<img src="https://drustcraft.com.au/images/brand.png" alt="Drustcraft" width="600"/>
 
 
 [![License: GPL-3.0](https://img.shields.io/github/license/Drustcraft/Drustcraft?color=blue)](LICENSE)
 [![Discord](https://img.shields.io/discord/782787130334248973.svg?color=%237289da&label=discord)](http://discord.drustcraft.com.au/)
-[![HitCount](http://hits.dwyl.com/Drustcraft/Drustcraft.svg)](http://hits.dwyl.com/Drustcraft/Drustcraft)
 
 Drustcraft is a Minecraft network that enables players to participate in an open MMORPG, creating their own cities, quests, shops, NPCs and participanting in world events, dungeons and raids.
 
