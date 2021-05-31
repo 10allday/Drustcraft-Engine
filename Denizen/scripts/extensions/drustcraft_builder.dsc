@@ -59,6 +59,13 @@ drustcraftw_builder:
         - if <[can_build]> == false:
           - narrate "<&8><&l>[<&4>-<&8><&l>] <&c>You can't break blocks in this location"
           - determine cancelled
+    
+    on portal created:
+      - if <context.entity.is_player||false>:
+        - foreach <context.blocks.parse[regions].combine.deduplicate||<list[]>> as:target_region:
+          - if <proc[drustcraftp_region.is_member].context[<[target_region]>|<context.entity>]> || <proc[drustcraftp_region.is_owner].context[<[target_region]>|<context.entity>]>:
+            - narrate '<&e>You cannot create portals in regions that you are either a member or owner' targets:<context.entity.as_player>
+            - determine cancelled
 
     on system time minutely:
       - foreach <server.online_players.filter[location.find.npcs.within[50].size.is_more_than[20]].filter[gamemode.equals[CREATIVE]]>:
