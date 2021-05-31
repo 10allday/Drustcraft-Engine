@@ -38,25 +38,26 @@ drustcraftw_player:
         - else:
           - if <player.first_played_time.day> == <[time_now].day>:
             - define cake_day:true
-          
+        
         - if <[cake_day]>:
-          - flag player drustcraft_player_cakeday:true
-          
-          - narrate '<&2>★<&3>★<&4>★<&5>★<&6>★ <&f>Today is nomadjimbobs cake day! <&6>★<&5>★<&4>★<&3>★<&2>★' targets:<server.online_players>
-          - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_LAUNCH sound_category:AMBIENT
-          - wait 1s
-          - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_LAUNCH sound_category:AMBIENT
-          - wait 0.5s
-          - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_LAUNCH sound_category:AMBIENT
-          - wait 0.5s
-          - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_TWINKLE sound_category:AMBIENT
-          - wait 0.5s
-          - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_TWINKLE sound_category:AMBIENT
-          - wait 0.2s
-          - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_TWINKLE sound_category:AMBIENT
-          
-          - if <player.has_flag[drustcraft_player_cakeday_<[time_now].year>_received]> == false:
-            - flag player drustcraft_player_cakeday_<[time_now].year>_received:true
+          - if <player.first_played_time.year> != <[time_now].year>:
+            - flag player drustcraft_player_cakeday:true
+            
+            - narrate '<&2>★<&3>★<&4>★<&5>★<&6>★ <&f>Today is <player.name> cake day! <&6>★<&5>★<&4>★<&3>★<&2>★' targets:<server.online_players>
+            - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_LAUNCH sound_category:AMBIENT
+            - wait 1s
+            - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_LAUNCH sound_category:AMBIENT
+            - wait 0.5s
+            - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_LAUNCH sound_category:AMBIENT
+            - wait 0.5s
+            - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_TWINKLE sound_category:AMBIENT
+            - wait 0.5s
+            - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_TWINKLE sound_category:AMBIENT
+            - wait 0.2s
+            - playsound <server.online_players> sound:ENTITY_FIREWORK_ROCKET_TWINKLE sound_category:AMBIENT
+            
+            - if <player.has_flag[drustcraft_player_cakeday_<[time_now].year>_received]> == false:
+              - flag player drustcraft_player_cakeday_<[time_now].year>_received:true
 
 
 drustcraftt_player:
