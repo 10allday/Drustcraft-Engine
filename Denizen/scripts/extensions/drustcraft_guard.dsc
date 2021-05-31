@@ -82,7 +82,7 @@ drustcraftc_guard:
                 - execute as_player 'sentinel addtarget monsters --id <[npc_id]>'
                 - execute as_player 'sentinel addtarget event:pvp --id <[npc_id]>'
                 - execute as_player 'sentinel addtarget event:pvsentinel --id <[npc_id]>'
-                - execute as_player 'sentinel autoswitch pvp --id <[npc_id]>'
+                - execute as_player 'sentinel autoswitch --id <[npc_id]>'
                 - execute as_player 'sentinel spawnpoint true --id <[npc_id]>'
                 - adjust <player> selected_npc:<npc[<[npc_id]>]>
                 - execute as_player 'npc skin --url https://www.drustcraft.com.au/skins/guard.png'
