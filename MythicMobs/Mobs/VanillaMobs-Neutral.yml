@@ -1,0 +1,147 @@
+###########################################################################
+#                                                                         #
+#                    Created and Uploaded by Cpt.Z#0404                   #
+#                                                                         #
+###########################################################################
+###########################################################################
+#                                                                         #
+#                        NEUTRAL MOBS SECTION (White)                             #
+#                                                                         #
+###########################################################################
+ BEE:
+  Display: 'Bee'
+  Health: 10
+  Damage: 3
+  Drops:
+  - exp 1-10 1
+  DropsPerLevel:
+  - exp 1 1
+  LevelModifiers:
+    Health: 1.0
+    Damage: 0.3
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+ CAVE_SPIDER:
+  Display: 'Cave Spider'
+  Health: 12
+  Damage: 3
+  Drops:
+  - exp 1-10 1
+  DropsPerLevel:
+  - STRING 1 0.5
+  - exp 1 1
+  LevelModifiers:
+    Health: 1.2
+    Damage: 0.3
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+ DOLPHIN:
+  Display: 'Dolpin'
+  Health: 10
+  Damage: 4
+  Drops:
+  - exp 1-10 1
+  DropsPerLevel:
+  - RAW_COD 1 0.5
+  - exp 1 1
+  LevelModifiers:
+    Health: 1.0
+    Damage: 0.4
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+ IRON_GOLEM:
+  Display: 'Iron Golem'
+  Health: 100
+  Damage: 23
+  Drops:
+  - exp 1-10 1
+  DropsPerLevel:
+  - IRON 1 0.2
+  - POPPY 1 0.5
+  - exp 1 1
+  LevelModifiers:
+    Health: 10.0
+    Damage: 2.3
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+ PANDA:
+  Display: 'Panda'
+  Health: 20
+  Damage: 9
+  Drops:
+  - exp 1-10 1
+  DropsPerLevel:
+  - BAMBOO 1 0.5
+  - exp 1 1
+  LevelModifiers:
+    Health: 2.0
+    Damage: 0.9
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+ PIGLIN:
+  Display: 'Piglin'
+  Health: 16
+  Damage: 12
+  Drops:
+  - exp 1-10 1
+  DropsPerLevel:
+  - exp 1 1
+  LevelModifiers:
+    Health: 1.6
+    Damage: 1.2
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+ POLAR_BEAR:
+  Display: 'Polar Bear'
+  Health: 30
+  Damage: 9
+  Drops:
+  - exp 1-10 1
+  DropsPerLevel:
+  - exp 1 1
+  - RAW_COD 1 0.5
+  - RAW_SALMON 1 0.5
+  LevelModifiers:
+    Health: 3.0
+    Damage: 0.9
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+ PUFFERFISH:
+  Display: 'Pufferfish'
+  Health: 3
+  Damage: 4
+  Drops:
+  - exp 1-10 1
+  DropsPerLevel:
+  - exp 1 1
+  - PUFFERFISH 1 0.5
+  - BONE_MEAL 1 0.3
+  LevelModifiers:
+    Health: 0.3
+    Damage: 0.4
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+ SPIDER:
+  Display: 'Spider'
+  Health: 16
+  Damage: 3
+  Drops:
+  - exp 1-10 1
+  DropsPerLevel:
+  - exp 1 1
+  - STRING 1 0.5
+  - SPIDER_EYE 1 0.5
+  LevelModifiers:
+    Health: 1.6
+    Damage: 0.3
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800

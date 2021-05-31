@@ -1,0 +1,24 @@
+# For more information, check out the plugin manual or join us on Discord:
+# http://www.mythicmobs.net
+#  
+
+RandomSkeletonKing:
+  MobType: SkeletonKing
+  #Chance: 0.001
+  Priority: 1
+  Action: ADD
+  Conditions:
+  - outside true
+RandomSkeletalKnight:
+  MobType: SkeletalKnight
+  #Chance: 0.008
+  Chance: 0
+  Priority: 1
+  Action: ADD
+
+RandomCow:
+  MobType: VanillaCow
+  #Chance: 0.005
+  Chance: 0
+  Priority: 1
+  Action: ADD

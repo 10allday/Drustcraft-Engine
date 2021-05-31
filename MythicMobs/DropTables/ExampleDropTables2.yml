@@ -1,0 +1,50 @@
+#SkeletalDrops
+SkeletalKnightDrops:
+  Drops:
+  - SkeletonHelmet 1 0.1
+  - SkeletonSword 1 0.1
+  - SkeletonShield 1 0.1
+  - 266 1-3 0.3
+  - 352 1-3 0.2
+  - exp 10
+SkeletalMinerDrops:
+  Drops:
+  - SkeletonHelmet 1 0.1
+  - SkeletonPickaxe 1 0.1
+  - SkeletonTorch 1-3 0.1
+  - 266 1-3 0.3
+  - 265 1-2 0.2
+  - 263 1-4 0.4
+  - 352 1-3 0.2
+  - exp 10
+SkeletalArcherDrops:
+  Drops:
+  - SkeletonHelmet 1 0.1
+  - SkeletonBow 1 0.1
+  - 266 1-3 0.3
+  - 352 1-3 0.2
+  - exp 10
+
+#HumanDrops
+HumanWarriorDrops:
+  Drops:
+  - IronArmor1 1 0.1
+  - HumanSword 1 0.1
+  - exp 10
+HumanMinerDrops:
+  Drops:
+  - MiningArmor1 1 0.1
+  - HumanPickaxe 1 0.1
+  - HumanTorch 1-3 0.1
+  - 263 1-5 0.3
+  - 265 1-4 0.2
+  - 264 1-2 0.1
+  - exp 10
+
+#FireRatDrops
+FireRatDrops:
+  Drops:
+  - 377 1-3 0.3
+  - 378 1-3 0.2
+  - 385 1-2 0.1
+  - exp 15

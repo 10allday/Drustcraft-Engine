@@ -1,0 +1,151 @@
+#Humans
+Human_Warrior:
+  Type: SKELETON
+  Health: 20
+  Damage: 4
+  DamageModifiers:
+  Drops:
+  - HumanWarriorDrops
+  Equipment:
+  - HumanSword:0
+  - IronArmor1:4
+  Faction: Humans
+  Options:
+    MovementSpeed: 0.3
+    PreventOtherDrops: true
+    Silent: true
+  AIGoalSelectors:
+  - 0 clear
+  - 1 meleeattack
+  - 2 randomstroll
+  - 3 lookatplayers
+  AITargetSelectors:
+  - 0 clear
+  - 1 SpecificFaction Skeleton_Army
+  - 2 SpecificFaction Rat
+  Skills:
+  Disguise:
+      Type: Player
+      Player: Warrior
+      Skin: Knight
+Human_Miner:
+  Type: SKELETON
+  Health: 20
+  Damage: 4
+  DamageModifiers:
+  Drops:
+  - HumanMinerDrops
+  Equipment:
+  - HumanPickaxe:0
+  - MiningArmor1:4
+  - HumanTorch:5
+  Faction: Humans
+  Options:
+    MovementSpeed: 0.3
+    PreventOtherDrops: true
+    Silent: true
+  AIGoalSelectors:
+  - 0 clear
+  - 1 meleeattack
+  - 2 randomstroll
+  - 3 lookatplayers
+  AITargetSelectors:
+  - 0 clear
+  - 1 SpecificFaction Skeleton_Army
+  - 2 SpecificFaction Rat
+  Skills:
+  Disguise:
+      Type: Player
+      Player: Miner
+      Skin: Miner
+
+#Skeletal Army
+Skeletal_Knight:
+  Type: SKELETON
+  Health: 20
+  Damage: 4
+  DamageModifiers:
+  - FIRE 2
+  - LAVA 2
+  - FIRE_TICK 2
+  Drops:
+  - SkeletalKnightDrops
+  Equipment:
+  - SkeletonSword:0
+  - SkeletonHelmet:4
+  - SkeletonShield:5
+  Faction: Skeleton_Army
+  Options:
+    MovementSpeed: 0.2
+    PreventOtherDrops: true
+  AIGoalSelectors:
+  - 0 clear
+  - 1 meleeattack
+  - 2 randomstroll
+  AITargetSelectors:
+  - 0 clear
+  - 1 players
+  - 2 SpecificFaction Humans
+  KillMessages:
+  - '<target.name> was destroyed by a pile of living bones'
+  Skills:
+Skeletal_Miner:
+  Type: SKELETON
+  Health: 20
+  Damage: 4
+  DamageModifiers:
+  - FIRE 2
+  - LAVA 2
+  - FIRE_TICK 2
+  Drops:
+  - SkeletalMinerDrops
+  Equipment:
+  - SkeletonPickaxe:0
+  - SkeletonHelmet:4
+  - SkeletonTorch:5
+  Faction: Skeleton_Army
+  Options:
+    MovementSpeed: 0.2
+    PreventOtherDrops: true
+  AIGoalSelectors:
+  - 0 clear
+  - 1 meleeattack
+  - 2 randomstroll
+  AITargetSelectors:
+  - 0 clear
+  - 1 players
+  - 2 SpecificFaction Humans
+  KillMessages:
+  - '<target.name> was destroyed by a pile of living bones'
+  Skills:
+
+#Random Mobs
+Fire_Rat:
+  Type: SILVERFISH
+  Health: 12
+  Damage: 2
+  DamageModifiers:
+  - FIRE -0.5
+  - LAVA -0.5
+  - FIRE_TICK -0.2
+  Drops:
+  - FireRatDrops
+  Faction: Rat
+  Options:
+    MovementSpeed: 0.3
+    PreventOtherDrops: true
+  AIGoalSelectors:
+  - 0 clear
+  - 1 meleeattack
+  - 2 randomstroll
+  AITargetSelectors:
+  - 0 clear
+  - 1 players
+  - 2 SpecificFaction Humans
+  - 3 SpecificFaction Skeleton_Army
+  KillMessages:
+  - '<target.name> was eaten alive'
+  Skills:
+  - ignite{ticks=630720000} @Self ~onSpawn 1.0
+  - ignite{ticks=60} @Target ~onAttack 0.5
+  - effect:flames @Self ~onTimer:10

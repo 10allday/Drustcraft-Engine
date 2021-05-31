@@ -1,0 +1,175 @@
+###########################################################################
+#                                                                         #
+#                    Created and Uploaded by Cpt.Z#0404                   #
+#                                                                         #
+###########################################################################
+###########################################################################
+#                                                                         #
+#                          PASSIVE MOBS SECTION   (Green)                         #
+#                                                                         #
+###########################################################################
+VanillaCow:
+  Type: COW
+  Display: '&2Cow'
+  Health: 10
+  Drops:
+  - exp 1-5 1
+  - LongNightExtraDrops
+  DropsPerLevel:
+  - exp 1 0.5
+  - LEATHER 1 0.1
+  - RAW_BEEF 1 0.1
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+
+
+
+BAT:
+  Display: '&2Bat'
+  Health: 6
+  Drops:
+  - exp 1-5 1
+  DropsPerLevel:
+  - exp 1 0.5
+  LevelModifiers:
+    Health: 0.6
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+Chicken:
+  Display: '&2Chicken'
+  Health: 10
+  Drops:
+  - exp 1-5 1
+  DropsPerLevel:
+  - exp 1 0.5
+  - FEATHER 1 0.1
+  - RAW_CHICKEN 1 0.1
+  - EGG 1 0.5
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+COD:
+  Display: '&2Cod'
+  Health: 3
+  Drops:
+  - exp 1-5 1
+  DropsPerLevel:
+  - exp 1 0.5
+  - RAW_COD 1 0.1
+  - BONE_MEAL 1 0.01
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+COW:
+  Type: COW
+  Display: '&2Cow'
+  Health: 10
+  Drops:
+  - exp 1-5 1
+#  - CowDrops
+  - EMERALD 5 1
+  - GOLD_NUGGET 32-64 1
+  #DropsPerLevel:
+  #- exp 1 0.5
+  #- LEATHER 1 0.1
+  #- RAW_BEEF 1 0.1
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+MUSHROOM_COW:
+  Display: '&2MOOSHROOM'
+  Health: 10
+  Drops:
+    - apple 1 1
+  Options:
+    PreventOtherDrops: true
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+PIG:
+  Display: '&2Pig'
+  Health: 10
+  Drops:
+  - exp 1-5 1
+  DropsPerLevel:
+  - exp 1 0.5
+  - RAW_PORKCHOP 1 0.1
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+RABBIT:
+  Display: '&2Rabbit'
+  Health: 3
+  Drops:
+  - exp 1-5 1
+  DropsPerLevel:
+  - exp 1 0.5
+  - RABBIT_HIDE 1 0.1
+  - RAW_RABBIT 1 0,1
+  - RABBIT_FOOT 1 0.01
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+SALMON:
+  Display: '&2Salmon'
+  Health: 3
+  Drops:
+  - exp 1-5 1
+  DropsPerLevel:
+  - exp 1 0.5
+  - RAW_SALMON 1 0.1
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+SHEEP:
+  Display: '&2Sheep'
+  Health: 8
+  DropsPerLevel:
+    - RAW_MUTTON 1 0.1
+  Options:
+    - AlwaysShowName: true
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+SHEEPY:
+  Type: sheep
+  Display: '&2Sheepy'
+  Health: 8
+  DropsPerLevel:
+    - RAW_MUTTON 1 0.1
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+SQUID:
+  Display: '&2Squid'
+  Health: 10
+  Drops:
+  - exp 1-5 1
+  DropsPerLevel:
+  - exp 1 0.5
+  - INK_SACK 1 0.1
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+STRIDER:
+  Display: '&2Strider'
+  Health: 20
+  Drops:
+  - exp 1-5 1
+  DropsPerLevel:
+  - exp 1 0.5
+  - STRING 1 0.1
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+TROPICAL_FISH:
+  Display: '&2Tropical Fish'
+  Health: 3
+  Drops:
+  - exp 1-5 1
+  DropsPerLevel:
+  - exp 1 0.5
+  - TROPICAL_FISH 1 0.1
+  - BONE_MEAL 1 0.5
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
+TURTLE:
+  Display: '&2Turtle'
+  Health: 30
+  Drops:
+  - exp 1-5 1
+  DropsPerLevel:
+  - exp 1 0.5
+  - SEAGRASS 1 0.1
+  - SCUTE 1 0.1
+  Skill:
+    - setlevel{a=add;l=1} ~onTimer:3600
