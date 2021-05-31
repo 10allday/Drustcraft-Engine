@@ -1,0 +1,60 @@
+HardenedIronSword:
+  Id: iron_sword
+  Data: 0
+  Display: 'Hardened Iron Sword'
+  Amount: 1
+  Attributes:
+    MainHand:
+      Damage: 8
+HardenedIronHelmet:
+  Id: iron_helmet
+  Data: 0
+  Display: 'Hardened Iron Helmet'
+  Amount: 1
+  Attributes:
+    Head:
+      Armor: 3
+  Enchantments:
+  - PROTECTION_ENVIRONMENTAL:1
+  - PROTECTION_PROJECTILE:1
+  - PROTECTION_FIRE:1
+  - PROTECTION_EXPLOSIONS:1
+HardenedIronChestplate:
+  Id: iron_chestplate
+  Data: 0
+  Display: 'Hardened Iron Chestplate'
+  Amount: 1
+  Attributes:
+    Chest:
+      Armor: 8
+  Enchantments:
+  - PROTECTION_ENVIRONMENTAL:1
+  - PROTECTION_PROJECTILE:1
+  - PROTECTION_FIRE:1
+  - PROTECTION_EXPLOSIONS:1
+HardenedIronLeggings:
+  Id: iron_leggings
+  Data: 0
+  Display: 'Hardened Iron Leggings'
+  Amount: 1
+  Attributes:
+    Legs:
+      Armor: 6
+  Enchantments:
+  - PROTECTION_ENVIRONMENTAL:1
+  - PROTECTION_PROJECTILE:1
+  - PROTECTION_FIRE:1
+  - PROTECTION_EXPLOSIONS:1
+HardenedIronBoots:
+  Id: iron_boots
+  Data: 0
+  Display: 'Hardened Iron Boots'
+  Amount: 1
+  Attributes:
+    Feet:
+      Armor: 13
+  Enchantments:
+  - PROTECTION_ENVIRONMENTAL:1
+  - PROTECTION_PROJECTILE:1
+  - PROTECTION_FIRE:1
+  - PROTECTION_EXPLOSIONS:1
