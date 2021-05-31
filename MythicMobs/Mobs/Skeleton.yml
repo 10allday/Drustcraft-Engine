@@ -1,0 +1,62 @@
+SKELETON:
+  Display: '&cSkeleton'
+  Health: 20
+  Damage: 3
+  Drops:
+    - LongNightExtraDrops
+  Options:
+    PreventOtherDrops: false
+  LevelModifiers:
+    Health: 2.0
+    Damage: 0.5
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+
+SKELETON_VETERAN:
+  Type: Skeleton
+  Display: '&cVeteran Skeleton'
+  Health: 40
+  Damage: 6
+  Drops:
+    - LongNightExtraDrops
+  Options:
+    PreventOtherDrops: false
+  LevelModifiers:
+    Health: 4.0
+    Damage: 1
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+
+SKELETON_ELITE:
+  Type: Skeleton
+  Display: '&cElite Skeleton'
+  Health: 80
+  Damage: 12
+  Drops:
+    - LongNightExtraDrops
+  Options:
+    PreventOtherDrops: false
+  LevelModifiers:
+    Health: 8.0
+    Damage: 2
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+
+SKELETON_LEGENDARY:
+  Type: Skeleton
+  Display: '&cLegendary Skeleton'
+  Health: 160
+  Damage: 24
+  Drops:
+    - LongNightExtraDrops
+  Options:
+    PreventOtherDrops: false
+  LevelModifiers:
+    Health: 16.0
+    Damage: 4
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800

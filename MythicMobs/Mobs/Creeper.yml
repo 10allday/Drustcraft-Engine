@@ -1,0 +1,58 @@
+CREEPER:
+  Display: '&cCreeper'
+  Health: 20
+  Drops:
+    - LongNightExtraDrops
+  Options:
+    PreventOtherDrops: false
+    ExplosionRadius: 6
+  LevelModifiers:
+    Health: 2.0
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+
+CREEPER_VETERAN:
+  Type: CREEPER
+  Display: '&cVeteran Creeper'
+  Health: 40
+  Drops:
+    - LongNightExtraDrops
+  Options:
+    PreventOtherDrops: false
+    ExplosionRadius: 12
+  LevelModifiers:
+    Health: 4.0
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+
+CREEPER_ELITE:
+  Type: CREEPER
+  Display: '&cElite Creeper'
+  Health: 80
+  Drops:
+    - LongNightExtraDrops
+  Options:
+    PreventOtherDrops: false
+    ExplosionRadius: 24
+  LevelModifiers:
+    Health: 8.0
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800
+
+CREEPER_LEGENDARY:
+  Type: CREEPER
+  Display: '&cLegendary Creeper'
+  Health: 160
+  Drops:
+    - LongNightExtraDrops
+  Options:
+    PreventOtherDrops: false
+    ExplosionRadius: 24
+  LevelModifiers:
+    Health: 16.0
+  Skill:
+    - setlevel{a=add;l=10} ~onKillPlayer
+    - setlevel{a=add;l=1} ~onTimer:1800

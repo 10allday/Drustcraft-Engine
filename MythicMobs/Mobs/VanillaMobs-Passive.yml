@@ -119,8 +119,8 @@ SHEEP:
   Health: 8
   DropsPerLevel:
     - RAW_MUTTON 1 0.1
-  Options:
-    - AlwaysShowName: true
+  #Options:
+  #  - AlwaysShowName: true
   Skill:
     - setlevel{a=add;l=1} ~onTimer:3600
 SHEEPY:

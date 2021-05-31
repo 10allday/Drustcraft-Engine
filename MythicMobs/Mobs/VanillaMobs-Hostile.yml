@@ -23,19 +23,6 @@ BLAZE:
   Skill:
     - setlevel{a=add;l=10} ~onKillPlayer
     - setlevel{a=add;l=1} ~onTimer:1800
-CREEPER:
-  Display: '&cCreeper'
-  Health: 20
-  Drops:
-    - LongNightExtraDrops
-  Options:
-    #PreventOtherDrops: true
-    PreventOtherDrops: false
-  LevelModifiers:
-    Health: 2.0
-  Skill:
-    - setlevel{a=add;l=10} ~onKillPlayer
-    - setlevel{a=add;l=1} ~onTimer:1800
 DROWNED:
   Display: '&cDrowned'
   Health: 20
@@ -252,21 +239,6 @@ SILVERFISH:
   LevelModifiers:
     Health: 0.8
     Damage: 0.1
-  Skill:
-    - setlevel{a=add;l=10} ~onKillPlayer
-    - setlevel{a=add;l=1} ~onTimer:1800
-SKELETON:
-  Display: '&cSkeleton'
-  Health: 20
-  Damage: 3
-  Drops:
-    - LongNightExtraDrops
-  Options:
-    #PreventOtherDrops: true
-    PreventOtherDrops: false
-  LevelModifiers:
-    Health: 2.0
-    Damage: 0.5
   Skill:
     - setlevel{a=add;l=10} ~onKillPlayer
     - setlevel{a=add;l=1} ~onTimer:1800

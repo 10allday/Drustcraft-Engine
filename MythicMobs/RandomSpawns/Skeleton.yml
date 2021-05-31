@@ -1,0 +1,44 @@
+# For more information, check out the plugin manual or join us on Discord:
+# http://www.mythicmobs.net
+#  
+
+RandomSkeleton:
+  MobType: SKELETON
+  Worlds: azentina
+  Chance: 0.25
+  Priority: 2
+  Action: REPLACE
+  Conditions:
+  - distancefromspawn{d=0to1750}
+  - lightLevel{l=0to7}
+  - inblock{b=AIR} true
+RandomSkeletonVeteran:
+  MobType: SKELETON_VETERAN
+  Worlds: azentina
+  Chance: 0.25
+  Priority: 2
+  Action: REPLACE
+  Conditions:
+  - distancefromspawn{d=1500to3250}
+  - lightLevel{l=0to7}
+  - inblock{b=AIR} true
+RandomSkeletonElite:
+  MobType: SKELETON_ELITE
+  Worlds: azentina
+  Chance: 0.25
+  Priority: 2
+  Action: REPLACE
+  Conditions:
+  - distancefromspawn{d=3000to4750}
+  - lightLevel{l=0to7}
+  - inblock{b=AIR} true
+RandomSkeletonLegendary:
+  MobType: SKELETON_LEGENDARY
+  Worlds: azentina
+  Chance: 0.25
+  Priority: 2
+  Action: REPLACE
+  Conditions:
+  - distancefromspawn{d=4500to6000}
+  - lightLevel{l=0to7}
+  - inblock{b=AIR} true
