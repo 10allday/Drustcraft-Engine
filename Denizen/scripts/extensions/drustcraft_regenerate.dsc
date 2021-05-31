@@ -20,18 +20,34 @@ drustcraftw_regenerate:
       - run drustcraftt_regenerate.update
     
     on player places block server_flagged:drustcraft_regenerate:
-      - if <player.gamemode> == SURVIVAL && <server.sql_connections.contains[drustcraft_database]> && <server.flag[drustcraft_regenerate_blocks].contains[<context.material.name>]>:
+      #- if <player.gamemode> == SURVIVAL && <server.sql_connections.contains[drustcraft_database]> && <server.flag[drustcraft_regenerate_blocks].contains[<context.material.name>]>:
+      - if <player.gamemode> == SURVIVAL && <server.sql_connections.contains[drustcraft_database]> && <context.material.block_strength> > 0:
         - sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate` WHERE server="<bungee.server||<empty>>" AND action="movement" AND world="<context.location.world.name>" AND x=<context.location.x.round> AND y=<context.location.y.round> AND z=<context.location.z.round>;'
         - sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate` (`server`, `action`, `world`, `x`, `y`, `z`, `material`, `date`) VALUES ("<bungee.server||<empty>>", "place", "<context.location.world.name>", <context.location.x.round>, <context.location.y.round>, <context.location.z.round>, "<context.material.name>", <util.time_now.epoch_millis.div[1000].round>);'
 
     on player breaks block server_flagged:drustcraft_regenerate:
-      - if <player.gamemode> == SURVIVAL && <server.sql_connections.contains[drustcraft_database]> && <server.flag[drustcraft_regenerate_blocks].contains[<context.material.name>]>:
+      # - if <player.gamemode> == SURVIVAL && <server.sql_connections.contains[drustcraft_database]> && <server.flag[drustcraft_regenerate_blocks].contains[<context.material.name>]>:
+      - if <player.gamemode> == SURVIVAL && <server.sql_connections.contains[drustcraft_database]> && <context.material.block_strength> > 0:
         - sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate` WHERE server="<bungee.server||<empty>>" AND action="place" AND world="<context.location.world.name>" AND x=<context.location.x.round> AND y=<context.location.y.round> AND z=<context.location.z.round>;'
         - ~sql id:drustcraft_database 'query:SELECT id FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate WHERE server="<bungee.server||<empty>>" AND action="break" AND world="<context.location.world.name>" AND x=<context.location.x.round> AND y=<context.location.y.round> AND z=<context.location.z.round>;' save:sql_result
         - define action:movement
         - if <entry[sql_result].result.size||0> == 0:
           - define action:break
         - sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate` (`server`, `action`, `world`, `x`, `y`, `z`, `material`, `date`) VALUES ("<bungee.server||<empty>>", "<[action]>", "<context.location.world.name>", <context.location.x.round>, <context.location.y.round>, <context.location.z.round>, "<context.material.name>", <util.time_now.epoch_millis.div[1000].round>);'
+    
+    on entity explodes server_flagged:drustcraft_regenerate:
+      - if <server.sql_connections.contains[drustcraft_database]>:
+        - foreach <context.blocks>:
+          - define target_material:<[value]>
+          # - if <server.flag[drustcraft_regenerate_blocks].contains[<[target_material].name>]>:
+          - if <[target_material].block_strength> > 0:
+            - sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate` WHERE server="<bungee.server||<empty>>" AND action="place" AND world="<context.location.world.name>" AND x=<context.location.x.round> AND y=<context.location.y.round> AND z=<context.location.z.round>;'
+            - ~sql id:drustcraft_database 'query:SELECT id FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate WHERE server="<bungee.server||<empty>>" AND action="break" AND world="<context.location.world.name>" AND x=<context.location.x.round> AND y=<context.location.y.round> AND z=<context.location.z.round>;' save:sql_result
+            - define action:movement
+            - if <entry[sql_result].result.size||0> == 0:
+              - define action:break
+            - sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate` (`server`, `action`, `world`, `x`, `y`, `z`, `material`, `date`) VALUES ("<bungee.server||<empty>>", "<[action]>", "<context.location.world.name>", <context.location.x.round>, <context.location.y.round>, <context.location.z.round>, "<[target_material].name>", <util.time_now.epoch_millis.div[1000].round>);'
+      
 
 
 drustcraftt_regenerate:
@@ -69,7 +85,7 @@ drustcraftt_regenerate:
       - if <yaml[drustcraft_server].contains[drustcraft.regenerate.decay_delay]> == false:
         - yaml id:drustcraft_server set drustcraft.regenerate.decay_delay:3628800
       
-      - flag server drustcraft_regenerate_blocks:<yaml[drustcraft_server].read[drustcraft.regenerate.blocks]||<list[]>>
+      #- flag server drustcraft_regenerate_blocks:<yaml[drustcraft_server].read[drustcraft.regenerate.blocks]||<list[]>>
       - flag server drustcraft_regenerate:true
     - else:
       - debug log 'Drustcraft Regenerate requires the Drustcraft SQL script installed'
