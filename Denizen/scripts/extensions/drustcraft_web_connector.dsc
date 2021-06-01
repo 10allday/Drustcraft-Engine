@@ -28,8 +28,10 @@ drustcraftw_web_connector:
           - case query:
             - define result:<[result].with[players].as[<server.online_players.size>]>
             - define result:<[result].with[tps].as[<server.recent_tps.get[1].round>]>
+            - define result:<[result].with[state].as[ok]>
           - case whitelist_sync:
-            - run drustcraftt_bungee.run def:whitelist_sync
+            - ~run drustcraftt_bungee.run def:whitelist_sync
+            - define result:<[result].with[state].as[ok]>
           - default:
             - define "result:<[result].with[error].as[Unknown Command]>"
           
