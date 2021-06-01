@@ -79,11 +79,14 @@ drustcraftc_guard:
                   - trait state:true sentinel to:<npc[<[npc_id]>]>
                 - adjust <npc[<[npc_id]>]> skin_layers:<npc[<[npc_id]>].skin_layers.exclude[cape]>
                 - adjust <npc[<[npc_id]>]> name:<&e>Guard
+                - equip <npc[<[npc_id]>]> hand:<item[netherite_sword]>
+                - equip <npc[<[npc_id]>]> offhand:<item[shield]>
+                - give <item[crossbow]> quantity:1 to:<npc[<npc_id]>].inventory>
                 - execute as_player 'sentinel addtarget monsters --id <[npc_id]>'
                 - execute as_player 'sentinel addtarget event:pvp --id <[npc_id]>'
                 - execute as_player 'sentinel addtarget event:pvsentinel --id <[npc_id]>'
-                - execute as_player 'sentinel autoswitch --id <[npc_id]>'
-                - execute as_player 'sentinel spawnpoint true --id <[npc_id]>'
+                - execute as_player 'sentinel autoswitch true --id <[npc_id]>'
+                - execute as_player 'sentinel spawnpoint --id <[npc_id]>'
                 - adjust <player> selected_npc:<npc[<[npc_id]>]>
                 - execute as_player 'npc skin --url https://www.drustcraft.com.au/skins/guard.png'
                 
