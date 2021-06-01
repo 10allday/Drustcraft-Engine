@@ -207,7 +207,7 @@ drustcraftt_whitelist:
 
   generate_new_code:
     - if <server.flag[drustcraft_whitelist_linking_codes]||false> == true:
-      - define characters:<list[0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|G|H|J|K|M|N|P|Q|R|S|T|U|W|X|Z]>
+      - define characters:<list[3|4|6|7|8|9|A|B|C|D|E|F|G|H|J|K|M|N|P|Q|R|T|W|X|Y]>
       - define found:true
       
       - while <[found]>:
