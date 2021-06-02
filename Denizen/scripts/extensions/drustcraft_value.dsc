@@ -51,6 +51,59 @@ drustcraftp_value:
     - define material:<[1]||<empty>>
     - determine <yaml[drustcraft_value].read[materials.<[material]>.value]||0>
     
+  value:
+    - define lookup_value:<element[17.8]>
+    - define item_value:<[lookup_value]>
+    - define item_value_mod:0
+    - define netherite_blocks:0
+    - define netherite_ingots:0
+    - define emeralds:0
+    - define iron_ingots:0
+    - define min_items:1
+    
+    - define netherite_blocks:<[item_value].div[117].round_down>
+    - define item_value:<[item_value].sub[<[netherite_blocks].mul[117]>]>
+    - define netherite_ingots:<[item_value].div[13].round_down>
+    - define item_value:<[value].sub[<[netherite_ingots].mul[13]>]>
+    - define item_value_mod:<[item_value].mod[1].round_to[2]>
+    - define emeralds:<[item_value].round_down>
+    
+    - if <[lookup_value]> < 1:
+      - define mod_list:<list[0|0.03|0.06|0.13|0.25|0.38|0.5|0.63|0.75|0.88]>
+      - define min_items_list:<list[1|8|4|2|1|2|1|2|1|2]>
+      - define iron_ingots_list:<list[0|1|1|1|1|3|1|5|3|7]>
+      - foreach <[mod_list]>:
+        - if <[item_value_mod]> <= <[value]>:
+          - define item_value_mod:<[value]>
+          - define min_items:<[min_items_list].get[<[loop_index]>]>
+          - define iron_ingots:<[iron_ingots_list].get[<[loop_index]>]>
+          - foreach stop
+    - else if <[lookup_value]> < 2:
+      - define emeralds:0
+      - define mod_list:<list[0|0.13|0.25|0.38|0.5|0.63|0.75|0.88]>
+      - define min_items_list:<list[1|2|1|2|1|2|1|2]>
+      - define iron_ingots_list:<list[0|9|5|11|6|13|7|5]>
+      - foreach <[mod_list]>:
+        - if <[item_value_mod]> <= <[value]>:
+          - define item_value_mod:<[value]>
+          - define min_items:<[min_items_list].get[<[loop_index]>]>
+          - define iron_ingots:<[iron_ingots_list].get[<[loop_index]>]>
+          - foreach stop
+    - else:
+      - define iron_ingots:<[value_mod].round_to_precision[0.25].div[0.25].round_down>
+
+    - if <[netherite_blocks]> <= 7 && <[netherite_blocks].mul[9].add[<[netherite_ingots]>]> <= 64:
+      - define netherite_ingots:<[netherite_ingot].add[<[netherite_blocks].mul[9]>]>
+      - define netherite_blocks:0
+    - if <[netherite_ingots]> <= 4 && <[netherite_ingots].mul[13].add[<[emeralds]>]> <= 64:
+      - define emeralds:<[emeralds].add[<[netherite_ingots].mul[13]>]>
+      - define netherite_ingots:0
+    - if <[iron_ingots]> > 0 && <[iron_ingots].mod[4]> == 0:
+      - define emeralds:<[emeralds].add[<[iron_ingots].div[4].round_down>]>
+      
+    - determine <list[<[min_items]>|<[netherite_blocks]>|<[netherite_ingots]>|<[emeralds]>|<[iron_ingots]>]>
+    
+    
 
 drustcraftc_value:
   type: command
