@@ -52,7 +52,7 @@ drustcraftp_value:
     - determine <yaml[drustcraft_value].read[materials.<[material]>.value]||0>
     
   value:
-    - define lookup_value:<element[17.8]>
+    - define lookup_value:<[1]>
     - define item_value:<[lookup_value]>
     - define item_value_mod:0
     - define netherite_blocks:0
@@ -64,7 +64,7 @@ drustcraftp_value:
     - define netherite_blocks:<[item_value].div[117].round_down>
     - define item_value:<[item_value].sub[<[netherite_blocks].mul[117]>]>
     - define netherite_ingots:<[item_value].div[13].round_down>
-    - define item_value:<[value].sub[<[netherite_ingots].mul[13]>]>
+    - define item_value:<[item_value].sub[<[netherite_ingots].mul[13]>]>
     - define item_value_mod:<[item_value].mod[1].round_to[2]>
     - define emeralds:<[item_value].round_down>
     
@@ -90,10 +90,10 @@ drustcraftp_value:
           - define iron_ingots:<[iron_ingots_list].get[<[loop_index]>]>
           - foreach stop
     - else:
-      - define iron_ingots:<[value_mod].round_to_precision[0.25].div[0.25].round_down>
+      - define iron_ingots:<[item_value_mod].round_to_precision[0.25].div[0.25].round_down>
 
     - if <[netherite_blocks]> <= 7 && <[netherite_blocks].mul[9].add[<[netherite_ingots]>]> <= 64:
-      - define netherite_ingots:<[netherite_ingot].add[<[netherite_blocks].mul[9]>]>
+      - define netherite_ingots:<[netherite_ingots].add[<[netherite_blocks].mul[9]>]>
       - define netherite_blocks:0
     - if <[netherite_ingots]> <= 4 && <[netherite_ingots].mul[13].add[<[emeralds]>]> <= 64:
       - define emeralds:<[emeralds].add[<[netherite_ingots].mul[13]>]>
