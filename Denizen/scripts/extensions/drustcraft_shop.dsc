@@ -8,10 +8,16 @@ drustcraftw_shop:
   events:
     on server start:
       - run drustcraftt_shop.load
+      - wait 4t
+      - run drustcraftt_shop.update_inventories def:true
     
     on script reload:
       - run drustcraftt_shop.load
-      
+      - wait 4t
+      - run drustcraftt_shop.update_inventories def:true
+
+    on system time 03:00:
+      - run drustcraftt_shop.update_inventories def:true
 
 drustcraftt_shop:
   type: task
@@ -57,6 +63,58 @@ drustcraftt_shop:
         
   save:
     - yaml id:drustcraft_shop savefile:/drustcraft_data/shops.yml
+
+  update_inventories:
+    - define force:<[1]||false>
+    
+    - foreach <yaml[drustcraft_shop].list_keys[npc]||<list[]>> as:target_npc_id:
+      - define shop_name:<yaml[drustcraft_shop].read[npc.<[target_npc_id]>]||<empty>>
+      - if <[shop_name]> != <empty>:
+
+        - if <server.npcs.parse[id].contains[<[target_npc_id]>]> && <npc[<[target_npc_id]>].has_flag[drustcraft_shop_items]> == false || <[force]>:
+          - define items:<list[]>
+          
+          - define sell_amount:<util.random.int[3].to[8]>
+          - foreach <yaml[drustcraft_shop].read[shop.<[shop_name]>.items].random[<[sell_amount]>]||<list[]>>:
+            - define change:<util.random.decimal[1.0].to[1.4].round_to[1]>
+            - define item_value:<proc[drustcraftp_value.get].context[<[value]>|<[change]>|false]||<map[]>>
+            - define quantity:9999
+            
+            - if <[item_value].get[value]> < 5:
+              - define quantity:9999
+            - else if <[item_value].get[value]> <= 5:
+              - define quantity:<util.random.int[1].to[40]>
+            - else if <[item_value].get[value]> <= 20:
+              - define quantity:<util.random.int[1].to[20]>
+            - else if <[item_value].get[value]> <= 40:
+              - define quantity:<util.random.int[1].to[10]>
+            - else:
+              - define quantity:<util.random.int[1].to[5]>
+            
+            - define items:|:<map[].with[action].as[sell].with[item].as[<[value]>].with[change].as[<[change]>].with[quantity].as[<[quantity]>]>
+          
+          - define buy_amount:<util.random.int[3].to[8]>
+          - foreach <yaml[drustcraft_shop].read[shop.<[shop_name]>.items].random[<[buy_amount]>]||<list[]>>:
+            - define change:<util.random.decimal[0.8].to[1.1].round_to[1]>
+            - define item_value:<proc[drustcraftp_value.get].context[<[value]>|<[change]>|false]||<map[]>>
+            - define quantity:9999
+            
+            - if <[item_value].get[value]> < 5:
+              - define quantity:9999
+            - else if <[item_value].get[value]> <= 5:
+              - define quantity:<util.random.int[1].to[40]>
+            - else if <[item_value].get[value]> <= 20:
+              - define quantity:<util.random.int[1].to[20]>
+            - else if <[item_value].get[value]> <= 40:
+              - define quantity:<util.random.int[1].to[10]>
+            - else:
+              - define quantity:<util.random.int[1].to[5]>
+              
+            - define items:|:<map[].with[action].as[buy].with[item].as[<[value]>].with[change].as[<[change]>].with[quantity].as[<[quantity]>]>
+          
+          - flag <npc[<[target_npc_id]>]> drustcraft_shop_items:<[items]>
+        
+    
   
 
 drustcraftp_shop:
@@ -192,7 +250,8 @@ drustcraftc_shop:
                       - yaml id:drustcraft_shop set npc.<player.selected_npc.id>:<[shop_name]>
                       - run drustcraftt_npc.interactor def:<[npc_id]>|drustcraftt_shop_interactor
                       
-                      - run drustcraftt_shop.save
+                      - ~run drustcraftt_shop.save
+                      - run drustcraftt_shop.update_inventories
                       - narrate '<&e>The NPC now sells items from the shop <&f><[shop_name]>'
                     - else:
                       - narrate '<&e>The NPC Id was not found on this server'
@@ -296,72 +355,63 @@ drustcraftt_shop_interactor:
     - define target_npc:<[1]>
     - define target_player:<[2]>
     - define action:<[3]>
+    - define target_inventory:<[4]||<empty>>
   
     - choose <[action]||<empty>>:
       - case click:
         - define items:<list[]>
-        - define shop_name:<yaml[drustcraft_shop].read[npc.<[target_npc].id>]||<empty>>
+        - define shop_items:<[target_npc].flag[drustcraft_shop_items]||<list[]>>
         
-        - if <[shop_name]> != <empty>:
-          - foreach <yaml[drustcraft_shop].read[shop.<[shop_name]>.items]||<list[]>>:
-            - define item_value:<proc[drustcraftp_value.get].context[<[value]>].round_to[2]||0>
-            - if <[item_value]> > 0:
+        - foreach <[shop_items]>:
+          - define shop_item:<[value].as_map>
+          
+          - define item_value:<proc[drustcraftp_value.get].context[<[shop_item].get[item]>|<[shop_item].get[change]>|false]||<map[]>>
+          - if <[item_value].size> > 0:
+            - if <[shop_item].get[action]> == sell:  
+              - define input:<list[<item[air]>|<item[air]>]>
+              - define output:<item[<[shop_item].get[item]>[quantity=<[item_value].get[min_qty]>]]>
               
-              # buy item
-              - define emerald_qty:1
-              - define item_qty:1
+              - define item_value_blocks:<[item_value]>
+              - repeat 2:
+                - if <[item_value_blocks].get[netherite_blocks]||0> > 0:
+                  - define input:<[input].set[<item[netherite_block[quantity=<[item_value].get[netherite_blocks]>]]>].at[<[value]>]>
+                  - define item_value_blocks:<[item_value_blocks].exclude[netherite_blocks]>
+                - else if <[item_value_blocks].get[netherite_ingots]||0> > 0:
+                  - define input:<[input].set[<item[netherite_ingot[quantity=<[item_value].get[netherite_ingots]>]]>].at[<[value]>]>
+                  - define item_value_blocks:<[item_value_blocks].exclude[netherite_ingots]>
+                - else if <[item_value_blocks].get[emeralds]||0> > 0:
+                  - define input:<[input].set[<item[emerald[quantity=<[item_value].get[emeralds]>]]>].at[<[value]>]>
+                  - define item_value_blocks:<[item_value_blocks].exclude[emeralds]>
+                - else if <[item_value_blocks].get[gold_ingots]||0> > 0:
+                  - define input:<[input].set[<item[gold_ingot[quantity=<[item_value].get[gold_ingots]>]]>].at[<[value]>]>
+                  - define item_value_blocks:<[item_value_blocks].exclude[gold_ingots]>
+                - else if <[item_value_blocks].get[iron_ingots]||0> > 0:
+                  - define input:<[input].set[<item[iron_ingot[quantity=<[item_value].get[iron_ingots]>]]>].at[<[value]>]>
+                  - define item_value_blocks:<[item_value_blocks].exclude[iron_ingots]>
               
-              - if <[item_value]> < 1:
-                - define item_qty:<element[1].div[<[item_value]>].round>
-              - else:
-                - define emerald_qty:<[item_value]>
-                - while <[emerald_qty].round> != <[emerald_qty]>:
-                  - define emerald_qty:+:<[item_value]>
-                  - define item_qty:++
-                
-              - define cost_item:<item[emerald[quantity=<[emerald_qty]>]]>
-              - define sell_item:<item[<[value]>[quantity=<[item_qty]>]]>
-              
-              - define trade_item:trade[inputs=<[cost_item]>|<item[air]>;result=<[sell_item]>;max_uses=9999]
+              - define trade_item:trade[inputs=<[input].get[1]>|<[input].get[2]>;result=<[output]>;max_uses=<[shop_item].get[quantity]>]
               - define items:|:<[trade_item]>
               
-              # sell item
-              - define emerald_qty:1
-              - define item_qty:1
+            - else if <[shop_item].get[action]> == buy:
+              - define input:<item[<[shop_item].get[item]>[quantity=<[item_value].get[min_qty]>]]>
+              - define output:<empty>
               
-              - define item_value:<[item_value].div[1.2].round_down_to_precision[0.01]>
-              - if <[item_value]> < 1:
-                - define item_qty:<element[1].div[<[item_value]>].round||1>
-              - else:
-                - define emerald_qty:<[item_value]>
-                - while <[emerald_qty].round> != <[emerald_qty]>:
-                  - define emerald_qty:+:<[item_value]>
-                  - define item_qty:++
-                
-              - define cost_item:<item[emerald[quantity=<[emerald_qty]>]]>
-              - define sell_item:<item[<[value]>[quantity=<[item_qty]>]]>
+              - if <[item_value].get[netherite_blocks]||0> > 0:
+                - define output:<item[netherite_block[quantity=<[item_value].get[netherite_blocks]>]]>
+              - else if <[item_value].get[netherite_ingots]||0> > 0:
+                - define output:<item[netherite_ingot[quantity=<[item_value].get[netherite_ingots]>]]>
+              - else if <[item_value].get[emeralds]||0> > 0:
+                - define output:<item[emerald[quantity=<[item_value].get[emeralds]>]]>
+              - else if <[item_value].get[gold_ingots]||0> > 0:
+                - define output:<item[gold_ingot[quantity=<[item_value].get[gold_ingots]>]]>
+              - else if <[item_value].get[iron_ingots]||0> > 0:
+                - define output:<item[iron_ingot[quantity=<[item_value].get[iron_ingots]>]]>
               
-              - define trade_item:trade[inputs=<[sell_item]>|<item[air]>;result=<[cost_item]>;max_uses=9999]
-              - define items:|:<[trade_item]>
+              - if <[output]> != <empty>:
+                - define trade_item:trade[inputs=<[input]>|<item[air]>;result=<[output]>;max_uses=<[shop_item].get[quantity]>]
+                - define items:|:<[trade_item]>
               
-            
-          # - foreach <yaml[drustcraft_shop].list_keys[shops.<[target_npc].id>.items]||<list[]>>:
-          #   - define available:<yaml[drustcraft_shop].read[shops.<[target_npc].id>.items.<[value]>.available]||<empty>>
-          #   - define group:<yaml[drustcraft_shop].read[shops.<[target_npc].id>.items.<[value]>.in_group]||<empty>>
-          #   
-          #   - if <[available]> == <empty> || <[available].split[,].contains[<util.time_now.day_of_week>]||false>:
-          #     - if <[group]> == <empty> || <[target_player].in_group[<[group]>]>:
-          #       - define sell_item:<yaml[drustcraft_shop].read[shops.<[target_npc].id>.items.<[value]>.sell_item]||<empty>>
-          #       - define sell_qty:<yaml[drustcraft_shop].read[shops.<[target_npc].id>.items.<[value]>.sell_qty]||1>
-          #       - define sell_item:<item[<[sell_item]>[quantity=<[sell_qty]>]]>
-          #       
-          #       - define cost_item:<yaml[drustcraft_shop].read[shops.<[target_npc].id>.items.<[value]>.cost_item]||<empty>>
-          #       - define cost_qty:<yaml[drustcraft_shop].read[shops.<[target_npc].id>.items.<[value]>.cost_qty]||1>
-          #       - define cost_item:<item[<[cost_item]>[quantity=<[cost_qty]>]]>
-          #       - define cost_item_b:<item[air]>
-          #     
-          #       - define trade_item:trade[inputs=<[cost_item]>|<[cost_item_b]>;result=<[sell_item]>;max_uses=9999]
-          #       - define items:|:<[trade_item]>
+
         
         - if <[items].size> > 0:
           - opentrades <[items]>
@@ -374,6 +424,27 @@ drustcraftt_shop_interactor:
           - narrate <proc[drustcraftp_chat_format].context[<[target_npc]>|<[greetings].random>]>
         
         - determine false
+        
+      - case close:
+        - foreach <[target_inventory].trades>:
+          - if <[value].uses> > 0:
+            - define action:sell
+            - define item:<[value].result.material.name||<empty>>
+            - define uses:<[value].uses>
+            
+            - if <list[netherrite_block|netherrite_ingot|emerald|gold_ingot|iron_ingot].contains[<[item]>]>:
+              - define action:buy
+              - define item:<[value].inputs.get[1].material.name||<empty>>
+            
+            - if <[item]> != <empty>:
+              - foreach <[target_npc].flag[drustcraft_shop_items]>:
+                - define shop_item:<[value].as_map>
+                
+                - if <[shop_item].get[action]> == <[action]> && <[shop_item].get[item]> == <[item]>:
+                  - define quantity:<[shop_item].get[quantity].sub[<[uses]>]>
+                  
+                  - flag <[target_npc]> drustcraft_shop_items:<[target_npc].flag[drustcraft_shop_items].set[<[shop_item].with[quantity].as[<[quantity]>]>].at[<[loop_index]>]>
+                  - foreach stop
 
 
 drustcraftp_tab_complete_shop_names:
