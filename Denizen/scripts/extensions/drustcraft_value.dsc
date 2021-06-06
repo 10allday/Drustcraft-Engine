@@ -49,11 +49,14 @@ drustcraftp_value:
   
   get:
     - define material:<[1]||<empty>>
-    # - determine <yaml[drustcraft_value].read[materials.<[material]>.value]||0>
-    - determine <proc[drustcraftp_value.convert_value].context[<yaml[drustcraft_value].read[materials.<[material]>.value]||0>]>
+    - define change:<[2]||1>
+    - define single:<[3]||false>
+    - determine <proc[drustcraftp_value.convert_value].context[<yaml[drustcraft_value].read[materials.<[material]>.value]||0>|<[change]>|<[single]>]>
     
   convert_value:
     - define lookup_value:<[1]>
+    - define change:<[2]||1>
+    - define single:<[3]||false>
     - define item_value:<[lookup_value]>
     - define item_value_mod:0
     - define netherite_blocks:0
@@ -61,51 +64,62 @@ drustcraftp_value:
     - define emeralds:0
     - define iron_ingots:0
     - define min_items:1
-    
-    - define netherite_blocks:<[item_value].div[117].round_down>
-    - define item_value:<[item_value].sub[<[netherite_blocks].mul[117]>]>
-    - define netherite_ingots:<[item_value].div[13].round_down>
-    - define item_value:<[item_value].sub[<[netherite_ingots].mul[13]>]>
-    - define item_value_mod:<[item_value].mod[1].round_to[2]>
-    - define emeralds:<[item_value].round_down>
-    
-    - if <[lookup_value]> < 1:
-      - define mod_list:<list[0|0.03|0.06|0.13|0.25|0.38|0.5|0.63|0.75|0.88]>
-      - define min_items_list:<list[1|8|4|2|1|2|1|2|1|2]>
-      - define iron_ingots_list:<list[0|1|1|1|1|3|1|5|3|7]>
-      - foreach <[mod_list]>:
-        - if <[item_value_mod]> <= <[value]>:
-          - define item_value_mod:<[value]>
-          - define min_items:<[min_items_list].get[<[loop_index]>]>
-          - define iron_ingots:<[iron_ingots_list].get[<[loop_index]>]>
-          - foreach stop
-    - else if <[lookup_value]> < 2:
-      - define emeralds:0
-      - define mod_list:<list[0|0.13|0.25|0.38|0.5|0.63|0.75|0.88]>
-      - define min_items_list:<list[1|2|1|2|1|2|1|2]>
-      - define iron_ingots_list:<list[0|9|5|11|6|13|7|5]>
-      - foreach <[mod_list]>:
-        - if <[item_value_mod]> <= <[value]>:
-          - define item_value_mod:<[value]>
-          - define min_items:<[min_items_list].get[<[loop_index]>]>
-          - define iron_ingots:<[iron_ingots_list].get[<[loop_index]>]>
-          - foreach stop
-    - else:
-      - define iron_ingots:<[item_value_mod].round_to_precision[0.25].div[0.25].round_down>
+    - define qty:1
 
-    - if <[netherite_blocks]> <= 7 && <[netherite_blocks].mul[9].add[<[netherite_ingots]>]> <= 64:
-      - define netherite_ingots:<[netherite_ingots].add[<[netherite_blocks].mul[9]>]>
+    - while true: 
+      - define item_value:<[lookup_value].mul[<[qty]>].mul[<[change]>]>
+
       - define netherite_blocks:0
-    - if <[netherite_ingots]> <= 4 && <[netherite_ingots].mul[13].add[<[emeralds]>]> <= 64:
-      - define emeralds:<[emeralds].add[<[netherite_ingots].mul[13]>]>
       - define netherite_ingots:0
-    - if <[iron_ingots]> > 0 && <[iron_ingots].mod[4]> == 0:
-      - define emeralds:<[emeralds].add[<[iron_ingots].div[4].round_down>]>
+      - define emeralds:0
+      - define gold_ingots:0
+      - define iron_ingots:0
+      - define min_items:1
+ 
+      - if <[lookup_value]> < 2:
+        - define mod_list:<list[0|0.03|0.06|0.13|0.25|0.38|0.5|0.63|0.75|0.88|1|1.13|1.25|1.38|1.5|1.63|1.75|1.88|2]>
+        - define min_items_list:<list[1|8|4|2|1|2|1|2|1|2|1|2|1|2|1|2|1|2|1]>
+        - define iron_ingots_list:<list[0|1|1|1|1|3|1|5|3|7|4|9|5|11|6|13|7|15|8]>
+        - foreach <[mod_list]>:
+          - if <[item_value]> <= <[value]>:
+            - define min_items:<[min_items_list].get[<[loop_index]>]>
+            - define iron_ingots:<[iron_ingots_list].get[<[loop_index]>]>
+            - foreach stop
+      - else:
+        - define netherite_blocks:<[item_value].div[117].round_down>
+        - define item_value:<[item_value].sub[<[netherite_blocks].mul[117]>]>
+        - define netherite_ingots:<[item_value].div[13].round_down>
+        - define item_value:<[item_value].sub[<[netherite_ingots].mul[13]>]>
+        - define item_value_mod:<[item_value].mod[1].round_to[2]>
+        - define emeralds:<[item_value].round_down>
+        - define iron_ingots:<[item_value_mod].round_to_precision[0.25].div[0.25].round_down>
+
+      - if <[netherite_blocks]> <= 7 && <[netherite_blocks].mul[9].add[<[netherite_ingots]>]> <= 64:
+        - define netherite_ingots:<[netherite_ingots].add[<[netherite_blocks].mul[9]>]>
+        - define netherite_blocks:0
+      - if <[netherite_ingots]> <= 4 && <[netherite_ingots].mul[13].add[<[emeralds]>]> <= 64:
+        - define emeralds:<[emeralds].add[<[netherite_ingots].mul[13]>]>
+        - define netherite_ingots:0
+      - if <[iron_ingots]> > 0:
+        - if <[iron_ingots].mod[4]> == 0 || <[netherite_blocks].add[<[netherite_ingots]>]> == 0:
+          - define emeralds:<[emeralds].add[<[iron_ingots].div[4].round_down>]>
+          - define iron_ingots:<[iron_ingots].mod[4].round_down>
       
-    - determine <map[].with[min_qty].as[<[min_items]>].with[value].as[<[lookup_value]>].with[netherite_blocks].as[<[netherite_blocks]>].with[netherite_ingots].as[<[netherite_ingots]>].with[emeralds].as[<[emeralds]>].with[iron_ingots].as[<[iron_ingots]>]>
+      - if <[emeralds]> > 0 && <util.random.int[1].to[4]> == 4:
+        - define gold_ingots:<[emeralds]>
+        - define emeralds:0  
+      
+      
+      - if <[single]>:
+        - if <list[<[netherite_blocks]>|<[netherite_ingots]>|<[emeralds]>|<[gold_ingots]>|<[iron_ingots]>].filter[equals[0].not].size> <= 1:
+          - define min_items:<[min_items].mul[<[qty]>]>
+          - while stop
+        - else:
+          - define qty:++
+      - else:
+        - while stop
     
-    #- determine <map[min_qty/<[min_items]>|value/<[lookup_value]>|netherite_blocks/<[netherite_blocks]>|netherite_ingots/<[netherite_ingots]>|emeralds/<[emeralds]>|iron_ingots/<[iron_ingots]>]>
-    
+    - determine <map[].with[min_qty].as[<[min_items]>].with[value].as[<[lookup_value]>].with[netherite_blocks].as[<[netherite_blocks]>].with[netherite_ingots].as[<[netherite_ingots]>].with[emeralds].as[<[emeralds]>].with[gold_ingots].as[<[gold_ingots]>].with[iron_ingots].as[<[iron_ingots]>]>    
     
 
 drustcraftc_value:
