@@ -74,9 +74,16 @@ drustcraftt_shop:
         - if <server.npcs.parse[id].contains[<[target_npc_id]>]> && <npc[<[target_npc_id]>].has_flag[drustcraft_shop_items]> == false || <[force]>:
           - define items:<list[]>
           
-          - define sell_amount:<util.random.int[3].to[8]>
+          - define sell_random_range:<yaml[drustcraft_shop].read[shop.<[shop_name]>.sell_random_range]||3-8>
+          - define sell_random_range_min:<[sell_random_range].before[-]>
+          - define sell_random_range_max:<[sell_random_range].after_last[-]>
+          - define sell_multiplier_range:<yaml[drustcraft_shop].read[shop.<[shop_name]>.sell_multiplier_range]||1.0-1.4>
+          - define sell_multiplier_range_min:<[sell_random_range].before[-]>
+          - define sell_multiplier_range_max:<[sell_random_range].after_last[-]>
+                    
+          - define sell_amount:<util.random.int[<[sell_random_range_min]>].to[<[sell_random_range_max]>]>
           - foreach <yaml[drustcraft_shop].read[shop.<[shop_name]>.items].random[<[sell_amount]>]||<list[]>>:
-            - define change:<util.random.decimal[1.0].to[1.4].round_to[1]>
+            - define change:<util.random.decimal[<[sell_multiplier_range_min]>].to[<[sell_multiplier_range_max]>].round_to[1]>
             - define item_value:<proc[drustcraftp_value.get].context[<[value]>|<[change]>|false]||<map[]>>
             - define quantity:9999
             
@@ -93,9 +100,17 @@ drustcraftt_shop:
             
             - define items:|:<map[].with[action].as[sell].with[item].as[<[value]>].with[change].as[<[change]>].with[quantity].as[<[quantity]>]>
           
-          - define buy_amount:<util.random.int[3].to[8]>
+
+          - define buy_random_range:<yaml[drustcraft_shop].read[shop.<[shop_name]>.buy_random_range]||3-8>
+          - define buy_random_range_min:<[buy_random_range].before[-]>
+          - define buy_random_range_max:<[buy_random_range].after_last[-]>
+          - define buy_multiplier_range:<yaml[drustcraft_shop].read[shop.<[shop_name]>.buy_multiplier_range]||0.8-1.1>
+          - define buy_multiplier_range_min:<[buy_random_range].before[-]>
+          - define buy_multiplier_range_max:<[buy_random_range].after_last[-]>
+                    
+          - define buy_amount:<util.random.int[<[buy_random_range_min]>].to[<[buy_random_range_max]>]>
           - foreach <yaml[drustcraft_shop].read[shop.<[shop_name]>.items].random[<[buy_amount]>]||<list[]>>:
-            - define change:<util.random.decimal[0.8].to[1.1].round_to[1]>
+            - define change:<util.random.decimal[<[buy_multiplier_range_min]>].to[<[buy_multiplier_range_max]>].round_to[1]>
             - define item_value:<proc[drustcraftp_value.get].context[<[value]>|<[change]>|false]||<map[]>>
             - define quantity:9999
             
@@ -389,8 +404,9 @@ drustcraftt_shop_interactor:
                   - define input:<[input].set[<item[iron_ingot[quantity=<[item_value].get[iron_ingots]>]]>].at[<[value]>]>
                   - define item_value_blocks:<[item_value_blocks].exclude[iron_ingots]>
               
-              - define trade_item:trade[inputs=<[input].get[1]>|<[input].get[2]>;result=<[output]>;max_uses=<[shop_item].get[quantity]>]
-              - define items:|:<[trade_item]>
+              - if <[input].get[1]> != <[output]> && <[input].get[1]> != <item[air]> && <[input].get[2]> != <[input].get[1]>:
+                - define trade_item:trade[inputs=<[input].get[1]>|<[input].get[2]>;result=<[output]>;max_uses=<[shop_item].get[quantity]>]
+                - define items:|:<[trade_item]>
               
             - else if <[shop_item].get[action]> == buy:
               - define input:<item[<[shop_item].get[item]>[quantity=<[item_value].get[min_qty]>]]>
@@ -408,8 +424,9 @@ drustcraftt_shop_interactor:
                 - define output:<item[iron_ingot[quantity=<[item_value].get[iron_ingots]>]]>
               
               - if <[output]> != <empty>:
-                - define trade_item:trade[inputs=<[input]>|<item[air]>;result=<[output]>;max_uses=<[shop_item].get[quantity]>]
-                - define items:|:<[trade_item]>
+                - if <[input]> != <[output]>:
+                  - define trade_item:trade[inputs=<[input]>|<item[air]>;result=<[output]>;max_uses=<[shop_item].get[quantity]>]
+                  - define items:|:<[trade_item]>
               
 
         
