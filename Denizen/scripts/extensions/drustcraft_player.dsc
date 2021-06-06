@@ -62,7 +62,9 @@ drustcraftw_player:
     on entity death:
       - if <context.entity.is_player||false> || <context.entity.is_npc||false>:
         - if <context.damager.is_player||false>:
-          - drop <item[player_head[skull_skin=<context.entity.skull_skin>|<context.entity.name>]]> <context.entity.location.random_offset[4,0,4]> quantity:1
+          - foreach <context.entity.location.regions||<list[]>>:
+            - if <proc[drustcraftp_region.is_type].context[<[value].world.name>|<[value].id>]||<empty>> == battleground:
+              - drop <item[player_head[skull_skin=<context.entity.skull_skin>|<context.entity.name>]]> <context.entity.location.random_offset[3,0,3]> quantity:1
 
 
 drustcraftt_player:
