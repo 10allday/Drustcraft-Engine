@@ -102,7 +102,9 @@ drustcraftp_value:
     - if <[iron_ingots]> > 0 && <[iron_ingots].mod[4]> == 0:
       - define emeralds:<[emeralds].add[<[iron_ingots].div[4].round_down>]>
       
-    - determine <map[min_qty/<[min_items]>|value/<[lookup_value]>|netherite_blocks/<[netherite_blocks]>|netherite_ingots/<[netherite_ingots]>|emeralds/<[emeralds]>|iron_ingots/<[iron_ingots]>]>
+    - determine <map[].with[min_qty].as[<[min_items]>].with[value].as[<[lookup_value]>].with[netherite_blocks].as[<[netherite_blocks]>].with[netherite_ingots].as[<[netherite_ingots]>].with[emeralds].as[<[emeralds]>].with[iron_ingots].as[<[iron_ingots]>]>
+    
+    #- determine <map[min_qty/<[min_items]>|value/<[lookup_value]>|netherite_blocks/<[netherite_blocks]>|netherite_ingots/<[netherite_ingots]>|emeralds/<[emeralds]>|iron_ingots/<[iron_ingots]>]>
     
     
 
