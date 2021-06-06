@@ -105,7 +105,7 @@ drustcraftp_value:
           - define emeralds:<[emeralds].add[<[iron_ingots].div[4].round_down>]>
           - define iron_ingots:<[iron_ingots].mod[4].round_down>
       
-      - if <[emeralds]> > 0 && <util.random.int[1].to[4]> == 4:
+      - if <[emeralds]> > 0 && <[emeralds].mod[2]> == 0:
         - define gold_ingots:<[emeralds]>
         - define emeralds:0  
       
