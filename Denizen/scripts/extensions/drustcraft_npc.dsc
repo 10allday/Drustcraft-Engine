@@ -27,6 +27,7 @@ drustcraftw_npc:
     after player joins:
       # Spawn NPCs that are within 25 blocks from the location
       - run drustcraftt_npc.spawn_close def:<player.location>
+      - flag <player> npc_engaged:!
 
 
     #TODO this interferes with sentinel respawntime on death
@@ -63,6 +64,21 @@ drustcraftw_npc:
     on entity death:
       - if <context.damager.object_type||<empty>> != PLAYER:
         - determine NO_XP
+    
+    on player closes inventory priority:100:
+      - define prev_npc:<player.flag[npc_engaged]||<empty>>
+      
+      - if <[prev_npc]> != <empty>:
+        - define gamemode:_<player.gamemode>
+        - if <player.gamemode> == SURVIVAL:
+          - define gamemode:<empty>
+
+        - define task_name:<proc[drustcraftp_npc.interactor].context[<player.flag[npc_engaged]>]>
+        - if <[task_name]> != <empty>:
+          - ~run <[task_name]> def:<npc[<player.flag[npc_engaged]>]>|<player>|close<[gamemode]>|<context.inventory>
+        
+        - flag <player> npc_engaged:!
+        
 
 
 drustcraftt_npc:
@@ -181,7 +197,7 @@ drustcrafti_npc:
           - if <[prev_npc]> != <empty> && <[prev_npc]> != <npc.id>:
             - define task_name:<proc[drustcraftp_npc.interactor].context[<player.flag[npc_engaged]>]>
             - if <[task_name]> != <empty>:
-              - ~run <[task_name]> def:<player.flag[npc_engaged]>|<player>|close<[gamemode]>
+              - ~run <[task_name]> def:<npc[<player.flag[npc_engaged]>]>|<player>|close<[gamemode]>
               
           - flag player npc_engaged:<npc.id>
           - define task_name:<proc[drustcraftp_npc.interactor].context[<player.flag[npc_engaged]>]>
