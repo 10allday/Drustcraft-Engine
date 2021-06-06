@@ -49,9 +49,10 @@ drustcraftp_value:
   
   get:
     - define material:<[1]||<empty>>
-    - determine <yaml[drustcraft_value].read[materials.<[material]>.value]||0>
+    # - determine <yaml[drustcraft_value].read[materials.<[material]>.value]||0>
+    - determine <proc[drustcraftp_value.convert_value].context[<yaml[drustcraft_value].read[materials.<[material]>.value]||0>]>
     
-  value:
+  convert_value:
     - define lookup_value:<[1]>
     - define item_value:<[lookup_value]>
     - define item_value_mod:0
@@ -101,7 +102,7 @@ drustcraftp_value:
     - if <[iron_ingots]> > 0 && <[iron_ingots].mod[4]> == 0:
       - define emeralds:<[emeralds].add[<[iron_ingots].div[4].round_down>]>
       
-    - determine <list[<[min_items]>|<[netherite_blocks]>|<[netherite_ingots]>|<[emeralds]>|<[iron_ingots]>]>
+    - determine <map[min_qty/<[min_items]>|value/<[lookup_value]>|netherite_blocks/<[netherite_blocks]>|netherite_ingots/<[netherite_ingots]>|emeralds/<[emeralds]>|iron_ingots/<[iron_ingots]>]>
     
     
 
@@ -122,8 +123,14 @@ drustcraftc_value:
       - case get:
         - define material:<context.args.get[2]||<empty>>
         - if <server.material_types.parse[name].contains[<[material]>]>:
-          - define value:<yaml[drustcraft_value].read[materials.<[material]>.value]||0>
-          - narrate '<&e>The material <&f><[material]> <&e>has a value of <&f><[value]> <&e>emeralds'
+          - define value:<proc[drustcraftp_value.get].context[<[material]>]>
+          
+          - narrate '<&e>The material <&f><[material]> <&e>has a value of <&f><[value].get[value]> <&e>Emeralds'
+          - narrate '<&e>Min Quantity: <&f><[value].get[min_qty]>'
+          - narrate '<&e>Netherite Blocks: <&f><[value].get[netherite_blocks]>'
+          - narrate '<&e>Netherite Ingots: <&f><[value].get[netherite_ingots]>'
+          - narrate '<&e>Emeralds: <&f><[value].get[emeralds]>'
+          - narrate '<&e>Iron Ingots: <&f><[value].get[iron_ingots]>'
         - else:
           - narrate '<&e>The material <&f><[material]> <&e>was not found on this server'
       
