@@ -468,7 +468,7 @@ drustcraftt_region:
         
         - if <[title]> != <empty>:
           - define subtitle:<element[]>
-          - define type:<proc[drustcraftp_region.is_type].context[<[world_name]>|<[region_name]>]>
+          - define type:<proc[drustcraftp_region.type].context[<[world_name]>|<[region_name]>]>
           - define prefix:<&f>
 
           - choose <[type]>:
@@ -693,7 +693,7 @@ drustcraftp_region:
       - determine <yaml[drustcraft_regions].read[regions.<[target_world]>.<[target_region]>.title]||<empty>>
     - determine <empty>
 
-  is_type:
+  type:
     - define target_world:<[1]||<empty>>
     - define target_region:<[2]||<empty>>
     
