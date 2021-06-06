@@ -58,6 +58,11 @@ drustcraftw_player:
             
             - if <player.has_flag[drustcraft_player_cakeday_<[time_now].year>_received]> == false:
               - flag player drustcraft_player_cakeday_<[time_now].year>_received:true
+    
+    on entity death:
+      - if <context.entity.is_player||false> || <context.entity.is_npc||false>:
+        - if <context.damager.is_player||false>:
+          - drop <item[player_head[skull_skin=<context.entity.skull_skin>|<context.entity.name>]]> <context.entity.location.random_offset[4,0,4]> quantity:1
 
 
 drustcraftt_player:
