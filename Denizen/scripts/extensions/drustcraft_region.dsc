@@ -345,7 +345,7 @@ drustcraftt_region:
         - execute as_server 'dmarker deleteset id:point'
         - execute as_server 'dmarker addset id:point Points hide:false prio:0'
 
-    - foreach <server.list_worlds> as:target_world:
+    - foreach <server.worlds> as:target_world:
       - define wg_yml_id:<empty>
       - define path:../WorldGuard/worlds/<[target_world].name>/regions.yml
       - if <server.has_file[<[path]>]>:
@@ -440,7 +440,7 @@ drustcraftt_region:
           - yaml unload id:<[wg_yml_id]>
 
     - if <[only_permissions]> == false:
-      - foreach <server.list_notables[cuboids].parse[note_name].filter[starts_with[drustcraft_region_]].exclude[<[drustcraft_region_list]>]||<list[]>>:
+      - foreach <server.notables[cuboids].parse[note_name].filter[starts_with[drustcraft_region_]].exclude[<[drustcraft_region_list]>]||<list[]>>:
         - note remove as:<[value]>
         - yaml id:drustcraft_regions set regions.<[value].after_last[_]>.<[value].before_last[_]>:!
     
