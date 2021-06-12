@@ -33,13 +33,13 @@ drustcraftw_npc:
     #TODO this interferes with sentinel respawntime on death
     on system time secondly every:5:
       # Spawn NPCs that are within 25 blocks from a player
-      - foreach <server.npcs.filter[location.find.entities[Player].within[50].size.is[OR_MORE].than[1]].filter[is_spawned.not]>:
+      - foreach <server.npcs.filter[location.find_entities[Player].within[50].size.is[OR_MORE].than[1]].filter[is_spawned.not]>:
         - spawn <[value]> <[value].location>
 
 
     on system time minutely:
       # Despawn NPCs that are spawned and further away then 25 blocks from a player - save server resources
-      - foreach <server.npcs.filter[location.find.entities[Player].within[50].size.is[==].to[0]].filter[is_spawned].filter[not[is_navigating]]>:
+      - foreach <server.npcs.filter[location.find_entities[Player].within[50].size.is[==].to[0]].filter[is_spawned].filter[not[is_navigating]]>:
         - despawn <[value]>
 
 

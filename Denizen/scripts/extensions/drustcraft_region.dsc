@@ -576,7 +576,7 @@ drustcraftt_region:
 
             - while <[y]> < <[max_y]>:
               - define loc:<location[<[x]>,<[y]>,<[z]>,<[region_cuboid].world.name>]>
-              - if <[loc].material.name> == air && <[loc].find.entities.within[1].size> == 0:
+              - if <[loc].material.name> == air && <[loc].find_entities.within[1].size> == 0:
                 - modifyblock <location[<[x]>,<[y]>,<[z]>,<[region_cuboid].world.name>]> <[material]>
                 - define count:--
                 - while stop
