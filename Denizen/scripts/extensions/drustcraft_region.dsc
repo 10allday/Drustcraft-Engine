@@ -358,20 +358,24 @@ drustcraftt_region:
           - define target_poly:<list[]>
           
           # check if this is a polygon instead of a cuboid
-          - if <[target_cuboid]> == <empty> && <yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.type]||<empty>> == poly2d:
-            - define target_poly:<yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.points]||<list[]>>
-            
-            - if <[target_poly].size> >= 3:
-              - define min_y:<yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.min-y]||0>
-              - define max_y:<yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.max-y]||120>
-              - define poly:<list[<location[<[target_poly].get[1].as_map.get[x]>,<[min_y]>,<[target_poly].get[1].as_map.get[z]>]>,<[target_world].name>].to_polygon.include_y[<[max_y]>]>
-
-              - foreach <yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.points].remove[1]||<list[]>>:
-                - define loc:<location[<[value].as_map.get[x]>,<[min_y]>,<[value].as_map.get[z]>,<[target_world].name>]>
-                - define poly:<[poly].with_corner[<[loc]>].include_y[<[min_y]>]>
-                
-              - define target_cuboid:<[poly].bounding_box>
-              - define target_notable:<[poly]>
+          - if <[target_cuboid].object_type> == polygon:
+            - define target_cuboid:<[target_cuboid].bounding_box>
+          
+          # check if this is a polygon instead of a cuboid (Old code)
+#           - if <[target_cuboid]> == <empty> && <yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.type]||<empty>> == poly2d:
+#             - define target_poly:<yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.points]||<list[]>>
+#             
+#             - if <[target_poly].size> >= 3:
+#               - define min_y:<yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.min-y]||0>
+#               - define max_y:<yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.max-y]||120>
+#               - define poly:<list[<location[<[target_poly].get[1].as_map.get[x]>,<[min_y]>,<[target_poly].get[1].as_map.get[z]>]>,<[target_world].name>].to_polygon.include_y[<[max_y]>]>
+# 
+#               - foreach <yaml[<[wg_yml_id]>].read[regions.<[target_region].id>.points].remove[1]||<list[]>>:
+#                 - define loc:<location[<[value].as_map.get[x]>,<[min_y]>,<[value].as_map.get[z]>,<[target_world].name>]>
+#                 - define poly:<[poly].with_corner[<[loc]>].include_y[<[min_y]>]>
+#                 
+#               - define target_cuboid:<[poly].bounding_box>
+#               - define target_notable:<[poly]>
                 # - note remove as:<[target_region].id>_polygon
                 # - note <[poly]> as:<[target_region].id>_polygon
           
