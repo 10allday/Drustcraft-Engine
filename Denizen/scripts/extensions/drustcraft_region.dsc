@@ -353,7 +353,7 @@ drustcraftt_region:
         - yaml load:<[path]> id:<[wg_yml_id]>
 
         - foreach <[target_world].list_regions||<list[]>> as:target_region:
-          - define target_cuboid:<[target_region].cuboid||<empty>>
+          - define target_cuboid:<[target_region].area||<empty>>
           - define target_notable:<[target_cuboid]>
           - define target_poly:<list[]>
           
