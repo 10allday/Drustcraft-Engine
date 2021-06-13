@@ -47,6 +47,7 @@ drustcraftw_web_connector:
             - choose <[request_map].get[cmd]>:
               - case query:
                 - define result:<[result].with[players].as[<server.online_players.size>]>
+                - define result:<[result].with[max_players].as[<server.max_players>]>
                 - define result:<[result].with[tps].as[<server.recent_tps.get[1].round>]>
                 - define result:<[result].with[state].as[ok]>
               - case whitelist_sync:
