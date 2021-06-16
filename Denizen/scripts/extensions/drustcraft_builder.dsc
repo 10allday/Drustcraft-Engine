@@ -69,8 +69,9 @@ drustcraftw_builder:
 
     on player opens inventory:
       - if <player.gamemode> != SURVIVAL:
-        - narrate '<&e>You cannot open inventories in creative mode'
-        - determine cancelled
+        - if <player.groups.contains[developer]> == false:
+          - narrate '<&e>You cannot open inventories in creative mode'
+          - determine cancelled
 
     on system time minutely:
       - foreach <server.online_players.filter[location.find.npcs.within[50].size.is_more_than[20]].filter[gamemode.equals[CREATIVE]]>:
