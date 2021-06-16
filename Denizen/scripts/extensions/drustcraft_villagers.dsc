@@ -60,7 +60,7 @@ drustcraftc_villagers:
   permission message: <&c>I'm sorry, you do not have permission to perform this command
   tab complete:
     - if <server.scripts.parse[name].contains[drustcraftw_tab_complete]>:
-      - define command:warn
+      - define command:village
       - determine <proc[drustcraftp_tab_complete].context[<list[<[command]>].include_single[<context.raw_args.escaped>]>]>
   script:
     - choose <context.args.get[1]||<empty>>:
