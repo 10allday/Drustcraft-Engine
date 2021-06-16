@@ -116,7 +116,7 @@ drustcraftt_event:
             - narrate '<&8><&l>[<&b>+<&8><&l>] <&b>The <[title]> event ends in 1 hour' targets:<server.online_players>
 
     - define time_now:<util.time_now>
-    - foreach <yaml[drustcraft_event].list_keys[events]> as:event_id:
+    - foreach <yaml[drustcraft_event].list_keys[events]||<list[]>> as:event_id:
       - foreach <yaml[drustcraft_event].read[events.<[event_id]>.schedule.dates]||<list[]>> as:date_time:
         - define scheduled:<time[<[date_time]>]||<empty>>
         - if <[scheduled]> != <empty> && <[time_now].year> == <[scheduled].year> && <[time_now].month> == <[scheduled].month> && <[time_now].day> == <[scheduled].day> && <[time_now].hour> == <[scheduled].hour> && <[time_now].minute> == <[scheduled].minute>:
