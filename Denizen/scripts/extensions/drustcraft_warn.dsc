@@ -126,7 +126,7 @@ drustcraftp_warn:
     
     - define 'ban_type:Temporarily Banned'
     - define 'ban_track:<&nl><&nl><&c>Reason <&8>» <&7><[1].to_titlecase>'
-    - define ban_until:<[2]>
+    - define ban_until:<[2]||<empty>>
     - define duration:<element[]>
     
     - if <[ban_until]||<empty>> != <empty>:
