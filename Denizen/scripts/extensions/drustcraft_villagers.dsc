@@ -43,7 +43,7 @@ drustcraftt_villagers:
       - define area:<[target_location].sub[50,0,50].to_cuboid[<[target_location].add[50,0,50]>]>
       - ~chunkload <[area].chunks> duration:5m
         
-      - if <[target_location].round.find_entities[villager].within[100].size> < 2:
+      - if <[target_location].round.find_entities[villager].within[100].size||99> < 2:
         - if <util.random.int[1].to[3]> == 1:
           - define amount:<util.random.int[2].to[5]>
           - repeat <[amount]>:
