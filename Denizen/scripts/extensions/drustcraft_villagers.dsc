@@ -9,11 +9,13 @@ drustcraftw_villagers:
     on server start:
       - wait 2t
       - run drustcraftt_villagers.load
-      - run drustcraftt_villagers.spawner delay:5m
     
     on script reload:
       - wait 2t
       - run drustcraftt_villagers.load
+      
+    on system time 02:00:
+      - run drustcraftt_villagers.spawner
       
     
 
