@@ -37,29 +37,30 @@ drustcraftw_plot:
               - inventory set slot:<[key]> o:air d:<context.inventory>
               
 
-    on player closes inventory:
+    # on player closes inventory:
       # todo remove NPC trading_with flag
       
-      - if <context.inventory.inventory_type> == MERCHANT:
-        - if <player.has_flag[drustcraft_trading_with]>:
-          - define target_npc:<player.flag[drustcraft_trading_with]>
-          - flag <player> drustcraft_trading_with:!
-          - flag <[target_npc]> drustcraft_trading_with:!
-
-        - foreach <context.inventory.map_slots>:
-          - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
-            - define plot_name:<[value].lore.space_separated.after[id:]||<empty>>
-            - if <[plot_name]> != <empty>:
-              - define owner_uuid:<proc[drustcraftp_plot.owner].context[<[plot_name]>]>
-              - if <[owner_uuid]> != <empty> && <[owner_uuid]> != <player.uuid>:
-                - narrate '<&e>That plot has already been purchased by <&f><player[<[owner_uuid]>].name>'
-                - inventory set slot:<[key]> o:air d:<context.inventory>
-                - give emerald quantity:10 to:<player.inventory>
-                # todo refund purchase
-              - else:
-                - run drustcraftt_plot.owner def:<[plot_name]>|<player.uuid>
-      
-      - run drustcraftt_plot.save
+#       - if <context.inventory.inventory_type> == MERCHANT:
+#         - if <player.has_flag[drustcraft_trading_with]>:
+#           - define target_npc:<player.flag[drustcraft_trading_with]>
+#           - flag <player> drustcraft_trading_with:!
+#           - flag <[target_npc]> drustcraft_trading_with:!
+# 
+#         - foreach <context.inventory.map_slots>:
+#           - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
+#             - define plot_name:<[value].lore.space_separated.after[id:]||<empty>>
+#             - if <[plot_name]> != <empty>:
+#               - define owner_uuid:<proc[drustcraftp_plot.owner].context[<[plot_name]>]>
+#               - if <[owner_uuid]> != <empty> && <[owner_uuid]> != <player.uuid>:
+#                 - narrate '<&e>That plot has already been purchased by <&f><player[<[owner_uuid]>].name>'
+#                 - inventory set slot:<[key]> o:air d:<context.inventory>
+#                 - give emerald quantity:20 to:<player.inventory>
+#                 # todo refund purchase
+#               - else:
+#                 - narrate HERE targets:<server.online_players>
+#                 - run drustcraftt_plot.owner def:<[plot_name]>|<player.uuid>
+#       
+#       - run drustcraftt_plot.save
     
     on system time hourly:
       - run drustcraftt_plot.update
@@ -203,6 +204,9 @@ drustcraftt_plot:
 
         - if <[plot_region]> != <empty> && <[plot_world]> != <empty>:
           - execute as_server 'rg removemember <[plot_region]> -w <[plot_world]> -a'
+          
+          - if <[plot_owner]> != <empty>:
+            - execute as_server 'rg addmember <[plot_region]> -w <[plot_world]> <player[<[plot_owner]>].name>'
             
           - define info:<proc[drustcraftp_plot.info].context[<[plot_name]>]>
           - run drustcraftt_plot.sign_update def:<[plot_name]>
@@ -266,7 +270,7 @@ drustcraftp_plot:
     
   address:
     - define plot_name:<[1]||<empty>>
-    - determine <yaml[drustcraft_plot].read[plots.<[plot_name]>.address]||<empty>>
+    - determine <yaml[drustcraft_plot].read[plots.<[plot_name]>.address]||<[plot_name]>>
 
 
 drustcraftc_plot:
@@ -502,12 +506,13 @@ drustcraftt_plot_interactor:
     - define target_npc:<[1]>
     - define target_player:<[2]>
     - define action:<[3]>
+    - define target_inventory:<[4]||<empty>>
   
     - choose <[action]||<empty>>:
       - case click:
         - define items:<list[]>
 
-        - if <[target_npc].has_flag[drustcraft_trading_with]> && <server.online_players.contains[<[target_npc].flag[drustcraft_trading_with]>]>:
+        - if <[target_npc].has_flag[drustcraft_trading_with]> && <server.online_players.contains[<[target_npc].flag[drustcraft_trading_with]>]> && <[target_player]> != <[target_npc].flag[drustcraft_trading_with]>:
           - define player_name:<[target_npc].flag[drustcraft_trading_with].name>
           - define greetings:<list[]>
           - define 'greetings:|:Hey, Im talking to <[player_name]>'
@@ -535,6 +540,14 @@ drustcraftt_plot_interactor:
             - define sell_item:<item[<[plotdeed]>]>
             - define trade_item:trade[inputs=<[cost_item]>|<item[air]>;result=<[sell_item]>;max_uses=1]
             - define items:|:<[trade_item]>
+            
+        - foreach <[target_player].inventory.map_slots>:
+          - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
+            - define plot_name:<[value].lore.space_separated.after[id:]||<empty>>
+            - if <[plot_name]> != <empty>:
+              - define sell_item:<item[emerald[quantity=<proc[drustcraftp_plot.cost].context[<[plot_name]>]>]]>
+              - define trade_item:trade[inputs=<[value]>|<item[air]>;result=<[sell_item]>;max_uses=1]
+              - define items:|:<[trade_item]>
               
         - if <[items].size> > 0:
           - flag <[target_npc]> drustcraft_trading_with:<[target_player]>
@@ -550,6 +563,29 @@ drustcraftt_plot_interactor:
         
         - determine false
 
+      - case close:
+        - foreach <[target_inventory].trades>:
+          - if <[value].uses> > 0:
+            - define item:<[value].result||<empty>>
+            - if <[item].is_book> && <[item].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
+              - define plot_name:<[item].lore.space_separated.after[id:]||<empty>>            
+              - define owner_uuid:<proc[drustcraftp_plot.owner].context[<[plot_name]>]>
+              - define plot_address:<proc[drustcraftp_plot.address].context[<[plot_name]>]>
+              - if <[owner_uuid]> != <empty> && <[owner_uuid]> != <player.uuid>:
+                - narrate '<&e>The plot <[plot_address]> has already been purchased by <&f><player[<[owner_uuid]>].name>' targets:<[target_player]>
+                - take <[item]> from:<[target_player].inventory>
+                - give emerald quantity:<proc[drustcraftp_plot.cost].context[<[plot_name]>]> to:<[target_player].inventory>
+              - else:
+                - narrate 'Bought <[plot_address]>' targets:<[target_player]>
+                - run drustcraftt_plot.owner def:<[plot_name]>|<[target_player].uuid>
+  
+            - foreach <[value].inputs||<empty>> as:item:
+              - if <[item].is_book> && <[item].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
+                - define plot_name:<[item].lore.space_separated.after[id:]||<empty>>
+                - define plot_address:<proc[drustcraftp_plot.address].context[<[plot_name]>]>
+                - narrate 'Sold <[plot_address]>' targets:<[target_player]>
+                - run drustcraftt_plot.owner def:<[plot_name]>
+  
 
 drustcraftp_tab_complete_plot_names:
   type: procedure
