@@ -366,7 +366,7 @@ drustcraftc_groups:
   name: groups
   description: Displays the groups you are within
   usage: /groups
-  permission: drustcraftt_groups
+  permission: drustcraft.groups
   permission message: <&c>I'm sorry, you do not have permission to perform this command
   script:
     - narrate '<&e>You are in the groups:'
