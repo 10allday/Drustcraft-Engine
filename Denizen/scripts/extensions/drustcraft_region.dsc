@@ -520,8 +520,8 @@ drustcraftt_region:
       - narrate NA
       
     update_all:
-      - foreach <yaml[drustcraft_regions].list_keys[regions]> as:target_world:
-        - foreach <yaml[drustcraft_regions].list_keys[regions.<[target_world]>]> as:target_region:
+      - foreach <yaml[drustcraft_regions].list_keys[regions]||<list[]>> as:target_world:
+        - foreach <yaml[drustcraft_regions].list_keys[regions.<[target_world]>]<list[]>> as:target_region:
           - foreach <yaml[drustcraft_regions].read[regions.<[target_world]>.<[target_region]>.spawner]||<map[]>>:
             - define quantity:10
             - define rate:3
@@ -558,7 +558,7 @@ drustcraftt_region:
                   - define attempts:--
                   
   update_spawns:
-    - foreach <yaml[drustcraft_regions].list_keys[regions]>:
+    - foreach <yaml[drustcraft_regions].list_keys[regions]||<list[]>>:
       - define region_id:<[value]>
       - foreach <yaml[drustcraft_regions].list_keys[regions.<[region_id]>.spawn.materials]||<list[]>>:
         - define material:<[value]>
