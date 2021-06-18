@@ -7,10 +7,12 @@ drustcraftw_villagers:
   debug: false
   events:
     on server start:
+      - wait 2t
       - run drustcraftt_villagers.load
-      - run drustcraftt_villagers.spawner
+      - run drustcraftt_villagers.spawner delay:5m
     
     on script reload:
+      - wait 2t
       - run drustcraftt_villagers.load
       
     
@@ -41,7 +43,7 @@ drustcraftt_villagers:
   spawner:
     - foreach <yaml[drustcraft_villagers].read[villages]||<list[]>> as:target_location:
       - define area:<[target_location].sub[50,0,50].to_cuboid[<[target_location].add[50,0,50]>]>
-      - ~chunkload <[area].chunks> duration:5m
+      - chunkload <[area].chunks> duration:5m
         
       - if <[target_location].round.find_entities[villager].within[100].size||99> < 2:
         - if <util.random.int[1].to[3]> == 1:
