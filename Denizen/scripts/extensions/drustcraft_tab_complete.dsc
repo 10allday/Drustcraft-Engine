@@ -61,8 +61,11 @@ drustcraftp_tab_complete:
       - define argsSize:+:1
     - repeat <[argsSize].sub[1]> as:index:
       - define value:<[args].get[<[index]>]>
-      - define keys:!|:<yaml[drustcraft_tab_complete].list_keys[<[path]>]||<list[]>>
-      - define permLockedKeys:!|:<[keys].filter[starts_with[?]]> 
+      # - define keys:!|:<yaml[drustcraft_tab_complete].list_keys[<[path]>]||<list[]>>
+      # - define permLockedKeys:!|:<[keys].filter[starts_with[?]]> 
+      - define keys:<yaml[drustcraft_tab_complete].list_keys[<[path]>]||<list[]>>
+      - define permLockedKeys:<[keys].filter[starts_with[?]]> 
+      
       - define keys:<-:<[permLockedKeys]>
       - if <[value]> == <empty>:
         - foreach next
