@@ -111,17 +111,18 @@ drustcraftt_regenerate:
         - define material:<[row].get[8]>
         - define date:<[row].get[9]>
 
-        # if the action is NOT break, or if at least 1 block around the location is not air
-        - if <[action]> != "break" || <location[<[x]>,<[y]>,<[z]>,<[world]>].find_blocks.within[1].parse[material.name].deduplicate.exclude[air].size||0> >= 1:
-          - define delay:<[restore_time]>
-          - if <[action]> != "break":
-            - define delay:<[decay_time]>
-          
-          # find rows where x~10 and y~10 and z~10 and server=same and world=same and action=place or action=modify and date > $delay
-          - ~sql id:drustcraft_database 'query:SELECT id FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate WHERE date><[delay]> AND server="<bungee.server||<empty>>" AND world="<[world]>" AND (x<&gt>=<[x].sub[<[radius]>]> AND x<&lt>=<[x].add[<[radius]>]>) AND (y<&gt>=<[y].sub[<[radius]>]> AND x<&lt>=<[y].add[<[radius]>]>) AND (z<&gt>=<[z].sub[<[radius]>]> AND x<&lt>=<[z].add[<[radius]>]>) LIMIT 1;' save:change_result
-          - if <entry[change_result].result.size||0> == 0:
-            - if <[action]> == "break":
-              - modifyblock <location[<[x]>,<[y]>,<[z]>,<[world]>]> <[material]>
-            - else:
-              - modifyblock <location[<[x]>,<[y]>,<[z]>,<[world]>]> air
-            - sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate` WHERE id=<[id]>;'
+        - if <server.worlds.parse[name].contains[<[world]>]>:
+          # if the action is NOT break, or if at least 1 block around the location is not air
+          - if <[action]> != "break" || <location[<[x]>,<[y]>,<[z]>,<[world]>].find_blocks.within[1].parse[material.name].deduplicate.exclude[air].size||0> >= 1:
+            - define delay:<[restore_time]>
+            - if <[action]> != "break":
+              - define delay:<[decay_time]>
+            
+            # find rows where x~10 and y~10 and z~10 and server=same and world=same and action=place or action=modify and date > $delay
+            - ~sql id:drustcraft_database 'query:SELECT id FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate WHERE date><[delay]> AND server="<bungee.server||<empty>>" AND world="<[world]>" AND (x<&gt>=<[x].sub[<[radius]>]> AND x<&lt>=<[x].add[<[radius]>]>) AND (y<&gt>=<[y].sub[<[radius]>]> AND x<&lt>=<[y].add[<[radius]>]>) AND (z<&gt>=<[z].sub[<[radius]>]> AND x<&lt>=<[z].add[<[radius]>]>) LIMIT 1;' save:change_result
+            - if <entry[change_result].result.size||0> == 0:
+              - if <[action]> == "break":
+                - modifyblock <location[<[x]>,<[y]>,<[z]>,<[world]>]> <[material]>
+              - else:
+                - modifyblock <location[<[x]>,<[y]>,<[z]>,<[world]>]> air
+              - sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate` WHERE id=<[id]>;'
