@@ -75,7 +75,8 @@ drustcraftw_analytics:
 
       - run drustcraftt_analytics.player.end_afk_time def:<player>
 
-      - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_sessions` SET `session_end`=<util.time_now.epoch_millis.div[1000].round> WHERE `id`=<player.flag[drustcraft_analytics_session_id]>;'
+      #- ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_sessions` SET `session_end`=<util.time_now.epoch_millis.div[1000].round> WHERE `id`=<player.flag[drustcraft_analytics_session_id]>;'
+      - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_sessions` SET `session_end`=<util.time_now.epoch_millis.div[1000].round> WHERE `player_uuid`="<player.uuid>" AND `session_end`=0;'
           
       - ~run drustcraftt_analytics.player.update_world_time def:<player>
       - flag <player> drustcraft_analytics_session_id:!
