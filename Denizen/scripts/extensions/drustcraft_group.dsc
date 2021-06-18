@@ -364,10 +364,12 @@ drustcraftc_groups:
   type: command
   debug: false
   name: groups
+  aliases:
+    - group
   description: Displays the groups you are within
   usage: /groups
   permission: drustcraft.groups
   permission message: <&c>I'm sorry, you do not have permission to perform this command
   script:
-    - narrate '<&e>You are in the groups:'
-		- narrate '<&f><player.groups.separated_by[<&e>, <&f>]>'
+    - narrate '<&e>You are in the following groups:'
+    - narrate '<&f><player.groups.separated_by[<&e>, <&f>]>'
