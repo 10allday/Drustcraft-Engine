@@ -40,7 +40,7 @@ drustcraftw_region:
         - determine passively fulfilled
         - define region_id:<[region_id].before[*]>
 
-        - foreach <server.list_worlds> as:target_world:
+        - foreach <server.worlds> as:target_world:
           - foreach <[target_world].list_regions> as:target_region:
             - if <[target_region].id.starts_with[<[region_id]>]>:
               - define args:<context.args.set[<[target_region].id>].at[2]>
