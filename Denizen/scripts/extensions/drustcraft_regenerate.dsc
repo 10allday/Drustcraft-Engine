@@ -115,7 +115,7 @@ drustcraftt_regenerate:
         - define date:<[row].get[9]>
 
         # if the action is NOT break, or if at least 1 block around the location is not air
-        - if <[action]> != "break" || <location[<[x]>,<[y]>,<[z]>,<[world]>].find_blocks[].within[1].parse[material.name].deduplicate.exclude[air].size||0> >= 1:
+        - if <[action]> != "break" || <location[<[x]>,<[y]>,<[z]>,<[world]>].find_blocks.within[1].parse[material.name].deduplicate.exclude[air].size||0> >= 1:
           - define delay:<[restore_time]>
           - if <[action]> != "break":
             - define delay:<[decay_time]>
