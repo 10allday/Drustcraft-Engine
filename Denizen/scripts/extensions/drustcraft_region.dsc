@@ -521,7 +521,7 @@ drustcraftt_region:
       
     update_all:
       - foreach <yaml[drustcraft_regions].list_keys[regions]||<list[]>> as:target_world:
-        - foreach <yaml[drustcraft_regions].list_keys[regions.<[target_world]>]<list[]>> as:target_region:
+        - foreach <yaml[drustcraft_regions].list_keys[regions.<[target_world]>]||<list[]>> as:target_region:
           - foreach <yaml[drustcraft_regions].read[regions.<[target_world]>.<[target_region]>.spawner]||<map[]>>:
             - define quantity:10
             - define rate:3
