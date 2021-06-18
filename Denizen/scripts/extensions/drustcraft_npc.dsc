@@ -138,12 +138,12 @@ drustcraftp_npc:
     
     - if <[target_npc]> != <empty> && <[target_player]> != <empty>:
       - define key:default
-      - define group:<yaml[drustcraft_greetings].read[greetings.npcs.<[target_npc].id>.group]||<empty>>
+      - define group:<yaml[drustcraft_npc].read[greetings.npcs.<[target_npc].id>.group]||<empty>>
       
       - if <[group]> != <empty>:
         - define key:group.<[group]>
       - else:
-        - if <yaml[drustcraft_greetings].list_keys[greetings.npcs].contains[<[target_npc].id>]||false>:
+        - if <yaml[drustcraft_npc].list_keys[greetings.npcs].contains[<[target_npc].id>]||false>:
           - define key:npcs.<[target_npc].id>
       
       - define weather:default
@@ -152,22 +152,22 @@ drustcraftp_npc:
       - if <[target_npc].location.world.thundering>:
         - define weather:thundering
       
-      - if <yaml[drustcraft_greetings].list_keys[greetings.<[key]>].contains[<[weather]>]||false>:
+      - if <yaml[drustcraft_npc].list_keys[greetings.<[key]>].contains[<[weather]>]||false>:
         - define key:<[key]>.<[weather]>
       - else:
         - define key:<[key]>.default
       
       - define time:<[target_npc].location.world.time.period>            
-      - if <yaml[drustcraft_greetings].list_keys[greetings.<[key]>].contains[<[time]>]||false>:
+      - if <yaml[drustcraft_npc].list_keys[greetings.<[key]>].contains[<[time]>]||false>:
         - define key:<[key]>.<[time]>
       - else:
         - define key:<[key]>.default
 
-      - define greetings:<yaml[drustcraft_greetings].read[greetings.<[key]>]||<list[]>>
+      - define greetings:<yaml[drustcraft_npc].read[greetings.<[key]>]||<list[]>>
       - if <[greetings].size> > 0:
         - determine <[greetings].random>
         
-    - determine Hello
+    - determine '<list[Hello|Hi|...|Yes?|What do you want?|Maybe I can, maybe I cant|Hey|You again]>'
 
 
   interactor:
