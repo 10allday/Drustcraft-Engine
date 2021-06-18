@@ -167,7 +167,7 @@ drustcraftp_npc:
       - if <[greetings].size> > 0:
         - determine <[greetings].random>
         
-    - determine '<list[Hello|Hi|...|Yes?|What do you want?|Maybe I can, maybe I cant|Hey|You again]>'
+    - determine '<list[Hello|Hi|...|Yes?|What do you want?|Maybe I can, maybe I cant|Hey|You again].random>'
 
 
   interactor:
