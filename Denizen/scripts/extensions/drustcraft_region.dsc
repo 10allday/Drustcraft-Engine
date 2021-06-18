@@ -209,7 +209,7 @@ drustcraftw_region:
 
             - case define create d remove rem delete del redefine update move load reload:
               - define command:<[args].get[1]>
-              - define region_name:<[args].get[2]>
+              - define region_name:<[args].get[2]||<empty>>
               
               - if <list[define|create|move|update|redefine].contains[<[command]>]> && <player.in_group[developer]> == false:
                 - define allow:false
@@ -305,7 +305,6 @@ drustcraftw_region:
                 
                   - narrate '<&9>Title: <&7><[title]>'
                   - narrate '<&9>Biomes: <&6>Grassland'
-                  - narrate '<&9>Regenerate: <&6>Gravel (1), Stone (2)'
 
 drustcraftt_region:
   type: task
@@ -355,10 +354,11 @@ drustcraftt_region:
         - foreach <[target_world].list_regions||<list[]>> as:target_region:
           - define target_cuboid:<[target_region].area||<empty>>
           - define target_notable:<[target_cuboid]>
-          - define target_poly:<list[]>
+          - define target_poly:<empty>
           
           # check if this is a polygon instead of a cuboid
           - if <[target_cuboid].object_type> == polygon:
+            - define target_poly:<[target_cuboid]>
             - define target_cuboid:<[target_cuboid].bounding_box>
           
           # check if this is a polygon instead of a cuboid (Old code)
@@ -408,14 +408,14 @@ drustcraftt_region:
                     - define region_map_set:point
                     - define region_map_icon:pin
 
-                # - if <server.plugins.parse[name].contains[dynmap]>:
-                #   - if <[target_poly].size> >= 3:
-                #     - execute as_server 'dmarker clearcorners'
-                #     - foreach <[target_poly]||<list[]>>:
-                #       - execute as_server 'dmarker addcorner <[value].as_map.get[x]> 64 <[value].as_map.get[z]> <[target_world].name>'
-                #     - execute as_server 'dmarker addarea id:<[target_region].id>_<[target_world].name> "<[region_title]>" icon:<[region_map_icon]>'
-                #   - else:
-                - execute as_server 'dmarker add id:<[target_region].id>_<[target_world].name> "<[region_title]>" icon:<[region_map_icon]> set:<[region_map_set]> x:<[target_cuboid].center.x.round> y:64 z:<[target_cuboid].center.z.round> world:<[target_cuboid].center.world.name>'
+                - if <server.plugins.parse[name].contains[dynmap]>:
+                  - if <[target_poly]> != <empty>:
+                    - execute as_server 'dmarker clearcorners'
+                    - foreach <[target_poly].corners||<list[]>>:
+                      - execute as_server 'dmarker addcorner <[value].x> 64 <[value].z> <[target_world].name>'
+                    - execute as_server 'dmarker addarea id:<[target_region].id>_<[target_world].name> "<[region_title]>" icon:<[region_map_icon]>'
+
+                  - execute as_server 'dmarker add id:<[target_region].id>_<[target_world].name> "<[region_title]>" icon:<[region_map_icon]> set:<[region_map_set]> x:<[target_cuboid].center.x.round> y:64 z:<[target_cuboid].center.z.round> world:<[target_cuboid].center.world.name>'
                 
 
               - define drustcraft_region_list:->:drustcraft_region_<[target_region].id>_<[target_world].name>

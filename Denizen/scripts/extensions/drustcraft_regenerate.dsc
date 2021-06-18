@@ -74,8 +74,6 @@ drustcraftt_regenerate:
         - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_version` (`name`,`version`) VALUES ("drustcraft_regenerate",'1');'
         - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate` (`id` INT NOT NULL AUTO_INCREMENT, `server` VARCHAR(255) NOT NULL, `action` VARCHAR(255) NOT NULL, `world` VARCHAR(255) NOT NULL, `x` INT NOT NULL, `y` INT NOT NULL, `z` INT NOT NULL, `material` VARCHAR(255) NOT NULL, `date` INT NOT NULL, PRIMARY KEY (`id`));'
   
-      - if <yaml[drustcraft_server].contains[drustcraft.regenerate.blocks]> == false:
-        - yaml id:drustcraft_server set drustcraft.regenerate.blocks:<list[ancient_debris|andesite|basalt|bedrock|blackstone|clay|coal_ore|coarse_dirt|cobblestone|copper_ore|diamond_ore|diorite|dirt|emerald_ore|end_stone|gilded_blackstone|glowstone|gold_ore|granite|grass_block|grass_path|gravel|ice|iron_ore|lapis_ore|lava|magma_block|mossy_cobblestone|mycelium|nether_gold_ore|nether_quartz_ore|netherrack|obsidian|packed_ice|podzol|redstone_ore|sand|sandstone|smooth_stone|smooth_stone|soul_sand|stone|stone_bricks|mossy_stone_bricks|cracked_stone_bricks|white_terracotta|orange_terracotta|magenta_terracotta|light_blue_terracotta|yellow_terracotta|lime_terracotta|pink_terracotta|gray_terracotta|light_gray_terracotta|cyan_terracotta|purple_terracotta|blue_terracotta|brown_terracotta|green_terracotta|red_terracotta|black_terracotta]>
       - if <yaml[drustcraft_server].contains[drustcraft.regenerate.radius]> == false:
         - yaml id:drustcraft_server set drustcraft.regenerate.radius:20
       - if <yaml[drustcraft_server].contains[drustcraft.regenerate.chance]> == false:
@@ -85,7 +83,6 @@ drustcraftt_regenerate:
       - if <yaml[drustcraft_server].contains[drustcraft.regenerate.decay_delay]> == false:
         - yaml id:drustcraft_server set drustcraft.regenerate.decay_delay:3628800
       
-      #- flag server drustcraft_regenerate_blocks:<yaml[drustcraft_server].read[drustcraft.regenerate.blocks]||<list[]>>
       - flag server drustcraft_regenerate:true
     - else:
       - debug log 'Drustcraft Regenerate requires the Drustcraft SQL script installed'
