@@ -7,7 +7,7 @@ drustcraftw_builder:
   debug: false
   events:
     on player exits cuboid:
-      - if <player.in_group[builder]> && <player.in_group[developer]> == false:
+      - if <player.in_group[builder]> && <player.in_group[staff]> == false:
         - if <player.gamemode> == CREATIVE:
           - define allow:false
 
@@ -35,7 +35,7 @@ drustcraftw_builder:
             - adjust <player> gamemode:SURVIVAL
                         
     on player places block:
-      - if <player.in_group[developer]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:
+      - if <player.in_group[staff]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:
         - define can_build:false
 
         - foreach <context.location.regions||<list[]>> as:target_region:
@@ -48,7 +48,7 @@ drustcraftw_builder:
           - determine cancelled
 
     on player breaks block:
-      - if <player.in_group[developer]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:        
+      - if <player.in_group[staff]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:        
         - define can_build:false
         
         - foreach <context.location.regions||<list[]>> as:target_region:
@@ -69,7 +69,7 @@ drustcraftw_builder:
 
     on player opens inventory:
       - if <player.gamemode> != SURVIVAL:
-        - if <player.groups.contains[developer]> == false:
+        - if <player.groups.contains[staff]> == false:
           - narrate '<&e>You cannot open inventories in creative mode'
           - determine cancelled
 
@@ -108,7 +108,7 @@ drustcraftc_builder:
           - else:
             - define allow:false
 
-            - if <player.in_group[developer]> == false:
+            - if <player.in_group[staff]> == false:
               - foreach <player.location.regions||<list[]>> as:target_region:
                 - if <proc[drustcraftp_region.is_member].context[<[target_region]>|<player>]||false> || <proc[drustcraftp_region.is_owner].context[<[target_region]>|<player>]||false>:
                   - define allow:true

@@ -56,7 +56,7 @@ drustcraftt_group:
     - define group_name:<[1]||<empty>>
 
     # todo need a better way than this. Can we use the non existant of owner?
-    - if <[group_name]> != <empty> && <list[default|moderator|builder|leader|developer].contains[<[group_name]>]> == false:
+    - if <[group_name]> != <empty> && <list[default|moderator|builder|leader|staff].contains[<[group_name]>]> == false:
       - execute as_server 'lp deletegroup <[group_name]>'
   
   add_owner:
@@ -64,7 +64,7 @@ drustcraftt_group:
     - define target_player:<[2]||<player>>
 
     # todo need a better way than this
-    - if <[group_name]> != <empty> && <list[default|moderator|builder|leader|developer].contains[<[group_name]>]> == false:
+    - if <[group_name]> != <empty> && <list[default|moderator|builder|leader|staff].contains[<[group_name]>]> == false:
       - if <[target_player].is_player>:
         - execute as_server 'lp user <[target_player].name> group add <[group_name]>'
         - execute as_server 'lp user <[target_player].name> permission set owner.<[group_name]>'

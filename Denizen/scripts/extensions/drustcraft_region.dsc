@@ -211,7 +211,7 @@ drustcraftw_region:
               - define command:<[args].get[1]>
               - define region_name:<[args].get[2]||<empty>>
               
-              - if <list[define|create|move|update|redefine].contains[<[command]>]> && <player.in_group[developer]> == false:
+              - if <list[define|create|move|update|redefine].contains[<[command]>]> && <player.in_group[staff]> == false:
                 - define allow:false
 
                 - foreach <player.we_selection.regions.parse[id].exclude[<[region_name]>]>:

@@ -16,7 +16,7 @@ drustcraftp_chat_format:
     - if <[entity].object_type> == Player:
       - if <[entity].in_group[moderator]> || <[entity].in_group[leader]>:
         - define colour:a
-      - if <[entity].in_group[developer]>:
+      - if <[entity].in_group[staff]>:
         - define colour:d
     - else if <[entity].object_type> == NPC:
       - define colour:6
