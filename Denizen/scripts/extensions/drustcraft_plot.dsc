@@ -1,4 +1,4 @@
-# Drustcraft - Plot
+  # Drustcraft - Plot
 # Town Plots
 # https://github.com/drustcraft/drustcraft
 
@@ -33,8 +33,9 @@ drustcraftw_plot:
         - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>:
           - define plot_name:<[value].lore.space_separated.after[id:]||<empty>>
           - if <[plot_name]> != <empty>:
-            - if <proc[drustcraft_plot.list].contains[<[plot_name]>]||false> == false:
-              - inventory set slot:<[key]> o:air d:<context.inventory>
+            - if <proc[drustcraftp_plot.list].contains[<[plot_name]>]||false> == false:
+              - narrate 'PLOT <[plot_name]> doesnt exist'
+              #- inventory set slot:<[key]> o:air d:<context.inventory>
               
 
     # on player closes inventory:
@@ -342,7 +343,7 @@ drustcraftc_plot:
       - case create:
         - define plot_name:<context.args.get[2]||<empty>>
         - if <[plot_name]> != <empty>:
-          - if <proc[drustcraft_plot.list].contains[<[plot_name]>]||false> == false:
+          - if <proc[drustcraftp_plot.list].contains[<[plot_name]>]||false> == false:
             - define plot_region:<context.args.get[3]||<empty>>
             - define plot_world:<context.args.get[4]||<empty>>
             
