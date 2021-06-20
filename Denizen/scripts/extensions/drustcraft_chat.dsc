@@ -28,10 +28,10 @@ drustcraftw_chat:
       
     on bungee player joins network:
       - wait 60t
-      - narrate '<&8>[<&a>+<&8>] <&e><player.name> <&f>joined Drustcraft' targets:<server.online_players.exclude[<player>]>
+      - narrate '<&8>[<&a>+<&8>] <&e><context.name> <&f>joined Drustcraft' targets:<server.online_players.exclude[<player>]>
   
     on bungee player leaves network:
-      - narrate '<&8>[<&c>-<&8>] <&e><player.name> <&f>left Drustcraft' targets:<server.online_players.exclude[<player>]>
+      - narrate '<&8>[<&c>-<&8>] <&e><context.name> <&f>left Drustcraft' targets:<server.online_players.exclude[<player>]>
 
     on player chats:
       - if <server.flag[drustcraft_chat]||false>:
