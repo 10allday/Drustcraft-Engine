@@ -68,7 +68,10 @@ drustcraftt_event:
 
       - if <[title]> != <empty>:
         - playsound <server.online_players> sound:ENTITY_EXPERIENCE_ORB_PICKUP
-        - narrate '<&8><&l>[<&b>+<&8><&l>] <&b>The <[title]> event has started' targets:<server.online_players>
+        - narrate '<&8><&l>[<&b>+<&8><&l>] <&b>The <[title]> event has begun' targets:<server.online_players>
+        
+        - if <server.scripts.parse[name].contains[drustcraftw_discord]>:
+          - run drustcraftt_discord.embed 'def:The <[title]> event has begun|#00008B|https://api.drustcraft.com.au/assets/images/red-flag.png'
 
       - define existing_events:<proc[drustcraftp_event.running]>
       - define duration:<yaml[drustcraft_event].read[events.<[event_id]>.duration]||1>
