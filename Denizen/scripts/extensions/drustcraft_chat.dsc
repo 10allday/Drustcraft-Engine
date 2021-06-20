@@ -27,7 +27,7 @@ drustcraftw_chat:
       - run drustcraftt_chat.load
       
     on bungee player joins network:
-      - wait 60t
+      - wait 20t
       - narrate '<&8>[<&a>+<&8>] <&e><context.name> <&f>joined Drustcraft' targets:<server.online_players.exclude[<player>]>
   
     on bungee player leaves network:
