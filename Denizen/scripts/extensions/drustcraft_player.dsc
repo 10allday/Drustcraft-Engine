@@ -24,7 +24,7 @@ drustcraftw_player:
             - foreach stop
           
         - if <[skip]> == false:
-          - take <[item]> quantity:<[item].quantity> from:<player.inventory>
+          - take item:<[item]> quantity:<[item].quantity> from:<player.inventory>
           - drop <[item]> <player.location.add[-2,-2,-2].to_cuboid[<player.location.add[2,2,2]>].spawnable_blocks.random>
           #- drop <[item]> <cuboid[<player.location.world.name>,<player.location.add[-2,-2,-2]>|<player.location.add[2,2,2]>].spawnable_blocks.random>
     
