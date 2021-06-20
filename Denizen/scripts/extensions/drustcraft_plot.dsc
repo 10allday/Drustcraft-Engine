@@ -34,8 +34,7 @@ drustcraftw_plot:
           - define plot_name:<[value].lore.space_separated.after[id:]||<empty>>
           - if <[plot_name]> != <empty>:
             - if <proc[drustcraftp_plot.list].contains[<[plot_name]>]||false> == false:
-              - narrate 'PLOT <[plot_name]> doesnt exist'
-              #- inventory set slot:<[key]> o:air d:<context.inventory>
+              - inventory set slot:<[key]> o:air d:<context.inventory>
               
 
     # on player closes inventory:
