@@ -115,6 +115,8 @@ drustcraftt_exchange_interactor:
         - define items:|:trade[inputs=<item[emerald_block[quantity=13]]>|<item[air]>;result=<item[netherite_block]>;max_uses=9999]
         - define items:|:trade[inputs=<item[netherite_block]>|<item[air]>;result=<item[netherite_ingot[quantity=9]]>;max_uses=9999]
         - define items:|:trade[inputs=<item[netherite_block]>|<item[air]>;result=<item[emerald_block[quantity=13]]>;max_uses=9999]
+        
+        - define items:|:trade[inputs=<item[gold_ingot[quantity=26]]>|<item[iron_ingot[quantity=2]]>;result=<item[ender_chest]>;max_uses=9999]
 
         - if <[items].size> > 0:
           - opentrades <[items]> 'title:Currency Exchange'
