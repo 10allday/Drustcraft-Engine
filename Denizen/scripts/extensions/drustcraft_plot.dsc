@@ -564,6 +564,12 @@ drustcraftt_plot_interactor:
         - determine false
 
       - case close:
+        - if <[target_npc].flag[drustcraft_trading_with]> == <[target_player]>:
+          - flag <[target_npc]> drustcraft_trading_with:!
+        
+        - if <[target_player].has_flag[drustcraft_trading_with]> == <[target_npc]>:
+          - flag <[target_player]> drustcraft_trading_with:!
+
         - foreach <[target_inventory].trades>:
           - if <[value].uses> > 0:
             - define item:<[value].result||<empty>>
