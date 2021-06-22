@@ -89,6 +89,10 @@ drustcraftw_discord:
               - define 'message:Here are the best sites in the world:<n>Website - https://drustcraft.com.au/<n>Atlas - https://map.drustcraft.com.au<n>Subreddit - https://www.reddit.com/r/drustcraft<n>Twitter - https://www.twitter.com/drustcraft<n>Facebook - https://www.facebook.com/drustcraft<n>Insta - https://www.instagram.com/drustcraft<n>Youtube - https://www.youtube.com/channel/UCUZLUu9b87ylDEai_rnUvKA'
               - discordmessage id:drustcraft_discord_bot channel:<context.channel> <[message]>
 
+            - case currency economy:
+              - define 'message:The most common items used in Drustcraft as currency is **Netherite Blocks**, **Netherite Ingots**, **Emerald Blocks**, **Emeralds**, **Diamonds** and **Iron Ingots**<n><n>1 Netherite Block = 9 Netherite Ingots<n>1 Netherite Ingot = 13 Emeralds<n>1 Emerald Block = 9 Emeralds<n>1 Diamond = 1 Emerald<n>1 Emerald = 4 Iron Ingots<n><n>You can exchange between these items at most banks<n><n>'
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> <[message]>
+              
             - case tps:
               - define tps_result:<list[]>
               - foreach <bungee.list_servers.sort_by_value[]>:
