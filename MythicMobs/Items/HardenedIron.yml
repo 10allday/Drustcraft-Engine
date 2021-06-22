@@ -1,4 +1,4 @@
-HardenedIronSword:
+hardened_iron_sword:
   Id: iron_sword
   Data: 0
   Display: 'Hardened Iron Sword'
@@ -6,7 +6,7 @@ HardenedIronSword:
   Attributes:
     MainHand:
       Damage: 8
-HardenedIronHelmet:
+hardened_iron_helmet:
   Id: iron_helmet
   Data: 0
   Display: 'Hardened Iron Helmet'
@@ -19,7 +19,7 @@ HardenedIronHelmet:
   - PROTECTION_PROJECTILE:1
   - PROTECTION_FIRE:1
   - PROTECTION_EXPLOSIONS:1
-HardenedIronChestplate:
+hardened_iron_chestplate:
   Id: iron_chestplate
   Data: 0
   Display: 'Hardened Iron Chestplate'
@@ -32,7 +32,7 @@ HardenedIronChestplate:
   - PROTECTION_PROJECTILE:1
   - PROTECTION_FIRE:1
   - PROTECTION_EXPLOSIONS:1
-HardenedIronLeggings:
+hardened_iron_leggings:
   Id: iron_leggings
   Data: 0
   Display: 'Hardened Iron Leggings'
@@ -45,7 +45,7 @@ HardenedIronLeggings:
   - PROTECTION_PROJECTILE:1
   - PROTECTION_FIRE:1
   - PROTECTION_EXPLOSIONS:1
-HardenedIronBoots:
+hardened_iron_boots:
   Id: iron_boots
   Data: 0
   Display: 'Hardened Iron Boots'
