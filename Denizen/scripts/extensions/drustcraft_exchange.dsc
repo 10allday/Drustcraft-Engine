@@ -101,8 +101,8 @@ drustcraftt_exchange_interactor:
         
         - define items:|:trade[inputs=<item[iron_ingot[quantity=4]]>|<item[air]>;result=<item[emerald]>;max_uses=9999]
         - define items:|:trade[inputs=<item[emerald]>|<item[air]>;result=<item[iron_ingot[quantity=4]]>;max_uses=9999]
-        - define items:|:trade[inputs=<item[iron_ingot[quantity=4]]>|<item[air]>;result=<item[gold_ingot]>;max_uses=9999]
-        - define items:|:trade[inputs=<item[gold_ingot]>|<item[air]>;result=<item[emerald]>;max_uses=9999]
+        - define items:|:trade[inputs=<item[iron_ingot[quantity=4]]>|<item[air]>;result=<item[diamond]>;max_uses=9999]
+        - define items:|:trade[inputs=<item[diamond]>|<item[air]>;result=<item[emerald]>;max_uses=9999]
         
         - define items:|:trade[inputs=<item[iron_ingot[quantity=36]]>|<item[air]>;result=<item[emerald_block]>;max_uses=9999]
         - define items:|:trade[inputs=<item[emerald[quantity=9]]>|<item[air]>;result=<item[emerald_block]>;max_uses=9999]
@@ -117,7 +117,7 @@ drustcraftt_exchange_interactor:
         - define items:|:trade[inputs=<item[netherite_block]>|<item[air]>;result=<item[emerald_block[quantity=13]]>;max_uses=9999]
         
         - define items:|:trade[inputs=<item[emerald]>|<item[iron_ingot]>;result=<item[chest]>;max_uses=9999]
-        - define items:|:trade[inputs=<item[gold_ingot[quantity=26]]>|<item[iron_ingot[quantity=2]]>;result=<item[ender_chest]>;max_uses=9999]
+        - define items:|:trade[inputs=<item[diamond[quantity=26]]>|<item[iron_ingot[quantity=2]]>;result=<item[ender_chest]>;max_uses=9999]
 
         - if <[items].size> > 0:
           - opentrades <[items]> 'title:Currency Exchange'

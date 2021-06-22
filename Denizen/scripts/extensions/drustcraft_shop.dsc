@@ -397,9 +397,9 @@ drustcraftt_shop_interactor:
                 - else if <[item_value_blocks].get[emeralds]||0> > 0:
                   - define input:<[input].set[<item[emerald[quantity=<[item_value].get[emeralds]>]]>].at[<[value]>]>
                   - define item_value_blocks:<[item_value_blocks].exclude[emeralds]>
-                - else if <[item_value_blocks].get[gold_ingots]||0> > 0:
-                  - define input:<[input].set[<item[gold_ingot[quantity=<[item_value].get[gold_ingots]>]]>].at[<[value]>]>
-                  - define item_value_blocks:<[item_value_blocks].exclude[gold_ingots]>
+                - else if <[item_value_blocks].get[diamond]||0> > 0:
+                  - define input:<[input].set[<item[diamond[quantity=<[item_value].get[diamond]>]]>].at[<[value]>]>
+                  - define item_value_blocks:<[item_value_blocks].exclude[diamond]>
                 - else if <[item_value_blocks].get[iron_ingots]||0> > 0:
                   - define input:<[input].set[<item[iron_ingot[quantity=<[item_value].get[iron_ingots]>]]>].at[<[value]>]>
                   - define item_value_blocks:<[item_value_blocks].exclude[iron_ingots]>
@@ -418,8 +418,8 @@ drustcraftt_shop_interactor:
                 - define output:<item[netherite_ingot[quantity=<[item_value].get[netherite_ingots]>]]>
               - else if <[item_value].get[emeralds]||0> > 0:
                 - define output:<item[emerald[quantity=<[item_value].get[emeralds]>]]>
-              - else if <[item_value].get[gold_ingots]||0> > 0:
-                - define output:<item[gold_ingot[quantity=<[item_value].get[gold_ingots]>]]>
+              - else if <[item_value].get[diamond]||0> > 0:
+                - define output:<item[diamond[quantity=<[item_value].get[diamond]>]]>
               - else if <[item_value].get[iron_ingots]||0> > 0:
                 - define output:<item[iron_ingot[quantity=<[item_value].get[iron_ingots]>]]>
               
@@ -449,7 +449,7 @@ drustcraftt_shop_interactor:
             - define item:<[value].result.material.name||<empty>>
             - define uses:<[value].uses>
             
-            - if <list[netherrite_block|netherrite_ingot|emerald|gold_ingot|iron_ingot].contains[<[item]>]>:
+            - if <list[netherrite_block|netherrite_ingot|emerald|diamond|iron_ingot].contains[<[item]>]>:
               - define action:buy
               - define item:<[value].inputs.get[1].material.name||<empty>>
             

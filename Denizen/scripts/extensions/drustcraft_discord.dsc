@@ -207,9 +207,9 @@ drustcraftw_discord:
                       - define item_text:<[item_text]>s
                       
                     - define item_value_list:|:<[item_text]>
-                  - if <[item_value].get[gold_ingots]> > 0:
-                    - define 'item_text:<[item_value].get[gold_ingots]> Gold ingot'
-                    - if <[item_value].get[gold_ingots]> > 1:
+                  - if <[item_value].get[diamond]> > 0:
+                    - define 'item_text:<[item_value].get[diamond]> Diamond'
+                    - if <[item_value].get[diamond]> > 1:
                       - define item_text:<[item_text]>s
                       
                     - define item_value_list:|:<[item_text]>
