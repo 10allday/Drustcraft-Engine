@@ -21,9 +21,9 @@ drustcraftw_discord:
       - run drustcraftt_discord.load
       
     on bungee player joins network:
-      - wait 60t
+      - wait 20t
       - define 'message:<discord_embed.with[color].as[#00ff00].with[author_icon_url].as[https://crafatar.com/avatars/<context.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<context.name> joined Drustcraft]>'
-      - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_drustcraft_discord_channel_botdiscord_channel_chat]> <[message]>
+      - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> <[message]>
       
     on bungee player leaves network:
       - define 'message:<discord_embed.with[color].as[#ff0000].with[author_icon_url].as[https://crafatar.com/avatars/<context.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<context.name> left Drustcraft]>'
@@ -38,7 +38,7 @@ drustcraftw_discord:
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> '**<player.name>** » <context.message>'
     
     on player death:
-      - define 'message:<discord_embed.with[color].as[#000000].with[author_icon_url].as[https://crafatar.com/avatars/<player.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<player.name> <context.message||died>]>'
+      - define 'message:<discord_embed.with[color].as[#000000].with[author_icon_url].as[https://crafatar.com/avatars/<player.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<context.message||died>]>'
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> <[message]>
       
     # on player completes advancement:
@@ -47,7 +47,11 @@ drustcraftw_discord:
     
     on system time hourly:
       - run drustcraftt_discord.update_status
-    
+
+    on discord user joins:
+      - define 'message::wave: **<context.user.mention>** and welcome to **Drustcraft**. Please visit <discord_channel[827353540564615188].mention> for around the what is expected around here and <discord_channel[827351975464402954].mention> about the various channels.'
+      - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> <[message]>
+
     on discord message received:
       - if <context.bot.name.equals[drustcraft_discord_bot]>:
         - define message:<context.new_message.text_stripped>
@@ -59,6 +63,32 @@ drustcraftw_discord:
               - discordmessage id:drustcraft_discord_bot channel:<context.channel> 'Howdy stranger, you can ask me for a few things such as `!tps` for the current server TPS, `!online` to see who is online or even `!value <&lt>item<&gt>` for what an item is worth'
             - case ip server:
               - discordmessage id:drustcraft_discord_bot channel:<context.channel> 'You can connect to the Drustcraft server at **play.drustcraft.com.au**, bedrock or tablet players need to use port **20123**'
+            
+            - case website site:
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> '<discord_embed.with[author_name].as[https://drustcraft.com.au/].with[author_url].as[https://drustcraft.com.au/]>'
+
+            - case map atlas:
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> '<discord_embed.with[author_name].as[https://map.drustcraft.com.au/].with[author_url].as[https://map.drustcraft.com.au/]>'
+
+            - case reddit subreddit:
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> '<discord_embed.with[author_name].as[https://www.reddit.com/r/drustcraft].with[author_url].as[https://www.reddit.com/r/drustcraft]>'
+
+            - case twitter:
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> '<discord_embed.with[author_name].as[https://www.twitter.com/drustcraft].with[author_url].as[https://www.twitter.com/drustcraft]>'
+
+            - case facebook fb:
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> '<discord_embed.with[author_name].as[https://www.facebook.com/drustcraft].with[author_url].as[https://www.facebook.com/drustcraft]>'
+
+            - case insta instagram:
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> '<discord_embed.with[author_name].as[https://www.instagram.com/drustcraft].with[author_url].as[https://www.instagram.com/drustcraft]>'
+
+            - case yt youtube:
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> '<discord_embed.with[author_name].as[https://www.youtube.com/channel/UCUZLUu9b87ylDEai_rnUvKA].with[author_url].as[https://www.youtube.com/channel/UCUZLUu9b87ylDEai_rnUvKA]>'
+
+            - case link links social socials:
+              - define 'message:Here are the best sites in the world:<n>Website - https://drustcraft.com.au/<n>Atlas - https://map.drustcraft.com.au<n>Subreddit - https://www.reddit.com/r/drustcraft<n>Twitter - https://www.twitter.com/drustcraft<n>Facebook - https://www.facebook.com/drustcraft<n>Insta - https://www.instagram.com/drustcraft<n>Youtube - https://www.youtube.com/channel/UCUZLUu9b87ylDEai_rnUvKA'
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> <[message]>
+
             - case tps:
               - define tps_result:<list[]>
               - foreach <bungee.list_servers.sort_by_value[]>:
@@ -86,6 +116,62 @@ drustcraftw_discord:
                 - define 'online_result:There are <[online_count]> players online<&co> <[online_result].sort_by_value[].comma_separated>'
 
               - discordmessage id:drustcraft_discord_bot channel:<context.channel> <[online_result]>
+            - case skin:
+              - define player_name:<[args].get[2]||<empty>>
+              - if <[player_name]> == <empty>:
+                - discordmessage id:drustcraft_discord_bot channel:<context.channel> "I'm not sure what player you want me to lookup!"
+              - else:
+                - define target_player:<server.match_offline_player[<[player_name]>]>
+                - if <[target_player].name> != <[player_name]>:
+                  - discordmessage id:drustcraft_discord_bot channel:<context.channel> "I've never seen **<[player_name]>** around these parts!"
+                - else:
+                  - if <[target_player].name.starts_with[*]>:
+                    - discordmessage id:drustcraft_discord_bot channel:<context.channel> "**<[target_player].name>** is a tablet player. I can't get skins for them yet"
+                  - else:
+                    - discordmessage id:drustcraft_discord_bot channel:<context.channel> '<discord_embed.with[description].as[Here is the skin of **<[target_player].name>**].with[image].as[https://crafatar.com/skins/<[target_player].uuid>]>'
+            
+            - case time:
+              - define world_time:<server.worlds.get[1].time>
+              - define hours:<[world_time].div[1000].round_down.add[6]>
+              - if <[hours]> >= 24:
+                - define hours:-:24
+              - define mins:<[world_time].mod[1000].mul[3.6].div[60].round_down>
+              
+              - define ampm:am
+              - if <[hours]> >= 12:
+                - define ampm:pm
+                - if <[hours]> >= 13:
+                  - define hours:-:12
+              
+              - if <[mins]> < 10:
+                - define mins:0<[mins]>
+              
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Server time is currently <[hours]>:<[mins]><[ampm]>"
+              
+            - case status:              
+              - ~webget https://api.drustcraft.com.au/v1/status headers:drustcraft-version/2021-05-25 save:result_webget
+              - define result_json:<entry[result_webget].result>
+              
+              - define result_map:<util.parse_yaml[<[result_json]>]>
+              - define servers:<[result_map].get[servers]>
+              
+              - define message:<element[]>
+              - if <[servers].size> == 0:
+                - define 'message:Could not load the status information from the network'
+              - else:
+                - define 'message:The Drustcraft network status looks like:<n>'
+                - foreach <[servers]>:
+                  - if <[value].get[status]> == ok:
+                    - define message:<[message]><&co>green_circle<&co><&sp>
+                  - else if <[value].get[status]> == warning:
+                    - define message:<[message]><&co>yellow_circle<&co><&sp>
+                  - else:
+                    - define message:<[message]><&co>red_circle<&co><&sp>
+                  
+                  - define 'message:<[message]><[value].get[name]> (<[value].get[type]>)<n>'
+              
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> <[message]>
+                
             - case value:
               - define item_name:<[args].remove[1].separated_by[_]>
               - if <[item_name]> == <empty>:
