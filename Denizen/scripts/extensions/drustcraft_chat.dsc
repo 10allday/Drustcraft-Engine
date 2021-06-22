@@ -38,7 +38,7 @@ drustcraftw_chat:
         - define type:chat
         - define sender:<player.uuid>
         - define receiver:<empty>
-        - define content:<context.message>
+        - define content:<context.message.sql_escaped>
         - define channel:<empty>
         - define rule:<proc[drustcraftp_chat.apply_rules].context[<[content]>]>
         
