@@ -92,7 +92,7 @@ drustcraftw_discord:
             - case tps:
               - define tps_result:<list[]>
               - foreach <bungee.list_servers.sort_by_value[]>:
-                - ~bungeetag server:<[value]> <server.recent_tps.get[1].round_to[1]> save:tps
+                - ~bungeetag server:<[value]> '<server.recent_tps.get[1].round_to[1]>, <server.recent_tps.get[2].round_to[1]>, <server.recent_tps.get[3].round_to[1]>' save:tps
                 - define 'tps_result:|:  - **<[value]>**: <entry[tps].result>'
 
               - if <[tps_result].size> == 0:
