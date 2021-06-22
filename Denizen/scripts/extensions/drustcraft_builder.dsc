@@ -18,6 +18,12 @@ drustcraftw_builder:
               - if <proc[drustcraftp_region.is_member].context[<[target_region]>|<player>]||false>:
                 - define allow:true
                 - foreach stop
+
+              - foreach <yaml[drustcraft_regions].read[regions.<[target_region].world.name>.<[target_region].id>.members.groups].filter[ends_with[_edit]]||<list[]>>:
+                - if <player.in_group[<[value].before[_edit]>]>:
+                  - run drustcraftt_group.add_member def:<[value]>|<player>
+                  - define allow:true
+                  - foreach stop
                 
           - if <[allow]> == false:
             - adjust <player> gamemode:SURVIVAL
@@ -29,6 +35,9 @@ drustcraftw_builder:
               - foreach stop
                       
           - if <[show_disabled]>:
+            - foreach <player.groups.filter[ends_with[_edit]]>:
+              - run drustcraftt_group.remove_member context:<[value]>|<player>
+
             - narrate '<&e>Builder tools disabled'
             - narrate '<&c>You do not have permission to build in this region'
           - else:
@@ -113,6 +122,13 @@ drustcraftc_builder:
                 - if <proc[drustcraftp_region.is_member].context[<[target_region]>|<player>]||false> || <proc[drustcraftp_region.is_owner].context[<[target_region]>|<player>]||false>:
                   - define allow:true
                   - foreach stop
+
+                - foreach <yaml[drustcraft_regions].read[regions.<[target_region].world.name>.<[target_region].id>.members.groups].filter[ends_with[_edit]]||<list[]>>:
+                  - if <player.in_group[<[value].before[_edit]>]>:
+                    - run drustcraftt_group.add_member def:<[value]>|<player>
+                    - define allow:true
+                    - foreach stop
+                
             - else:
               - define allow:true
 
@@ -126,6 +142,18 @@ drustcraftc_builder:
           - if <proc[drustcraftp_region.gamemode].context[<player.location>]||SURVIVAL> != CREATIVE:
             - if <player.gamemode> == CREATIVE:
               - adjust <player> gamemode:SURVIVAL
+              
+              # - define region_builder_groups:<list[]>
+              # - foreach <player.location.regions||<list[]>> as:target_region:
+              #   - define region_builder_groups:|:<yaml[drustcraft_regions].read[regions.<[target_region].world.name>.<[target_region].id>.members.groups].filter[ends_with[_edit]]||<list[]>>
+              # - define player_builder_groups:<player.groups.filter[ends_with[_edit]]||<list[]>>
+              # - define remove_builder_groups:<[player_builder_groups].exclude[<[region_builder_groups]>]>
+              # - foreach <[remove_builder_groups]>:
+              #   - run drustcraftt_group.remove_member context:<[value]>|<player>
+              
+              - foreach <player.groups.filter[ends_with[_edit]]>:
+                - run drustcraftt_group.remove_member context:<[value]>|<player>
+              
               - narrate '<&e>Builder tools disabled'
             - else:
               - narrate '<&e>Builder tools already disabled'
