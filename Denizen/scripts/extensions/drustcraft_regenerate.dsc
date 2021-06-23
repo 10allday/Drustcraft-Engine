@@ -40,7 +40,7 @@ drustcraftw_regenerate:
         - foreach <context.blocks>:
           - define target_material:<[value]>
           # - if <server.flag[drustcraft_regenerate_blocks].contains[<[target_material].name>]>:
-          - if <[target_material].block_strength> > 0:
+          - if <[target_material].block_strength||0> > 0:
             - sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate` WHERE server="<bungee.server||<empty>>" AND action="place" AND world="<context.location.world.name>" AND x=<context.location.x.round> AND y=<context.location.y.round> AND z=<context.location.z.round>;'
             - ~sql id:drustcraft_database 'query:SELECT id FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_regenerate WHERE server="<bungee.server||<empty>>" AND action="break" AND world="<context.location.world.name>" AND x=<context.location.x.round> AND y=<context.location.y.round> AND z=<context.location.z.round>;' save:sql_result
             - define action:movement
