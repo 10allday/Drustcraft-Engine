@@ -241,8 +241,35 @@ drustcraftw_discord:
                     - define 'response:<[response]> for every <[item_value].get[min_qty]> pieces'
                 
                   - discordmessage id:drustcraft_discord_bot channel:<context.channel> <[response]>
+
             - case link:
               - run drustcraftt_discord.link_player def:<context.channel>|<context.new_message.author>|<[args].get[2]||<empty>>
+
+            - case unlink:
+              - ~sql id:drustcraft_database 'query:SELECT `player_uuid` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE `discord_user_id`="<context.new_message.author.id>"' save:sql_result
+              - if <entry[sql_result].result.size||0> >= 1:
+                - foreach <entry[sql_result].result>:
+                  - define row:<[value].split[/]||<list[]>>
+                  - define player_uuid:<[row].get[1]||<empty>>
+                  - define discord_user_id:<[row].get[2]||<empty>>
+
+                  - run drustcraftt_discord.unlink_player def:<player[<[player_uuid]>]>
+                  - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Hey <context.new_message.author.mention>, you are no longer linked to the Minecraft account **<player[<[player_uuid]>].name>**"
+
+              - else:
+                - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Hey <context.new_message.author.mention>, you are not linked with a Minecraft account!"
+            
+            - case uuid:
+              - define player_name:<[args].get[2]||<empty>>
+              - define target_player:<server.match_offline_player[<[player_name]>]||<empty>>
+              
+              - if <[player_name]> != <empty>:
+                - if <[target_player]> != <empty>:
+                  - discordmessage id:drustcraft_discord_bot channel:<context.channel> "The uuid of **<[target_player].name>** is <[target_player].uuid>"
+                - else:
+                  - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Could not find any info on **<[player_name]>**"
+              - else:
+                - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Which player did you want to know about?"
             
             - case whois:
               - define discord_name:<[args].remove[1].space_separated||<empty>>
@@ -425,6 +452,12 @@ drustcraftt_discord:
       
     - else:
       - discordmessage id:drustcraft_discord_bot channel:<[channel]> "You can link your Minecraft account to this Discord server by typing `/discord link` while in Drustcraft"
+  
+  unlink_player:
+    - define target_player:<[1]>
+    - run drustcraftt_discord.clear_player_roles def:<[target_player]>
+    - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE (`player_uuid`="<[target_player].uuid>")'
+
 
   
 drustcraftc_discord:
@@ -471,7 +504,7 @@ drustcraftc_discord:
           - narrate '<&e>You already have linked your Minecraft account to a Discord user. Use <&f>/discord unlink <&e>to remove this link'
 
       - case unlink:
-        - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE (`player_uuid`="<player.uuid>")'
+        - run drustcraftt_discord.unlink_player def:<player>
         - narrate '<&e>Any Discord user links to this player has been removed.'
         
       - default:
