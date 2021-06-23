@@ -269,7 +269,7 @@ drustcraftc_whitelist:
                 - define added_date:<util.time_now.epoch_millis.div[1000].round>
                 - define added_player:<player.name||console>
                 
-                - sql id:drustcraft_database 'query:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`name`, `account`, `linking`, `added_date`, `added_player`) VALUES("<[name]>", <[account]>, <[linking]>, <[added_date]>, "<[added_player]>");'
+                - sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` (`name`, `account`, `linking`, `added_date`, `added_player`) VALUES("<[name]>", <[account]>, <[linking]>, <[added_date]>, "<[added_player]>");'
                 - narrate '<&e>The player <&sq><[name]><&sq> has been added to the whitelist of this server. It will take a few minutes to propagate across the network'
               - else:
                 - narrate '<&e>The player <&sq><[name]><&sq> was already on the whitelist of this server'
@@ -291,7 +291,7 @@ drustcraftc_whitelist:
               - waituntil <server.sql_connections.contains[drustcraft_database]>
               - ~sql id:drustcraft_database 'query:SELECT `name` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE name="<[name]>";' save:sql_result
               - if <entry[sql_result].result.size||0> > 0:
-                - sql id:drustcraft_database 'query:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE `name`="<[name]>";'
+                - sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_whitelist` WHERE `name`="<[name]>";'
                 - run drustcraftt_whitelist.sync
                 - narrate '<&e>The player <&sq><[name]><&sq> has been removed from the whitelist of this server. It will take a few minutes to propagate across the network'
               - else:
