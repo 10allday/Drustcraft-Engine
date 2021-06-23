@@ -317,6 +317,10 @@ drustcraftw_discord:
               
             - default:
               - discordmessage id:drustcraft_discord_bot channel:<context.channel> "What you talking about?"
+              
+        - else if <context.channel.id> == <server.flag[drustcraft_discord_channel_chat]>:
+          - if !<context.new_message.author.is_bot>:
+            - narrate '<&3>[D]<&7><&lt><context.new_message.author.name><&gt> <&f><[message]>' targets:<server.online_players>
 
 
 drustcraftt_discord:
