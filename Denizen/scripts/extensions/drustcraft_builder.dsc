@@ -7,41 +7,10 @@ drustcraftw_builder:
   debug: false
   events:
     on player exits cuboid:
-      - if <player.in_group[builder]> && <player.in_group[staff]> == false:
-        - if <player.gamemode> == CREATIVE:
-          - define allow:false
+      - run drustcraftt_builder.update_player def:<player>|<context.to||<empty>>|<context.from||<empty>>
 
-        - if <context.to||<empty>> != <empty>:
-          - define allow:false
-          - if <proc[drustcraftp_region.gamemode].context[<context.to>]||SURVIVAL> != CREATIVE:
-            - foreach <context.to.regions||<list[]>> as:target_region:
-              - if <proc[drustcraftp_region.is_member].context[<[target_region]>|<player>]||false>:
-                - define allow:true
-                - foreach stop
-
-              - foreach <yaml[drustcraft_regions].read[regions.<[target_region].world.name>.<[target_region].id>.members.groups].filter[ends_with[_edit]]||<list[]>>:
-                - if <player.in_group[<[value].before[_edit]>]>:
-                  - run drustcraftt_group.add_member def:<[value]>|<player>
-                  - define allow:true
-                  - foreach stop
-                
-          - if <[allow]> == false:
-            - adjust <player> gamemode:SURVIVAL
-                  
-          - define show_disabled:false
-          - foreach <context.from.regions||<list[]>> as:target_region:
-            - if <proc[drustcraftp_region.is_member].context[<[target_region]>|<player>]>:
-              - define show_disabled:true
-              - foreach stop
-                      
-          - if <[show_disabled]>:
-            - foreach <player.groups.filter[ends_with[_edit]]>:
-              - run drustcraftt_group.remove_member context:<[value]>|<player>
-
-            - narrate '<&e>Builder tools disabled'
-            - narrate '<&c>You do not have permission to build in this region'
-          - else:
-            - adjust <player> gamemode:SURVIVAL
+    on player exits polygon:
+      - run drustcraftt_builder.update_player def:<player>|<context.to||<empty>>|<context.from||<empty>>
                         
     on player places block:
       - if <player.in_group[staff]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:
@@ -86,6 +55,54 @@ drustcraftw_builder:
       - foreach <server.online_players.filter[location.find.npcs.within[50].size.is_more_than[20]].filter[gamemode.equals[CREATIVE]]>:
         - define npc_count:<[value].location.find.npcs.within[50].size>
         - narrate '<&8><&l>[<&6>!<&8><&l>] <&6>There is currently <&f><[npc_count]> <&6>NPCs within 50 blocks of your location. This is higher than the recommended limit of <&f>20<&6>. Try spacing out some NPCs to reduce the chance of server lag' targets:<[value]>
+
+
+drustcraftt_builder:
+  type: task
+  debug: false
+  script:
+    - determine <empty>
+  
+  update_player:
+    - define target_player:<[1]>
+    - define target_to:<[2]>
+    - define target_from:<[3]>
+    
+    - if <[target_player].in_group[builder]> && <[target_player].in_group[staff]> == false:
+      - if <[target_player].gamemode> == CREATIVE:
+        - define allow:false
+
+      - if <[target_to]||<empty>> != <empty>:
+        - define allow:false
+        - if <proc[drustcraftp_region.gamemode].context[<[target_to]>]||SURVIVAL> != CREATIVE:
+          - foreach <[target_to].regions||<list[]>> as:target_region:
+            - if <proc[drustcraftp_region.is_member].context[<[target_region]>|<[target_player]>]||false>:
+              - define allow:true
+              - foreach stop
+
+            - foreach <yaml[drustcraft_regions].read[regions.<[target_region].world.name>.<[target_region].id>.members.groups].filter[ends_with[_edit]]||<list[]>>:
+              - if <[target_player].in_group[<[value].before[_edit]>]>:
+                - run drustcraftt_group.add_member def:<[value]>|<[target_player]>
+                - define allow:true
+                - foreach stop
+              
+        - if <[allow]> == false:
+          - adjust <[target_player]> gamemode:SURVIVAL
+                
+        - define show_disabled:false
+        - foreach <[target_from].regions||<list[]>> as:target_region:
+          - if <proc[drustcraftp_region.is_member].context[<[target_region]>|<[target_player]>]>:
+            - define show_disabled:true
+            - foreach stop
+                    
+        - if <[show_disabled]>:
+          - foreach <[target_player].groups.filter[ends_with[_edit]]>:
+            - run drustcraftt_group.remove_member context:<[value]>|<[target_player]>
+
+          - narrate '<&e>Builder tools disabled'
+          - narrate '<&c>You do not have permission to build in this region'
+        - else:
+          - adjust <[target_player]> gamemode:SURVIVAL
 
 
 drustcraftc_builder:
