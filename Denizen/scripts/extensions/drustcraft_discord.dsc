@@ -48,7 +48,7 @@ drustcraftw_discord:
     #   - define 'message:<discord_embed.with[color].as[#FFFF00].with[author_icon_url].as[https://crafatar.com/avatars/<player.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<player.name> has made the advancement <context.advancement>]>'
     #   - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> <[message]>
     
-    on system time hourly:
+    on system time minutely every:12:
       - run drustcraftt_discord.update_status
 
     on discord user joins:
@@ -273,6 +273,37 @@ drustcraftw_discord:
               - else:
                 - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Which player did you want to know about?"
             
+            - case whereis:
+              - define player_name:<[args].get[2]||<empty>>
+              - define target_player:<server.match_offline_player[<[player_name]>]||<empty>>
+              
+              - if <[player_name]> != <empty>:
+                - if <[target_player]> != <empty>:
+                  - define target_location:<[target_player].location.round>
+                  - define x:<[target_location].x>
+                  - define z:<[target_location].z>
+                  - define world:<[target_location].world.name.replace_text[_].with[<&sp>].to_titlecase>
+                  
+                  - define region:<proc[drustcraftp_region.find].context[<[target_location]>]||<empty>>
+                  - if !<list[<empty>|__global__].contains[<[region]>]>:
+                    - define region:<proc[drustcraftp_region.title].context[<[target_location].world.name>|<[region]>]>
+                    - if <[region]> != <empty>:
+                      - define 'region:, <[region]>'
+                    - else:
+                      - define region:<element[]>
+                  - else:
+                    - define region:<element[]>
+                  
+                  - define 'online:is currently'
+                  - if !<server.online_players.contains[<[target_player]>]>:
+                    - define 'online:was last seen'
+                  
+                  - discordmessage id:drustcraft_discord_bot channel:<context.channel> "**<[target_player].name>** <[online]> at X: <[x]> Z: <[z]><[region]> in <[world]>."
+                - else:
+                  - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Could not find any info on **<[player_name]>**"
+              - else:
+                - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Which player did you want to know about?"
+            
             - case whois:
               - define discord_name:<[args].remove[1].space_separated||<empty>>
               
@@ -316,7 +347,17 @@ drustcraftw_discord:
                 
               - else:
                 - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Which player did you want to know about?"
+            
+            - case joke:
+              - define jokes:<yaml[drustcraft_discord].list_keys[discord.jokes]||<list[]>>
               
+              - if <[jokes].size> > 0:
+                - foreach <yaml[drustcraft_discord].read[discord.jokes.<yaml[drustcraft_discord].list_keys[discord.jokes].random>]||<list[]>>:
+                  - discordmessage id:drustcraft_discord_bot channel:<context.channel> <[value]>
+                  - wait 60t
+              - else:
+                - discordmessage id:drustcraft_discord_bot channel:<context.channel> "I got no jokes today"
+            
             - default:
               - discordmessage id:drustcraft_discord_bot channel:<context.channel> "What you talking about?"
               
@@ -334,6 +375,15 @@ drustcraftt_discord:
   load:
     - if <discord[drustcraft_discord_bot]||<empty>> == <empty>:
       - ~discordconnect id:drustcraft_discord_bot tokenfile:drustcraft_data/discord_token.txt
+
+    - if <yaml.list.contains[drustcraft_discord]>:
+      - yaml unload id:drustcraft_discord
+  
+    - if <server.has_file[/drustcraft_data/discord.yml]>:
+      - yaml load:/drustcraft_data/discord.yml id:drustcraft_discord
+    - else:
+      - yaml create id:drustcraft_discord
+      - yaml savefile:/drustcraft_data/discord.yml id:drustcraft_discord
 
     - waituntil <server.sql_connections.contains[drustcraft_database]>
     
@@ -364,10 +414,12 @@ drustcraftt_discord:
     - run drustcraftt_tab_complete.completions def:discord|link
     - run drustcraftt_tab_complete.completions def:discord|unlink  
   
+  save:
+    - yaml id:drustcraft_discord savefile:/drustcraft_data/discord.yml
   
   update_status:
     - if <discord[drustcraft_discord_bot]||<empty>> != <empty>:
-      - define 'activity_list:<list[Watching Drustcraft|Playing Drustcraft|Playing Minecraft|Watching a raid|Playing with Guards|Watching for Phantoms|Listening Music|Listening Zombies]>'
+      - define 'activity_list:<list[Watching Drustcraft|Playing Drustcraft|Playing Minecraft|Watching a raid|Playing with Guards|Watching for Phantoms|Listening Music|Listening Zombies|Watching Fireworks|Playing with Bees|Listening Randoms|Watching <server.online_players.parse[name].random||<element[the Server]>>]>'
       - define activity:<[activity_list].random>
       
       - ~discord id:drustcraft_discord_bot status "<[activity].after[<&sp>]>" "status:ONLINE" "activity:<[activity].before[<&sp>]>"
