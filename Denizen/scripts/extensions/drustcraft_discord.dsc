@@ -10,10 +10,10 @@ drustcraftw_discord:
       - wait 2t
       - waituntil <yaml.list.contains[drustcraft_server]>
       - ~run drustcraftt_discord.load
-      - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> ':white_check_mark: **Server <bungee.server> has started**'
+      - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> ':white_check_mark: **Server <bungee.server> has started**'
       
     on shutdown:
-      - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> ':octagonal_sign: **Server <bungee.server> has stopped**'
+      - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> ':octagonal_sign: **Server <bungee.server> has stopped**'
       
     on script reload:
       - wait 2t
@@ -33,6 +33,9 @@ drustcraftw_discord:
       - wait 60t
       - define 'message:<discord_embed.with[color].as[#00ffff].with[author_icon_url].as[https://crafatar.com/avatars/<player.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<player.name> arrived in <bungee.server.to_titlecase>]>'
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> <[message]>
+      - run drustcraftt_discord.update_player_roles def:<player>
+      
+      #ex discord id:drustcraft_discord_bot add_role user:846286915413082124 role:787809504833699850 group:782787130334248973 
       
     on player chats priority:100:
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> '**<player.name>** » <context.message>'
@@ -238,6 +241,53 @@ drustcraftw_discord:
                     - define 'response:<[response]> for every <[item_value].get[min_qty]> pieces'
                 
                   - discordmessage id:drustcraft_discord_bot channel:<context.channel> <[response]>
+            - case link:
+              - run drustcraftt_discord.link_player def:<context.channel>|<context.new_message.author>|<[args].get[2]||<empty>>
+            
+            - case whois:
+              - define discord_name:<[args].remove[1].space_separated||<empty>>
+              
+              - if <[discord_name]> != <empty>:
+                - define found:false
+                
+                - ~sql id:drustcraft_database 'query:SELECT `player_uuid`,`discord_user_id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE 1' save:sql_result
+                - if <entry[sql_result].result.size||0> >= 1:
+                  - foreach <entry[sql_result].result>:
+                    - define row:<[value].split[/]||<list[]>>
+                    - define player_uuid:<[row].get[1]||<empty>>
+                    - define discord_user_id:<[row].get[2]||<empty>>
+                    
+                    - define real_discord_name:<discord_user[drustcraft_discord_bot,<[discord_user_id]>].name>
+                    - if <[real_discord_name].regex_matches[.*<[discord_name]>.*]>:
+                      - define found:true
+                      - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Discord user **<[real_discord_name]>** is known as player **<player[<[player_uuid]>].name>**"
+                
+                - if <[found]> == false:
+                  - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Could not find any info on **<[discord_name]>**"
+                
+            - case player:
+              - define player_name:<[args].get[2]||<empty>>
+              - define target_player:<server.match_offline_player[<[player_name]>]||<empty>>
+              
+              - if <[target_player]> != <empty>:
+                - define found:false
+                
+                - ~sql id:drustcraft_database 'query:SELECT `discord_user_id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE `player_uuid`="<[target_player].uuid>"' save:sql_result
+                - if <entry[sql_result].result.size||0> >= 1:
+                  - foreach <entry[sql_result].result>:
+                    - define row:<[value].split[/]||<list[]>>
+                    - define discord_user_id:<[row].get[1]||<empty>>
+                    
+                    - define real_discord_name:<discord_user[drustcraft_discord_bot,<[discord_user_id]>].name>
+                    - define found:true
+                    - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Player **<[target_player].name>** is known as discord user **<[real_discord_name]>**"
+                
+                - if <[found]> == false:
+                  - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Could not find any info on **<[player_name]>**"
+                
+              - else:
+                - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Which player did you want to know about?"
+              
             - default:
               - discordmessage id:drustcraft_discord_bot channel:<context.channel> "What you talking about?"
 
@@ -251,13 +301,36 @@ drustcraftt_discord:
   load:
     - if <discord[drustcraft_discord_bot]||<empty>> == <empty>:
       - ~discordconnect id:drustcraft_discord_bot tokenfile:drustcraft_data/discord_token.txt
+
+    - waituntil <server.sql_connections.contains[drustcraft_database]>
     
+      # - if <yaml[drustcraft_server].contains[drustcraft.regenerate.radius]> == false:
+      #   - yaml id:drustcraft_server set drustcraft.regenerate.radius:20
+
+    - flag server drustcraft_discord_server_id:782787130334248973
     - flag server drustcraft_discord_channel_general:803069653273542696
     - flag server drustcraft_discord_channel_bot:855647065841467392
     - flag server drustcraft_discord_channel_chat:804613169631854632
     
     - run drustcraftt_discord.update_status
-    #ex ~discordmessage id:drustcraft_discord_bot channel:<discord[drustcraft_discord_bot].group[Drustcraft].channel[bot-taunting]> "Hello world!"
+
+    - define create_tables:true
+    - ~sql id:drustcraft_database 'query:SELECT version FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_version WHERE name="drustcraft_discord";' save:sql_result
+    - if <entry[sql_result].result.size||0> >= 1:
+      - define row:<entry[sql_result].result.get[1].split[/]||0>
+      - define create_tables:false
+      #- if <[row]> >= 2 || <[row]> < 1:
+        # Weird version error
+
+    - if <[create_tables]>:
+      - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_version` (`name`,`version`) VALUES ("drustcraft_discord",'1');'
+      - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` (`id` INT NOT NULL AUTO_INCREMENT, `player_uuid` VARCHAR(255) NOT NULL, `discord_user_id` VARCHAR(255), `discord_link_code` VARCHAR(4), PRIMARY KEY (`id`));'
+
+
+    - waituntil <yaml.list.contains[drustcraft_tab_complete]>
+    - run drustcraftt_tab_complete.completions def:discord|link
+    - run drustcraftt_tab_complete.completions def:discord|unlink  
+  
   
   update_status:
     - if <discord[drustcraft_discord_bot]||<empty>> != <empty>:
@@ -285,5 +358,121 @@ drustcraftt_discord:
     
     - if <discord[drustcraft_discord_bot]||<empty>> != <empty>:
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> <[embed]>
+  
+  update_player_roles:
+    - define target_player:<[1]>
+    - define discord_user_id:<empty>
+    
+    - ~sql id:drustcraft_database 'query:SELECT `discord_user_id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE (`player_uuid`="<[target_player].uuid>")' save:sql_result
+    - if <entry[sql_result].result.size||0> >= 1:
+      - foreach <entry[sql_result].result>:
+        - define row:<[value].split[/]||<list[]>>
+        - define discord_user_id:<[row].get[1]||<empty>>
+    
+    - if <[discord_user_id]> != <empty>:
+      - if <[target_player].groups.contains[staff]>:
+        - discord discord id:drustcraft_discord_bot add_role user:<[discord_user_id]> role:787809504833699850 group:<server.flag[drustcraft_discord_server_id]>
+      - else:
+        - discord discord id:drustcraft_discord_bot remove_role user:<[discord_user_id]> role:787809504833699850 group:<server.flag[drustcraft_discord_server_id]>
+        
+      - if <[target_player].groups.contains[moderator]>:
+        - discord discord id:drustcraft_discord_bot add_role user:<[discord_user_id]> role:787809695099256884 group:<server.flag[drustcraft_discord_server_id]>
+      - else:
+        - discord discord id:drustcraft_discord_bot remove_role user:<[discord_user_id]> role:787809695099256884 group:<server.flag[drustcraft_discord_server_id]>
+        
+      - if <[target_player].groups.contains[builder]>:
+        - discord discord id:drustcraft_discord_bot add_role user:<[discord_user_id]> role:857087745976303618 group:<server.flag[drustcraft_discord_server_id]>
+      - else:
+        - discord discord id:drustcraft_discord_bot remove_role user:<[discord_user_id]> role:857087745976303618 group:<server.flag[drustcraft_discord_server_id]>
+        
+      
+  clear_player_roles:
+    - define target_player:<[1]>
+    - define discord_user_id:<empty>
+    
+    - ~sql id:drustcraft_database 'query:SELECT `discord_user_id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE (`player_uuid`="<[target_player].uuid>")' save:sql_result
+    - if <entry[sql_result].result.size||0> >= 1:
+      - foreach <entry[sql_result].result>:
+        - define row:<[value].split[/]||<list[]>>
+        - define discord_user_id:<[row].get[1]||<empty>>
+    
+    - if <[discord_user_id]> != <empty>:
+      - discord discord id:drustcraft_discord_bot remove_role user:<[discord_user_id]> role:787809504833699850 group:<server.flag[drustcraft_discord_server_id]>
+      - discord discord id:drustcraft_discord_bot remove_role user:<[discord_user_id]> role:787809695099256884 group:<server.flag[drustcraft_discord_server_id]>
+      - discord discord id:drustcraft_discord_bot remove_role user:<[discord_user_id]> role:857087745976303618 group:<server.flag[drustcraft_discord_server_id]>
+  
+  
+  
+  link_player:
+    - define channel:<[1]>
+    - define author:<[2]>
+    - define link_code:<[3]||<empty>>
+    
+    - if <[link_code]> != <empty>:
+      - define player_uuid:<empty>
+      
+      - ~sql id:drustcraft_database 'query:SELECT `player_uuid` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE (`discord_link_code`="<[link_code]>")' save:sql_result
+      - if <entry[sql_result].result.size||0> >= 1:
+        - foreach <entry[sql_result].result>:
+          - define row:<[value].split[/]||<list[]>>
+          - define player_uuid:<[row].get[1]||<empty>>
+      
+      - if <[player_uuid]> != <empty>:
+        - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` SET `discord_user_id`="<[author].id>", `discord_link_code`=NULL WHERE (`discord_link_code`="<[link_code]>")' save:sql_result
+        - discordmessage id:drustcraft_discord_bot channel:<[channel]> "Hey <[author].mention>, you are now linked with player <player[<[player_uuid]>].name>"
+      - else:
+        - discordmessage id:drustcraft_discord_bot channel:<[channel]> "Hey, I could not find that discord link code"
+      
+    - else:
+      - discordmessage id:drustcraft_discord_bot channel:<[channel]> "You can link your Minecraft account to this Discord server by typing `/discord link` while in Drustcraft"
 
   
+drustcraftc_discord:
+  type: command
+  debug: false
+  name: discord
+  description: Manages your discord link
+  usage: /discord <&lt>link|unlink<&gt>
+  permission: drustcraft.discord
+  permission message: <&c>I'm sorry, you do not have permission to perform this command
+  tab complete:
+    - if <server.scripts.parse[name].contains[drustcraftw_tab_complete]>:
+      - define command:discord
+      - determine <proc[drustcraftp_tab_complete].context[<list[<[command]>].include_single[<context.raw_args.escaped>]>]>
+  script:
+    - choose <context.args.get[1]||<empty>>:
+      - case link:
+        - define discord_user_id:null
+        - define discord_link_code:null
+        
+        - ~sql id:drustcraft_database 'query:SELECT `discord_user_id`,`discord_link_code` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE (`player_uuid`="<player.uuid>")' save:sql_result
+        - if <entry[sql_result].result.size||0> >= 1:
+          - foreach <entry[sql_result].result>:
+            - define row:<[value].split[/]||<list[]>>
+            - define discord_user_id:<[row].get[1]||<empty>>
+            - define discord_link_code:<[row].get[2]||<empty>>
+        
+        - if <[discord_user_id]> == null:
+          - if <[discord_link_code]> == null:
+            - define found:false
+            - define discord_link_code:null
+            
+            - while !<[found]>:
+              - define discord_link_code:<util.random.int[1000].to[9999]>
+              - ~sql id:drustcraft_database 'query:SELECT `id` FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE (`discord_link_code`=<[discord_link_code]>)' save:sql_result
+              - if <entry[sql_result].result.size||0> == 0:
+                - define found:true
+
+            - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE (`player_uuid`="<player.uuid>")'
+            - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` (`player_uuid`,`discord_link_code`) VALUES("<player.uuid>", <[discord_link_code]>)'
+          
+          - narrate '<&e>Jump into Discord and enter <&f>!link <[discord_link_code]>'
+        - else:
+          - narrate '<&e>You already have linked your Minecraft account to a Discord user. Use <&f>/discord unlink <&e>to remove this link'
+
+      - case unlink:
+        - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_discord` WHERE (`player_uuid`="<player.uuid>")'
+        - narrate '<&e>Any Discord user links to this player has been removed.'
+        
+      - default:
+        - narrate '<&c>Unknown option. Try <queue.script.data_key[usage].parsed>'
