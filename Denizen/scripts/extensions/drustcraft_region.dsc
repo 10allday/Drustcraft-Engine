@@ -242,7 +242,7 @@ drustcraftw_region:
               
               - if <world[<[world_name]>].has_region[<[region_name]>]||false>:
                 - foreach <[items].parse[after[g:]]>:
-                  - if <yaml[drustcraft_regions].read[regions.<[world_name]>.<[region_name]>.members.groups].contains[<[value]>]> == false:
+                  - if <yaml[drustcraft_regions].read[regions.<[world_name]>.<[region_name]>.members.groups].contains[<[value]>]||false> == false:
                     - yaml id:drustcraft_regions set regions.<[world_name]>.<[region_name]>.members.groups:->:<[value]>
 
                 - run drustcraftt_region.save
@@ -255,7 +255,7 @@ drustcraftw_region:
               
               - if <world[<[world_name]>].has_region[<[region_name]>]||false>:
                 - foreach <[items].parse[after[g:]]>:
-                  - if <yaml[drustcraft_regions].read[regions.<[world_name]>.<[region_name]>.members.groups].contains[<[value]>]>:
+                  - if <yaml[drustcraft_regions].read[regions.<[world_name]>.<[region_name]>.members.groups].contains[<[value]>]||false>:
                     - yaml id:drustcraft_regions set regions.<[world_name]>.<[region_name]>.members.groups:<-:<[value]>
 
                 - run drustcraftt_region.save
