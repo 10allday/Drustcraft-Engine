@@ -85,27 +85,34 @@ drustcraftc_warn:
               - case mute:
                 - narrate '<&e>MUTE'
               - case kick:
-                - kick <[target_player]> reason:<proc[drustcraftp_warn.generate_msg].context[<[track]>]>
-              - case ban:
-                - yaml id:drustcraft_warn set players.<[target_player].uuid>.banned_track:<[track]>
-                - if <[timeframe]> == perm:
-                  - yaml id:drustcraft_warn set players.<[target_player].uuid>.banned_until:perm
+                - if !<[target_player].has_permission[drustcraft.warn.override]>:
+                  - kick <[target_player]> reason:<proc[drustcraftp_warn.generate_msg].context[<[track]>]>
                 - else:
-                  - if <yaml[drustcraft_warn].read[players.<[target_player].uuid>.banned_until]||0> < <[timeframe]>:
-                    - yaml id:drustcraft_warn set players.<[target_player].uuid>.banned_until:<[timeframe]>
+                  - narrate 'WARN: <proc[drustcraftp_warn.generate_msg].context[<[track]>]>'
+              - case ban:
+                - if !<[target_player].has_permission[drustcraft.warn.override]>:
+                  - yaml id:drustcraft_warn set players.<[target_player].uuid>.banned_track:<[track]>
+                  - if <[timeframe]> == perm:
+                    - yaml id:drustcraft_warn set players.<[target_player].uuid>.banned_until:perm
                   - else:
-                    - define timeframe:<yaml[drustcraft_warn].read[players.<[target_player].uuid>.banned_until]||0>
-                
-                - kick <[target_player]> reason:<proc[drustcraftp_warn.generate_msg].context[<[track]>|<[timeframe]>]>
+                    - if <yaml[drustcraft_warn].read[players.<[target_player].uuid>.banned_until]||0> < <[timeframe]>:
+                      - yaml id:drustcraft_warn set players.<[target_player].uuid>.banned_until:<[timeframe]>
+                    - else:
+                      - define timeframe:<yaml[drustcraft_warn].read[players.<[target_player].uuid>.banned_until]||0>
+                  
+                  - kick <[target_player]> reason:<proc[drustcraftp_warn.generate_msg].context[<[track]>|<[timeframe]>]>
+                - else:
+                  - narrate 'WARN: <proc[drustcraftp_warn.generate_msg].context[<[track]>]>'
               - default:
                 - narrate '<&e>You have received a WARNING for <[track]>'
 
-            - yaml id:drustcraft_warn set players.<[target_player].uuid>.tracks.<[track]>.<[next_row]>.time:<util.time_now.epoch_millis.div[1000].round>
-            - yaml id:drustcraft_warn set players.<[target_player].uuid>.tracks.<[track]>.<[next_row]>.by:<player.uuid||console>
-            - if <context.args.size> > 2:
-              - yaml id:drustcraft_warn set players.<[target_player].uuid>.tracks.<[track]>.<[next_row]>.reason:<context.args.remove[1|2].space_separated>
-            
-            - run drustcraftt_warn.save
+            - if !<[target_player].has_permission[drustcraft.warn.override]>:
+              - yaml id:drustcraft_warn set players.<[target_player].uuid>.tracks.<[track]>.<[next_row]>.time:<util.time_now.epoch_millis.div[1000].round>
+              - yaml id:drustcraft_warn set players.<[target_player].uuid>.tracks.<[track]>.<[next_row]>.by:<player.uuid||console>
+              - if <context.args.size> > 2:
+                - yaml id:drustcraft_warn set players.<[target_player].uuid>.tracks.<[track]>.<[next_row]>.reason:<context.args.remove[1|2].space_separated>
+              
+              - run drustcraftt_warn.save
           - else:
             - narrate '<&e>The track <[track]> was not found'
         - else:
