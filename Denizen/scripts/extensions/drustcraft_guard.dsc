@@ -81,7 +81,7 @@ drustcraftc_guard:
                 - adjust <npc[<[npc_id]>]> name:<&e>Guard
                 - equip <npc[<[npc_id]>]> hand:<item[netherite_sword]>
                 - equip <npc[<[npc_id]>]> offhand:<item[shield]>
-                - give <item[crossbow]> quantity:1 to:<npc[<npc_id]>].inventory>
+                - give <item[crossbow]> quantity:1 to:<npc[<[npc_id]>].inventory>
                 - execute as_player 'sentinel addtarget monsters --id <[npc_id]>'
                 - execute as_player 'sentinel addtarget event:pvp --id <[npc_id]>'
                 - execute as_player 'sentinel addtarget event:pvsentinel --id <[npc_id]>'
