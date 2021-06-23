@@ -57,6 +57,7 @@ drustcraftp_value:
     - define lookup_value:<[1]>
     - define change:<[2]||1>
     - define single:<[3]||false>
+    - define exact:<[4]||false>
     - define item_value:<[lookup_value]>
     - define item_value_mod:0
     - define netherite_blocks:0
@@ -105,9 +106,21 @@ drustcraftp_value:
           - define emeralds:<[emeralds].add[<[iron_ingots].div[4].round_down>]>
           - define iron_ingots:<[iron_ingots].mod[4].round_down>
       
+      - if <[exact]> == false:
+        - if <[netherite_blocks]> > 0:
+          - if <[netherite_ingots]> > 0:
+            - define emeralds:0
+            - define iron_ingots:0
+          - else if <[emeralds]> > 0:
+            - define iron_ingots:0
+        - else:
+          - if <[netherite_ingots]> > 0 && <[emeralds]> > 0:
+            - define iron_ingots:0
+      
+      
       - if <[emeralds]> > 0 && <[emeralds].mod[2]> == 0:
         - define diamond:<[emeralds]>
-        - define emeralds:0  
+        - define emeralds:0
       
       
       - if <[single]>:
