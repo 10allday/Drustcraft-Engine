@@ -113,7 +113,9 @@ drustcraftw_discord:
               - foreach <bungee.list_servers.sort_by_value[]>:
                 - ~bungeetag server:<[value]> <server.online_players.parse[name]> save:online_players
                 - define online_result:<[online_result].include[<entry[online_players].result>]>
-
+              
+              - define online_result:<[online_result].deduplicate.alphanumeric>
+              
               - if <[online_result].size> == 0:
                 - define 'online_result:No one is currently online <&co>('
               - else if <[online_result].size> == 1:
