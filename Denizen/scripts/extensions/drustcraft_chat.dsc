@@ -44,8 +44,14 @@ drustcraftw_chat:
         
         - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_chat` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
         - if <[rule]> == <empty>:
+          - define message:<context.message>
+          
+          - foreach <yaml[drustcraft_chat].list_keys[chat.replace]||<list[]>>:
+            - define message:<[message].replace_text[regex:<yaml[drustcraft_chat].read[chat.replace.<[value]>.match]>].with[<yaml[drustcraft_chat].read[chat.replace.<[value]>.replace]>]>
+          
           - determine passively RECIPIENTS:<player.location.world.players>
           - determine passively FORMAT:drustcraftf_chat
+          - determine <[message]>
         - else:
           - narrate '<&8><&l>[<&c><&l>!<&8><&l>] <&c>You message was not sent as it breaks the rule: <[rule]>'
           - determine CANCELLED
