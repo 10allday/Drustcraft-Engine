@@ -65,7 +65,7 @@ drustcraftw_discord:
             - case help:
               - discordmessage id:drustcraft_discord_bot channel:<context.channel> 'Howdy stranger, you can ask me for a few things such as `!tps` for the current server TPS, `!online` to see who is online or even `!value <&lt>item<&gt>` for what an item is worth'
             - case ip server:
-              - discordmessage id:drustcraft_discord_bot channel:<context.channel> 'You can connect to the Drustcraft server at **play.drustcraft.com.au**, bedrock or tablet players need to use port **20123**'
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> 'You can connect to the Drustcraft server at **play.drustcraft.com.au**, bedrock or tablet players will need to set the port to **20123**<n><n>Java players can also set their port to **26963** (set the server address to **play.drustcraft.com.au:26963**) if you are having issues'
             
             - case website site:
               - discordmessage id:drustcraft_discord_bot channel:<context.channel> '<discord_embed.with[author_name].as[https://drustcraft.com.au/].with[author_url].as[https://drustcraft.com.au/]>'
