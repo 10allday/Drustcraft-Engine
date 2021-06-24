@@ -317,7 +317,9 @@ drustcraftw_discord:
                     - define player_uuid:<[row].get[1]||<empty>>
                     - define discord_user_id:<[row].get[2]||<empty>>
                     
-                    - define real_discord_name:<discord_user[drustcraft_discord_bot,<[discord_user_id]>].name>
+                    - define real_discord_name:<discord_user[drustcraft_discord_bot,<[discord_user_id]>].nickname[<server.flag[drustcraft_discord_server_id]>]||<discord_user[drustcraft_discord_bot,<[discord_user_id]>].name>>
+                      
+                      
                     - if <[real_discord_name].regex_matches[.*<[discord_name]>.*]>:
                       - define found:true
                       - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Discord user **<[real_discord_name]>** is known as player **<player[<[player_uuid]>].name>**"
@@ -338,7 +340,7 @@ drustcraftw_discord:
                     - define row:<[value].split[/]||<list[]>>
                     - define discord_user_id:<[row].get[1]||<empty>>
                     
-                    - define real_discord_name:<discord_user[drustcraft_discord_bot,<[discord_user_id]>].name>
+                    - define real_discord_name:<discord_user[drustcraft_discord_bot,<[discord_user_id]>].nickname[<server.flag[drustcraft_discord_server_id]>]||<discord_user[drustcraft_discord_bot,<[discord_user_id]>].name>>
                     - define found:true
                     - discordmessage id:drustcraft_discord_bot channel:<context.channel> "Player **<[target_player].name>** is known as discord user **<[real_discord_name]>**"
                 
@@ -363,7 +365,7 @@ drustcraftw_discord:
               
         - else if <context.channel.id> == <server.flag[drustcraft_discord_channel_chat]>:
           - if !<context.new_message.author.is_bot>:
-            - narrate '<&3>[D]<&7><&lt><context.new_message.author.name><&gt> <&f><[message]>' targets:<server.online_players>
+            - narrate '<&3><&lt>D<&gt><&7>[<context.new_message.author.nickname[<server.flag[drustcraft_discord_server_id]>]||<context.new_message.author.name>>] <&f><[message]>' targets:<server.online_players>
 
 
 drustcraftt_discord:
