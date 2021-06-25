@@ -101,7 +101,7 @@ drustcraftt_builder:
 
           - narrate '<&e>Builder tools disabled'
           - narrate '<&c>You do not have permission to build in this region'
-        - else:
+        # - else:
           - adjust <[target_player]> gamemode:SURVIVAL
 
 
