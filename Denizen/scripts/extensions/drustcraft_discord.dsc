@@ -374,6 +374,28 @@ drustcraftw_discord:
               - else:
                 - discordmessage id:drustcraft_discord_bot channel:<context.channel> "There are no events currently running in Drustcraft"
             
+            - case weather:
+              - discordmessage id:drustcraft_discord_bot channel:<context.channel> "The weather bureau is reporting the following conditions:"
+              - wait 20t
+              - foreach <server.worlds>:
+                - define 'weather:Find and Sunny'
+                
+                - choose <[value].environment>:
+                  - case NETHER:
+                    - define 'weather:<list[Hot and humid|Fine but enjoy the lava|...|Overcast, jk].random>'
+                  - case THE_END:
+                    - define 'weather:<list[Dark|...].random>'
+                  - default:
+                    - if <[value].has_storm>:
+                      - if <[value].thundering>:
+                        - define weather:Thunderstorms
+                      - else:
+                        - define 'weather:Overcast, possible rain and snow'
+                
+                - discordmessage id:drustcraft_discord_bot channel:<context.channel> "  • **<[value].name.replace_text[_].with[<&sp>].to_titlecase>**: <[weather]>"
+                - wait 2t
+                  
+            
             - default:
               - discordmessage id:drustcraft_discord_bot channel:<context.channel> "What you talking about?"
               
