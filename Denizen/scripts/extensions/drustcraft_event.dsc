@@ -150,3 +150,15 @@ drustcraftp_event:
       - determine <yaml[drustcraft_event].read[events.<[id]>.title]||<empty>>
     
     - determine <empty>
+  
+  remaining:
+    - define id:<[1]||<empty>>
+    - define running:<proc[drustcraftp_event.running]>
+    
+    - if <[running].keys.contains[<[id]>]>:
+      - define mins_remaining:<duration[<element[60].sub[<util.time_now.minute>].mul[60]>]>
+      - define hours_remaining:<duration[<util.time_now.hour.add[<[running].get[<[id]>].sub[1]>].mul[3600]>]>
+
+      - determine <duration[<[hours_remaining]>].add[<[mins_remaining]>]>
+    - else:
+      - determine <duration[0]>
