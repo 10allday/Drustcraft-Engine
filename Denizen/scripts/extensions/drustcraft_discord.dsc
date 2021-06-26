@@ -360,6 +360,20 @@ drustcraftw_discord:
               - else:
                 - discordmessage id:drustcraft_discord_bot channel:<context.channel> "I got no jokes today"
             
+            - case event events:
+              - define event_list:<proc[drustcraftp_event.running]>
+              
+              - if <[event_list].size> > 0:
+                - if <[event_list].size> > 1:
+                  - discordmessage id:drustcraft_discord_bot channel:<context.channel> "The following events are currently running:"
+                  - foreach <[event_list]>:
+                    - discordmessage id:drustcraft_discord_bot channel:<context.channel> "  • <proc[drustcraftp_event.title].context[<[key]>]> for another <proc[drustcraftp_event.remaining].context[<[key]>].formatted_words>"
+                - else:
+                  - define event_id:<[event_list].keys.get[1]>
+                  - discordmessage id:drustcraft_discord_bot channel:<context.channel> "The <proc[drustcraftp_event.title].context[<[event_id]>]> event is running for another <proc[drustcraftp_event.remaining].context[<[event_id]>].formatted_words>"
+              - else:
+                - discordmessage id:drustcraft_discord_bot channel:<context.channel> "There are no events currently running in Drustcraft"
+            
             - default:
               - discordmessage id:drustcraft_discord_bot channel:<context.channel> "What you talking about?"
               
