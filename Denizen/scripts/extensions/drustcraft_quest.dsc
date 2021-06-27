@@ -801,9 +801,14 @@ drustcraftp_quest:
       - if <[rewards]> == <empty>:
         - define 'rewards:- No rewards'
       
-      - define description:<proc[drustcraftp_utils.split_for_pages].context[<proc[drustcraftp_quest.description].context[<[quest_id]>|<[target_player]>]>]>
+      - define title:<&2><bold><yaml[drustcraft_quests].read[quests.<[quest_id]>.title]||<empty>><p><&0>
+      - define description:<proc[drustcraftp_utils.split_for_pages].context[<[title]><proc[drustcraftp_quest.description].context[<[quest_id]>|<[target_player]>]>]>
       
-      - define 'book_pages:<list_single[<&2><bold><yaml[drustcraft_quests].read[quests.<[quest_id]>.title]||<empty>><p><&0><[description].get[1]>|<&0><bold>Objectives<p><&0><[objectives]>|<&0><bold>Rewards<p><&0><[rewards]>]>'
+      - define description:->:<&0><bold>Objectives<p><&0><[objectives]>
+      - define description:->:<&0><bold>Rewards<p><&0><[rewards]>
+      
+      # - define 'book_pages:<list_single[<[description]>]>'
+      - define book_pages:<[description]>
       
       #<item[drustcraft_questbook[book=map@title/<&4>Quest: My quest|author/nomadjimbob|pages/li@el@page 1&amppipeel@page 2]]>'
       - define book_map:<map.with[title].as[<[book_title]>].with[author].as[<[book_author]>].with[pages].as[<[book_pages]>]>
