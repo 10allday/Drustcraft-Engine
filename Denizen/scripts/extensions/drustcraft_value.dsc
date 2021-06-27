@@ -69,6 +69,7 @@ drustcraftp_value:
 
     - while true: 
       - define item_value:<[lookup_value].mul[<[qty]>].mul[<[change]>]>
+      - define item_value_changed:<[item_value]>
 
       - define netherite_blocks:0
       - define netherite_ingots:0
@@ -132,7 +133,7 @@ drustcraftp_value:
       - else:
         - while stop
     
-    - determine <map[].with[min_qty].as[<[min_items]>].with[value].as[<[lookup_value]>].with[netherite_blocks].as[<[netherite_blocks]>].with[netherite_ingots].as[<[netherite_ingots]>].with[emeralds].as[<[emeralds]>].with[diamond].as[<[diamond]>].with[iron_ingots].as[<[iron_ingots]>]>    
+    - determine <map[].with[min_qty].as[<[min_items]>].with[value].as[<[item_value_changed]>].with[netherite_blocks].as[<[netherite_blocks]>].with[netherite_ingots].as[<[netherite_ingots]>].with[emeralds].as[<[emeralds]>].with[diamond].as[<[diamond]>].with[iron_ingots].as[<[iron_ingots]>]>    
     
 
 drustcraftc_value:
