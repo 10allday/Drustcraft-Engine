@@ -761,7 +761,8 @@ drustcraftp_quest:
 #       - else:
 #         - define gives:<element[]>
         
-      - define lore:<&nl><yaml[drustcraft_quests].read[quests.<[quest_id]>.description].split_lines[40]||<empty>><[gives]>
+      # - define lore:<&nl><yaml[drustcraft_quests].read[quests.<[quest_id]>.description].split_lines[40]||<empty>><[gives]>
+      - define lore:<&nl><proc[drustcraftp_quest.description].context[<[quest_id]>|<[target_player]>]><[gives]>
             
       - define objectives:<empty>
       - foreach <yaml[drustcraft_quests].list_keys[quests.<[quest_id]>.objectives]||<list[]>>:
@@ -790,7 +791,6 @@ drustcraftp_quest:
         - if <[npc_start]> != <[npc_end]>:
           - define 'objectives:<[objectives]>- Find <npc[<[npc_end]>].name.strip_color||Unknown><&nl>'
         
-      
       - if <[objectives]> == <empty>:
         - define 'objectives:- No objectives'
 
@@ -801,13 +801,24 @@ drustcraftp_quest:
       - if <[rewards]> == <empty>:
         - define 'rewards:- No rewards'
       
-      - define 'book_pages:<list_single[<&2><bold><yaml[drustcraft_quests].read[quests.<[quest_id]>.title]||<empty>><p><&0><yaml[drustcraft_quests].read[quests.<[quest_id]>.description]||<empty>>|<&0><bold>Objectives<p><&0><[objectives]>|<&0><bold>Rewards<p><&0><[rewards]>]>'
+      - define description:<proc[drustcraftp_utils.split_for_pages].context[<proc[drustcraftp_quest.description].context[<[quest_id]>|<[target_player]>]>]>
+      
+      - define 'book_pages:<list_single[<&2><bold><yaml[drustcraft_quests].read[quests.<[quest_id]>.title]||<empty>><p><&0><[description].get[1]>|<&0><bold>Objectives<p><&0><[objectives]>|<&0><bold>Rewards<p><&0><[rewards]>]>'
       
       #<item[drustcraft_questbook[book=map@title/<&4>Quest: My quest|author/nomadjimbob|pages/li@el@page 1&amppipeel@page 2]]>'
       - define book_map:<map.with[title].as[<[book_title]>].with[author].as[<[book_author]>].with[pages].as[<[book_pages]>]>
       - define questbook:<item[drustcraft_questbook[book=<[book_map]>;lore=<[lore]>]]>
       
     - determine <[questbook]>
+  
+  description:
+    - define quest_id:<[1]||<empty>>
+    - define target_player:<[2]||<empty>>
+    
+    - define description:<yaml[drustcraft_quests].read[quests.<[quest_id]>.description].split_lines[40]||<empty>>
+    - define description:<[description].replace_text[$player$].with[<[target_player].name>]>
+    
+    - determine <[description]>
 
 
 drustcraftc_quest:
@@ -1246,7 +1257,7 @@ drustcraftc_quest:
           - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
             - define repeatable:<context.args.get[3]||<empty>>
             
-            - if <[repeatable]> != <empty> && <list[true|false].contains[<[repeatable]>:
+            - if <[repeatable]> != <empty> && <list[true|false].contains[<[repeatable]>]>:
               - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                 - run drustcraftt_quest.repeatable def:<[quest_id]>|<[repeatable]>
                 - narrate '<&e>Quest ID <&sq><[value]><&sq> has been updated'
