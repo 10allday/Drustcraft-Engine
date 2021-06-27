@@ -78,8 +78,8 @@ drustcraftt_shop:
           - define sell_random_range_min:<[sell_random_range].before[-]>
           - define sell_random_range_max:<[sell_random_range].after_last[-]>
           - define sell_multiplier_range:<yaml[drustcraft_shop].read[shop.<[shop_name]>.sell_multiplier_range]||1.0-1.4>
-          - define sell_multiplier_range_min:<[sell_random_range].before[-]>
-          - define sell_multiplier_range_max:<[sell_random_range].after_last[-]>
+          - define sell_multiplier_range_min:<[sell_multiplier_range].before[-]>
+          - define sell_multiplier_range_max:<[sell_multiplier_range].after_last[-]>
                     
           - define sell_amount:<util.random.int[<[sell_random_range_min]>].to[<[sell_random_range_max]>]>
           - foreach <yaml[drustcraft_shop].read[shop.<[shop_name]>.items].random[<[sell_amount]>]||<list[]>>:
@@ -105,8 +105,8 @@ drustcraftt_shop:
           - define buy_random_range_min:<[buy_random_range].before[-]>
           - define buy_random_range_max:<[buy_random_range].after_last[-]>
           - define buy_multiplier_range:<yaml[drustcraft_shop].read[shop.<[shop_name]>.buy_multiplier_range]||0.8-1.1>
-          - define buy_multiplier_range_min:<[buy_random_range].before[-]>
-          - define buy_multiplier_range_max:<[buy_random_range].after_last[-]>
+          - define buy_multiplier_range_min:<[buy_multiplier_range].before[-]>
+          - define buy_multiplier_range_max:<[buy_multiplier_range].after_last[-]>
                     
           - define buy_amount:<util.random.int[<[buy_random_range_min]>].to[<[buy_random_range_max]>]>
           - foreach <yaml[drustcraft_shop].read[shop.<[shop_name]>.items].random[<[buy_amount]>]||<list[]>>:
