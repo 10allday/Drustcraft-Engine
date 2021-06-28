@@ -17,9 +17,9 @@ drustcraftw_region:
       - run drustcraftt_region.load
     
     after player joins:
-      - adjust <player> gamemode:<proc[drustcraftp_region.gamemode].context[<player.location>]||SURVIVAL>
-      - if <proc[drustcraftp_region.gamemode].context[<player.location>]> == CREATIVE:
-        - adjust <player> gamemode:CREATIVE
+      - wait 40t
+      - define region_gamemode:<proc[drustcraftp_region.gamemode].context[<player.location>]||SURVIVAL>
+      - adjust <player> gamemode:<[region_gamemode]>
   
     on player enters polygon:
       - run drustcraftt_region.show_title def:<context.area.note_name||<empty>>|<player>
