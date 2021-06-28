@@ -50,6 +50,11 @@ drustcraftw_builder:
         - if <player.groups.contains[staff]> == false:
           - narrate '<&e>You cannot open inventories in creative mode'
           - determine cancelled
+          
+    on player quits:
+      - foreach <player.groups.filter[ends_with[_edit]]>:
+        - run drustcraftt_group.remove_member context:<[value]>|<player>
+      
 
     on system time minutely:
       - foreach <server.online_players.filter[location.find.npcs.within[50].size.is_more_than[20]].filter[gamemode.equals[CREATIVE]]>:
