@@ -5,6 +5,7 @@
 drustcraftw_value:
   type: world
   debug: false
+  version: 1
   events:
     on server starts:
       - run drustcraftt_value.load
