@@ -26,12 +26,30 @@ drustcraftw_chat:
       - waituntil <yaml.list.contains[drustcraft_server]>
       - run drustcraftt_chat.load
       
-    on bungee player joins network:
+    on bungee player joins network server_flagged:drustcraft_bungee_master:
       - wait 20t
-      - narrate '<&8>[<&a>+<&8>] <&e><context.name> <&f>joined Drustcraft' targets:<server.online_players.exclude[<player>]>
+      - define skip:true
+      - flag server drustcraft_skip_player_announcement:<-:<context.uuid>
+      
+      - foreach <bungee.list_servers>:
+        - ~bungeetag server:<[value]> <server.online_players> save:online_players
+        - if <entry[online_players].result.parse[uuid].contains[<context.uuid>]>:
+          - define skip:false
+          - foreach stop
+      
+      - if !<[skip]>:
+        # targets:<server.online_players.exclude[<player>]>
+        # this doesnt work as the event only has <context.name> or <context.uuid>      
+        - narrate '<&8>[<&a>+<&8>] <&e><context.name> <&f>joined Drustcraft' targets:<server.online_players>
+      - else:
+        - flag server drustcraft_skip_player_announcement:->:<context.uuid>
   
-    on bungee player leaves network:
-      - narrate '<&8>[<&c>-<&8>] <&e><context.name> <&f>left Drustcraft' targets:<server.online_players.exclude[<player>]>
+    on bungee player leaves network server_flagged:drustcraft_bungee_master:
+      - if !<server.flag[drustcraft_skip_player_announcement].contains[<context.uuid>]||false>:
+        - flag server drustcraft_skip_player_announcement:<-:<context.uuid>
+        # targets:<server.online_players.exclude[<player>]>
+        # this doesnt work as the event only has <context.name> or <context.uuid>      
+        - narrate '<&8>[<&c>-<&8>] <&e><context.name> <&f>left Drustcraft' targets:<server.online_players>
 
     on player chats:
       - if <server.flag[drustcraft_chat]||false>:
@@ -104,6 +122,7 @@ drustcraftt_chat:
     
   load:
     - flag server drustcraft_chat:!
+    - flag server drustcraft_skip_player_announcement:<list[]>
 
     - if <server.has_file[/drustcraft_data/chat.yml]>:
       - yaml load:/drustcraft_data/chat.yml id:drustcraft_chat
