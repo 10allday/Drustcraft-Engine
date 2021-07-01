@@ -145,7 +145,7 @@ drustcraftt_chat:
   
       - if <[create_tables]>:
         - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_version` (`name`,`version`) VALUES ("drustcraft_chat",'1');'
-        - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_chat` (`id` INT NOT NULL AUTO_INCREMENT, `server` VARCHAR(255) NOT NULL, `world` VARCHAR(255) NOT NULL, `date` INT NOT NULL, `type` VARCHAR(255) NOT NULL, `sender` VARCHAR(255) NOT NULL, `receiver` VARCHAR(255) NOT NULL, `content` VARCHAR(255) NOT NULL, `channel` VARCHAR(255) NOT NULL, `rule` VARCHAR(255) NOT NULL, PRIMARY KEY (`id`));'
+        - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_chat` (`id` INT NOT NULL AUTO_INCREMENT, `server` VARCHAR(255) NOT NULL, `world` VARCHAR(255) NOT NULL, `date` INT NOT NULL, `type` VARCHAR(255) NOT NULL, `sender` VARCHAR(255) NOT NULL, `receiver` VARCHAR(255) NOT NULL, `content` TEXT NOT NULL, `channel` VARCHAR(255) NOT NULL, `rule` VARCHAR(255) NOT NULL, PRIMARY KEY (`id`));'
       
       - flag server drustcraft_chat:true
 
