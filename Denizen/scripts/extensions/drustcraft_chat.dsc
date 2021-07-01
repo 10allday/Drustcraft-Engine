@@ -15,6 +15,7 @@ drustcraftf_chat:
 drustcraftw_chat:
   type: world
   debug: false
+  version: 1
   events:
     on server start:
       - wait 2t
