@@ -491,6 +491,9 @@ drustcraftt_discord:
       - foreach <entry[sql_result].result>:
         - define row:<[value].split[/]||<list[]>>
         - define discord_user_id:<[row].get[1]||<empty>>
+        
+        - if <[discord_user_id]> == null:
+          - define discord_user_id:<empty>
     
     - if <[discord_user_id]> != <empty>:
       - if <[target_player].groups.contains[staff]>:
