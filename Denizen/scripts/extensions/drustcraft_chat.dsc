@@ -30,9 +30,8 @@ drustcraftw_chat:
     on bungee player joins network server_flagged:drustcraft_bungee_master:
       - wait 20t
       - define skip:true
-      - flag server drustcraft_skip_player_announcement:<-:<context.uuid>
       
-      - foreach <bungee.list_servers>:
+      - foreach <bungee.list_servers||<list[]>>:
         - ~bungeetag server:<[value]> <server.online_players> save:online_players
         - if <entry[online_players].result.parse[uuid].contains[<context.uuid>]>:
           - define skip:false
@@ -46,6 +45,7 @@ drustcraftw_chat:
         - flag server drustcraft_skip_player_announcement:->:<context.uuid>
   
     on bungee player leaves network server_flagged:drustcraft_bungee_master:
+      - wait 20t
       - if !<server.flag[drustcraft_skip_player_announcement].contains[<context.uuid>]||false>:
         - flag server drustcraft_skip_player_announcement:<-:<context.uuid>
         # targets:<server.online_players.exclude[<player>]>
