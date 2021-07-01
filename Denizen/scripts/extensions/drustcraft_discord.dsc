@@ -38,10 +38,10 @@ drustcraftw_discord:
       #ex discord id:drustcraft_discord_bot add_role user:846286915413082124 role:787809504833699850 group:782787130334248973 
       
     on player chats priority:100:
-      - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> '**<player.name>** » <context.message>'
+      - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> '**<player.name>** » <context.message.strip_color>'
     
     on player death:
-      - define 'message:<discord_embed.with[color].as[#000000].with[author_icon_url].as[https://crafatar.com/avatars/<player.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<context.message||died>]>'
+      - define 'message:<discord_embed.with[color].as[#000000].with[author_icon_url].as[https://crafatar.com/avatars/<player.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<context.message.strip_color||died>]>'
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> <[message]>
       
     # on player completes advancement:
