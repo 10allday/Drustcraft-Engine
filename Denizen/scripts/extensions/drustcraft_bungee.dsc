@@ -67,7 +67,7 @@ drustcraftt_bungee:
       
       - if <[master]>:
         - flag server drustcraft_bungee_master:true
-        - debug log '<server.bungee> is now the Bungee master server'
+        - debug log 'This server is now the Bungee master server'
     
 
 _drustcraftt_bungee_run:
