@@ -20,12 +20,12 @@ drustcraftw_discord:
       - waituntil <yaml.list.contains[drustcraft_server]>
       - run drustcraftt_discord.load
       
-    on bungee player joins network:
+    on bungee player joins network server_flagged:drustcraft_bungee_master:
       - wait 20t
       - define 'message:<discord_embed.with[color].as[#00ff00].with[author_icon_url].as[https://crafatar.com/avatars/<context.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<context.name> joined Drustcraft]>'
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> <[message]>
       
-    on bungee player leaves network:
+    on bungee player leaves network server_flagged:drustcraft_bungee_master:
       - define 'message:<discord_embed.with[color].as[#ff0000].with[author_icon_url].as[https://crafatar.com/avatars/<context.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<context.name> left Drustcraft]>'
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> <[message]>
 
