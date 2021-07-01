@@ -25,19 +25,20 @@ drustcraftt_bungee:
     - flag server drustcraft_bungee_master:!
     - flag server drustcraft_bungee_priority:!
     
-    - if <server.plugins.contains[Depenizen]> && <bungee.server||<empty>> != <empty>:
-      - if <yaml.list.contains[drustcraft_bungee]>:
-        - ~yaml id:drustcraft_bungee unload
-      - ~yaml id:drustcraft_bungee create
+    - if <yaml.list.contains[drustcraft_bungee]>:
+      - ~yaml id:drustcraft_bungee unload
+    - ~yaml id:drustcraft_bungee create
+  
+    - run drustcraftt_bungee.challenge
     
-      - run drustcraftt_bungee.challenge
-      - debug log 'Drustcraft Bungee loaded'
-    - else:
-      - debug log 'Drustcraft Bungee did not load because this server is not connected to BungeeCord'
+    - flag server drustcraft_bungee:true
+    - debug log 'Drustcraft Bungee loaded'
     
   register:
     - define bungee_cmd:<[1]||<empty>>
     - define task_name:<[2]||<empty>>
+    
+    - waituntil <yaml.list.contains[drustcraft_bungee]>
     
     - if <[bungee_cmd]> != <empty> && <[task_name]> != <empty>:
       - yaml id:drustcraft_bungee set bungee.commands.<[bungee_cmd]>:<[task_name]>
@@ -46,23 +47,21 @@ drustcraftt_bungee:
     - bungeerun <bungee.list_servers> _drustcraftt_bungee_run def:<queue.definition_map.exclude[raw_context].values>
   
   challenge:
-    - if <server.flag[drustcraft_bungee_priority]||<empty>> == <empty>:
-      - flag server drustcraft_bungee_priority
-    
+    - flag server drustcraft_bungee_priority:!
     - define master:true
     
     - while !<server.has_flag[drustcraft_bungee_priority]>:
       - define master:true
 
       - flag server drustcraft_bungee_priority:<util.random.int[1].to[1000]>
-      - foreach <bungee.list_servers>:
+      - foreach <bungee.list_servers.exclude[<bungee.server>]||<list[]>>:
         - ~bungeetag server:<[value]> <server.flag[drustcraft_bungee_priority]> save:drustcraft_bungee_priority
         - if <entry[drustcraft_bungee_priority].result||0> == <server.flag[drustcraft_bungee_priority]>:
           - flag server drustcraft_bungee_priority:!
         - else if <entry[drustcraft_bungee_priority]||0> < <server.flag[drustcraft_bungee_priority]>:
           - define master:false
         
-        - ~bungeetag server:<[value]> <server.flag[drustcraft_bungee_master]> save:drustcraft_bungee_master
+        - ~bungeetag server:<[value]> <server.flag[drustcraft_bungee_master]||<empty>> save:drustcraft_bungee_master
         - if <entry[drustcraft_bungee_master].result||false> != false:
           - define master:false
       
