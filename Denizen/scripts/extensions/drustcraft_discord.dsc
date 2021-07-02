@@ -42,7 +42,7 @@ drustcraftw_discord:
     
     on command:
       - if <context.source_type> == PLAYER:
-        - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> '**<player.name>** <context.command> <context.raw_args>'
+        - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> '**<player.name>** /<context.command> <context.raw_args>'
     
     on player death:
       - define 'message:<discord_embed.with[color].as[#000000].with[author_icon_url].as[https://crafatar.com/avatars/<player.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<context.message.strip_color||died>]>'
