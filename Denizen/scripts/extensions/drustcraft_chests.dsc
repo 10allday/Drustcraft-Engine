@@ -18,7 +18,7 @@ drustcraftw_chest:
           - if !<yaml[drustcraft_chest].contains[ignored_chests]> || !<yaml[drustcraft_chest].read[ignored_chests].contains[<context.inventory.location>]||true>:
             - yaml id:drustcraft_chest set restocked_chests:->:<context.inventory.location>
             - if <context.inventory.quantity_item> < 10:
-              - repeat <util.random.int[5].to[20]>:
+              - repeat <util.random.int[1].to[3]>:
                 - define random_item:<yaml[drustcraft_chest].list_keys[restock_items].random>
                 - define random_item_chance:<yaml[drustcraft_chest].read[restock_items.<[random_item]>]>
                 
