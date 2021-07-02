@@ -77,7 +77,18 @@ drustcraftw_chat:
       - else:
         - narrate '<&8><&l>[<&c><&l>!<&8><&l>] <&c>Chat is currently disabled'
         - determine CANCELLED
+    
+    on command:
+      - if <server.flag[drustcraft_chat]||false> && <context.source_type> == PLAYER:
+        - define type:command
+        - define sender:<player.uuid>
+        - define receiver:<empty>
+        - define 'content:<context.command> <context.raw_args>'
+        - define channel:<empty>
+        - define rule:<empty>
         
+        - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_chat` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
+            
     on player changes sign:
       - if <server.flag[drustcraft_chat]||false>:
         - define type:sign
@@ -222,6 +233,9 @@ drustcraftt_chat_message:
           - playsound <player[<[player_uuid_to]>]> sound:ENTITY_CHICKEN_EGG volume:1.0 pitch:1.5
           - narrate '<&7>[<[player_name_from]> <&gt> You] <&f><[message]>' targets:<player[<[player_uuid_to]>]>
           - flag <player[<[player_uuid_to]>]> drustcraft_chat_reply:<[player_uuid_from]>
+          
+          - if <server.has_flag[drustcraft_discord]>:
+            - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> '**<[player_name_from]> <&gt> <player[<[player_uuid_to]>].name>** <[message]>'
 
 
 drustcraftc_chat_announce:
