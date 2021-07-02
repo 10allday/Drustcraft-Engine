@@ -40,6 +40,10 @@ drustcraftw_discord:
     on player chats priority:100:
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> '**<player.name>** » <context.message.strip_color>'
     
+    on command:
+      - if <context.source_type> == PLAYER:
+        - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> '**<player.name>** <context.command> <context.raw_args>'
+    
     on player death:
       - define 'message:<discord_embed.with[color].as[#000000].with[author_icon_url].as[https://crafatar.com/avatars/<player.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<context.message.strip_color||died>]>'
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> <[message]>
@@ -411,6 +415,8 @@ drustcraftt_discord:
     - determine <empty>
   
   load:
+    - flag server drustcraft_discord:!
+    
     - if <discord[drustcraft_discord_bot]||<empty>> == <empty>:
       - ~discordconnect id:drustcraft_discord_bot tokenfile:drustcraft_data/discord_token.txt
 
@@ -452,6 +458,8 @@ drustcraftt_discord:
     - run drustcraftt_tab_complete.completions def:discord|link
     - run drustcraftt_tab_complete.completions def:discord|unlink  
   
+    - flag server drustcraft_discord:true
+    
   save:
     - yaml id:drustcraft_discord savefile:/drustcraft_data/discord.yml
   
