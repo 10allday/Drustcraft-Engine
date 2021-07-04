@@ -1,61 +1,45 @@
 # Drustcraft - NPC
-# NPC Utilities (De-spawns when no players are around)
+# NPC Utilities
 # https://github.com/drustcraft/drustcraft
 
 drustcraftw_npc:
   type: world
   debug: false
+  version: 1
   events:
     on server start:
       - run drustcraftt_npc.load
     
-    
     on script reload:
       - run drustcraftt_npc.load
     
-    #on entity teleports:
-      # Spawn NPCs that are within 25 blocks from the destination
-      # We leave the original NPCs spawned incase the player returns, the minute counter will clean then up
-      #- run drustcraftt_npc.spawn_close def:<context.destination>
-      
-
     on player respawns:
-      # Spawn NPCs that are within 25 blocks from the location
       - run drustcraftt_npc.spawn_close def:<context.location>
-
 
     after player joins:
       # Spawn NPCs that are within 25 blocks from the location
       - run drustcraftt_npc.spawn_close def:<player.location>
       - flag <player> npc_engaged:!
 
-
-    #TODO this interferes with sentinel respawntime on death
     on system time secondly every:5:
-      # Spawn NPCs that are within 25 blocks from a player
-      - foreach <server.npcs.filter[location.find_entities[Player].within[50].size.is[OR_MORE].than[1]].filter[is_spawned.not]>:
+      # spawn NPCs that are within 50 blocks from a player and does not have the flag drustcraft_killed
+      - foreach <server.npcs.filter[location.find_entities[Player].within[50].size.is[OR_MORE].than[1]].filter[is_spawned.not].filter[has_flag[drustcraft_killed].not]>:
         - spawn <[value]> <[value].location>
 
-
     on system time minutely:
-      # Despawn NPCs that are spawned and further away then 25 blocks from a player - save server resources
+      # despawn NPCs that are beyond 50 blocks from a player and is not navigating
       - foreach <server.npcs.filter[location.find_entities[Player].within[50].size.is[==].to[0]].filter[is_spawned].filter[not[is_navigating]]>:
+        - if <[value].has_flag[drustcraft_killed]>:
+          - flag <[value]> drustcraft_killed:!
+          
         - despawn <[value]>
 
-
-    # Ensure that NPC names start with the color code &e
     on npc command:
       - choose <context.args.get[1]||<empty>>:
         - case create rename:
           - wait 5t
           - lookclose <player.selected_npc> true range:10 realistic
           - assignment set script:drustcrafta_npc npc:<player.selected_npc>
-          #- if <player.selected_npc.traits.contains[sentinel]> == false:
-          #  - trait state:true sentinel to:<player.selected_npc>
-          #- anchor add <player.selected_npc.location> id:spawn npc:<player.selected_npc>
-          #- adjust <player.selected_npc> skin_layers:<player.selected_npc.skin_layers.exclude[cape]>
-          #- execute as_player 'sentinel addtarget monsters'
-          #- execute as_player 'sentinel spawnpoint'
           
           - foreach <server.npcs>:
             - if <[value].name.starts_with[§]> == false:
@@ -64,6 +48,8 @@ drustcraftw_npc:
     on entity death:
       - if <context.damager.object_type||<empty>> != PLAYER:
         - determine NO_XP
+      - if <context.entity.object_type||<empty>> == NPC:
+        - flag <context.entity> drustcraft_killed:true
     
     on player closes inventory priority:100:
       - define prev_npc:<player.flag[npc_engaged]||<empty>>
@@ -88,6 +74,9 @@ drustcraftt_npc:
     - determine <empty>
 
   load:
+    - wait 2t
+    - waituntil <yaml.list.contains[drustcraft_server]>
+    
     - if <yaml.list.contains[drustcraft_npc_interactor]>:
       - ~yaml unload id:drustcraft_npc_interactor
     - yaml create id:drustcraft_npc_interactor
@@ -118,11 +107,10 @@ drustcraftt_npc:
       - else:
         - yaml id:drustcraft_npc_interactor set interactor.<[npc_id]>:!
 
-
   spawn_close:
     - define target_location:<[1]>
     
-    - foreach <server.npcs.filter[location.distance[<[target_location]>].is[OR_LESS].than[25]]>:
+    - foreach <server.npcs.filter[location.distance[<[target_location]>].is[OR_LESS].than[25]].filter[has_flag[drustcraft_killed].not]>:
       - spawn <[value]> <[value].location>
 
 
@@ -207,7 +195,7 @@ drustcrafti_npc:
               
           - if <[show_greeting]> && <player.gamemode> == SURVIVAL:
             #- if <player.item_in_hand.material.name||air>> == air:
-            - narrate <proc[drustcraftp_chat_format].context[<npc>|<proc[drustcraftp_npc.greeting].context[<npc.id>|<player>]>]>
+            - narrate <proc[drustcraftp_message_format].context[<npc>|<proc[drustcraftp_npc.greeting].context[<npc.id>|<player>]>]>
 
       proximity trigger:
         entry:
@@ -227,12 +215,12 @@ drustcrafti_npc:
                   - if <[show_greeting].object_type> == LIST:
                     - flag <player> drustcraft_npc_entry:<npc.id>
                     - foreach <[show_greeting]>:
-                      - narrate <proc[drustcraftp_chat_format].context[<npc>|<[value]>]>
+                      - narrate <proc[drustcraftp_message_format].context[<npc>|<[value]>]>
                       - wait 5s
                       - if <player.flag[drustcraft_npc_entry]||0> != <npc.id>:
                         - foreach stop
                   - else:
-                    - narrate <proc[drustcraftp_chat_format].context[<npc>|<[show_greeting]>]>
+                    - narrate <proc[drustcraftp_message_format].context[<npc>|<[show_greeting]>]>
 
         exit:
           script:
