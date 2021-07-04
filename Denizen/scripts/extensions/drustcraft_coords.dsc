@@ -48,7 +48,6 @@ drustcraftt_coords:
   
   load:
     - flag player drustcraft_coords_show:!
-    - flag player drustcraft_coords_pointer:!
 
 
 drustcraftc_coords:
