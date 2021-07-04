@@ -17,9 +17,10 @@ drustcraftw:
       - foreach <yaml[drustcraft_server].read[drustcraft.run.reload]||<list[]>>:
         - execute as_server <[value]>
 
+
 drustcraftt:
   type: task
-  debug: false
+  debug: true
   script:
     - determine <empty>
   
@@ -35,6 +36,7 @@ drustcraftt:
     
     - foreach <server.notables>:
       - note remove as:<[value].note_name>
+
 
 drustcraftp:
   type: procedure
@@ -70,3 +72,19 @@ drustcraftp:
           - determine TRUE
     
     - determine FALSE
+  
+  determine_map:
+    - define determine_list:<queue.definition[raw_context]||<empty>>
+    - define determine_map:<map[]>
+    
+    - if <[determine_list].object_type> == LIST:
+      - foreach <[determine_list]>:
+        - define key:<[value].before[:]>
+        - define val:<[value].after[:]>
+        
+        - if <[val].length> == 0:
+          - define val:true
+        
+        - define determine_map:<[determine_map].with[<[key]>].as[<[val]>]>
+    
+    - determine <[determine_map]>
