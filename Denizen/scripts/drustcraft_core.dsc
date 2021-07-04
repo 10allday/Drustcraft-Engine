@@ -5,6 +5,7 @@
 drustcraftw:
   type: world
   debug: false
+  version: 1
   events:
     on server start:
       - ~run drustcraftt.load      
@@ -34,3 +35,25 @@ drustcraftt:
     
     - foreach <server.notables>:
       - note remove as:<[value].note_name>
+
+drustcraftp:
+  type: procedure
+  debug: false
+  script:
+    - determine <empty>
+  
+  message_format:
+    - define type:<[1]||<empty>>
+    - define message:<[2]||<empty>>
+    
+    - choose <[type]>:
+      - case warning:
+        - define 'prefix:<&8><&l>[<&c><&l>-<&8><&l>] <&e>'
+      - case error:
+        - define 'prefix:<&8><&l>[<&c><&l>!<&8><&l>] <&c>'
+      - case announcement:
+        - define 'prefix:<&8><&l>[<&6><&l>!!!<&8><&l>] <&6>'
+      - default:
+        - define 'prefix:<&8><&l>[<&a><&l>+<&8><&l>] <&e>'
+      
+      - determine <[prefix]><[message].replace_text[%f].with[<&f>].replace_text[%r].with[<&e>]>
