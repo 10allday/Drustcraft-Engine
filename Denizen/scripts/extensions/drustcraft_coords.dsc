@@ -5,16 +5,50 @@
 drustcraftw_coords:
   type: world
   debug: false
+  version: 1
   events:
     on player walks:
       - if <player.has_flag[drustcraft_coords_show]>:
-        - define parsed_regions:<player.location.regions.parse[id].comma_separated||<element[]>>
-        - if <[parsed_regions].length> == 0:
-          - define parsed_regions:<&7>(none)
+        - define parsed_regions:<player.location.regions.parse[id]||<element[]>>
+        - define parsed_regions_str:<elemen
+        - if <[parsed_regions].size> == 0:
+          - define parsed_regions_str:<&7>(none)
+        - else:
+          - define parsed_regions_str:<[parsed_regions].get[1]>
+          - foreach <[parsed_regions].remove[1]>:
+            - if <[value].length.add[<[parsed_regions_str].length>]> > 14:
+              - define parsed_regions_str:<[parsed_regions_str]>,|<[value]>
+            - else:
+              - define 'parsed_regions_str:<[parsed_regions_str]>, <[value]>'
+              
+        - define npc_selected:<&7>(none)
+        - if <player.selected_npc||<empty>> != <empty>:
+          - define 'npc_selected:<&f><player.selected_npc.id> (<player.selected_npc.name.strip_color>)'
+
+        - define npc_nearest:<player.location.find_entities[npc].within[10].get[1]||<empty>>
+        - if <[npc_nearest]> != <empty>:
+          - define 'npc_nearest:<&f><[npc_nearest].id> (<[npc_nearest].name.strip_color>)'
+        - else:
+          - define npc_nearest:<&7>(none)
         
-        - actionbar "<&e>X: <&f><context.new_location.x.round_down>   <&e>Y: <&f><context.new_location.y.round_down>   <&e>Z: <&f><context.new_location.z.round_down>   <&e>Face: <&f><context.new_location.yaw.simple>   <&e>Biome: <&f><context.new_location.biome.name>   <&e>Rgn: <&f><[parsed_regions]>"
-      - else if <player.has_flag[drustcraft_coords_pointer]>:
-        - actionbar "<&e>X: <&f><player.cursor_on.x.round_down>   <&e>Y: <&f><player.cursor_on.y.round_down>   <&e>Z: <&f><player.cursor_on.z.round_down>"
+        - sidebar set "title:<&e><&l>Location Info" "values:|<&e>POS X: <&f><context.new_location.x.round_down>  <&e>Y: <&f><context.new_location.y.round_down>  <&e>Z: <&f><context.new_location.z.round_down>|<&e>CUR X: <&f><player.cursor_on.x.round_down||-->  <&e>Y: <&f><player.cursor_on.y.round_down||-->  <&e>Z: <&f><player.cursor_on.z.round_down||-->|<&e>NPC Sel: <&f><[npc_selected]>|<&e>NPC Near: <&f><[npc_nearest]>|<&e>Face: <&f><context.new_location.yaw.simple>|<&e>Biome: <&f><context.new_location.biome.name>|<&e>Rgn: <&f><[parsed_regions_str]>"
+      
+
+    on player changes gamemode:
+      - if <player.has_flag[drustcraft_coords_show]>:
+        - flag player drustcraft_coords_show:!
+        - sidebar remove
+
+
+drustcraftt_coords:
+  type: task
+  debug: false
+  script:
+    - determine <empty>
+  
+  load:
+    - flag player drustcraft_coords_show:!
+    - flag player drustcraft_coords_pointer:!
 
 
 drustcraftc_coords:
@@ -32,22 +66,7 @@ drustcraftc_coords:
   script:
     - if <player.has_flag[drustcraft_coords_show]>:
       - flag player drustcraft_coords_show:!
+      - sidebar remove
     - else:
       - flag player drustcraft_coords_show:true
-      - flag player drustcraft_coords_pointer:!
-
-
-drustcraftc_coords_pointer:
-    type: command
-    debug: false
-    name: pointer
-    description: Displays the coordinates you are looking at
-    usage: /pointer
-    permission: drustcraft.coords
-    permission message: <&c>I'm sorry, you do not have permission to perform this command
-    script:
-      - if <player.has_flag[drustcraft_coords_pointer]>:
-        - flag player drustcraft_coords_pointer:!
-      - else:
-        - flag player drustcraft_coords_pointer:true
-        - flag player drustcraft_coords_show:!
+      - sidebar set "title:Location Info" "values:|<&e>X: <&f>--  <&e>Y: <&f>--  <&e>Z: <&f>--|<&e>Face: <&f>--|<&e>Biome: <&f>--|<&e>Rgn: <&f>--"
