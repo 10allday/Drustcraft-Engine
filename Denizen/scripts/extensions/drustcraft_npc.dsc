@@ -19,7 +19,7 @@ drustcraftw_npc:
     after player joins:
       # Spawn NPCs that are within 25 blocks from the location
       - run drustcraftt_npc.spawn_close def:<player.location>
-      - flag <player> npc_engaged:!
+      - flag <player> drustcraft_npc_engaged:!
 
     on system time secondly every:5:
       # spawn NPCs that are within 50 blocks from a player and does not have the flag drustcraft_killed
@@ -52,18 +52,18 @@ drustcraftw_npc:
         - flag <context.entity> drustcraft_killed:true
     
     on player closes inventory priority:100:
-      - define prev_npc:<player.flag[npc_engaged]||<empty>>
+      - define prev_npc:<player.flag[drustcraft_npc_engaged]||<empty>>
       
       - if <[prev_npc]> != <empty>:
         - define gamemode:_<player.gamemode>
         - if <player.gamemode> == SURVIVAL:
           - define gamemode:<empty>
 
-        - define task_name:<proc[drustcraftp_npc.interactor].context[<player.flag[npc_engaged]>]>
+        - define task_name:<proc[drustcraftp_npc.interactor].context[<player.flag[drustcraft_npc_engaged]>]>
         - if <[task_name]> != <empty>:
-          - ~run <[task_name]> def:<npc[<player.flag[npc_engaged]>]>|<player>|close<[gamemode]>|<context.inventory>
+          - ~run <[task_name]> def:<npc[<player.flag[drustcraft_npc_engaged]>]>|<player>|close<[gamemode]>|<context.inventory>
         
-        - flag <player> npc_engaged:!
+        - flag <player> drustcraft_npc_engaged:!
         
 
 
@@ -88,11 +88,6 @@ drustcraftt_npc:
     - else:
       - ~yaml create id:drustcraft_npc
       
-      # defaults
-      - yaml id:drustcraft_npc set npc.storage:yaml
-            
-      - yaml savefile:/drustcraft_data/npc.yml id:drustcraft_npc
-
   save:
     - if <yaml.list.contains[drustcraft_npc]>:
       - yaml savefile:/drustcraft_data/npc.yml id:drustcraft_npc
@@ -175,7 +170,7 @@ drustcrafti_npc:
     1:
       click trigger:
         script:
-          - define prev_npc:<player.flag[npc_engaged]||<empty>>
+          - define prev_npc:<player.flag[drustcraft_npc_engaged]||<empty>>
           - define show_greeting:true
           
           - define gamemode:_<player.gamemode>
@@ -183,12 +178,12 @@ drustcrafti_npc:
             - define gamemode:<empty>
 
           - if <[prev_npc]> != <empty> && <[prev_npc]> != <npc.id>:
-            - define task_name:<proc[drustcraftp_npc.interactor].context[<player.flag[npc_engaged]>]>
+            - define task_name:<proc[drustcraftp_npc.interactor].context[<player.flag[drustcraft_npc_engaged]>]>
             - if <[task_name]> != <empty>:
-              - ~run <[task_name]> def:<npc[<player.flag[npc_engaged]>]>|<player>|close<[gamemode]>
+              - ~run <[task_name]> def:<npc[<player.flag[drustcraft_npc_engaged]>]>|<player>|close<[gamemode]>
               
-          - flag player npc_engaged:<npc.id>
-          - define task_name:<proc[drustcraftp_npc.interactor].context[<player.flag[npc_engaged]>]>
+          - flag player drustcraft_npc_engaged:<npc.id>
+          - define task_name:<proc[drustcraftp_npc.interactor].context[<player.flag[drustcraft_npc_engaged]>]>
           - if <[task_name]> != <empty>:
             - ~run <[task_name]> def:<npc>|<player>|click<[gamemode]> save:result
             - define show_greeting:<entry[result].created_queue.determination.get[1]||true>
@@ -232,8 +227,8 @@ drustcrafti_npc:
 
               - ~run <[task_name]> def:<npc>|<player>|exit<[gamemode]>
             
-            - if <player.flag[npc_engaged]||<empty>> == <npc.id>:
-              - flag player npc_engaged:!
+            - if <player.flag[drustcraft_npc_engaged]||<empty>> == <npc.id>:
+              - flag player drustcraft_npc_engaged:!
 
 drustcrafta_npc:
   type: assignment
