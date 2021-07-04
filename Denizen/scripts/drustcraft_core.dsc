@@ -57,3 +57,16 @@ drustcraftp:
         - define 'prefix:<&8><&l>[<&a><&l>+<&8><&l>] <&e>'
       
       - determine <[prefix]><[message].replace_text[%f].with[<&f>].replace_text[%r].with[<&e>]>
+  
+  script_exists:
+    - define script_name:<[1]||<empty>>
+    
+    - if <[script_name]> != <empty>:
+      - define script_key:<[script_name].after[.]>
+      - define script_name:<[script_name].before[.]>
+      
+      - if <server.scripts.parse[name].contains[<[script_name]>]>:
+        - if <[script_key].length> == 0 || <script[<[script_name]>].list_keys.contains[<[script_key]>]>:
+          - determine TRUE
+    
+    - determine FALSE
