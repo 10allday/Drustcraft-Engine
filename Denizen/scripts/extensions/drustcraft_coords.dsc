@@ -69,6 +69,6 @@ drustcraftc_coords:
     - else:
       - if <player.gamemode> == CREATIVE:
         - flag player drustcraft_coords_show:true
-        - sidebar set "title:Location Info" "values:|<&e>X: <&f>--  <&e>Y: <&f>--  <&e>Z: <&f>--|<&e>Face: <&f>--|<&e>Biome: <&f>--|<&e>Rgn: <&f>--"
+        - sidebar set "title:<&e><&l>Location Info" "values:|<&e>POS X: <&f>--  <&e>Y: <&f>--  <&e>Z: <&f>--|<&e>CUR X: <&f>--  <&e>Y: <&f>--  <&e>Z: <&f>--|<&e>NPC Sel: <&7>(none)|<&e>NPC Near: <&7>(none)|<&e>Face: <&f>--|<&e>Biome: <&f>--|<&e>Rgn: <&7>(none)"
       - else:
-        - narrate '<proc[drustcraftp.message_format].context[error|You cannot use this command outside of %f/builder %rmode]>'
+        - narrate '<proc[drustcraftp.message_format].context[error|You cannot use this command outside of $f/builder $rmode]>'
