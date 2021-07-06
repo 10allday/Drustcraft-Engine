@@ -148,7 +148,7 @@ drustcraftp_tab_complete_groups:
   type: procedure
   debug: false
   script:
-    - determine <server.permission_groups>
+    - determine <server.permission_groups.filter[ends_with[_edit].not].exclude[default]>
 
 
 drustcraftp_tab_complete_durations:
