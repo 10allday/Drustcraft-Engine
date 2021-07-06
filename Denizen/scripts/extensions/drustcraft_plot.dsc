@@ -360,7 +360,7 @@ drustcraftc_plot:
                   - execute as_server 'rg priority <[plot_region]> -w <player.location.world.name> 1000'
                   - execute as_server 'rg flag <[plot_region]> -w <player.location.world.name> -g nonmembers build deny'
                   - execute as_server 'rg flag <[plot_region]> -w <player.location.world.name> -g nonmembers interact deny'
-                  # - execute as_server 'rg flag <[plot_region]> -w <player.location.world.name> -g nonmembers chest-access deny'
+                  - execute as_server 'rg flag <[plot_region]> -w <player.location.world.name> -g nonmembers chest-access deny'
                   - execute as_server 'rg removemember <[plot_region]> -w <player.location.world.name> -a'
                   - execute as_server 'rg removeowner <[plot_region]> -w <player.location.world.name> -a'
                   - narrate '<&e>The plot <&f><[plot_name]> <&e>was created'
