@@ -14,21 +14,39 @@ drustcraftw_currency:
       
     # chests
     on player closes inventory server_flagged:drustcraft_currency:
-      - define type:chest
-      - define location:<context.inventory.location.round||<empty>>
-      - define server:<empty>
-      
-      - if <[location]> == <empty>:
-        - define location:<context.inventory.note_name||<empty>>
-        - define server:NULL
+      - if <player.gamemode> == SURVIVAL:
+        - define type:chest
+        - define location:<context.inventory.location.round||<empty>>
+        - define server:<bungee.server||null>
+        - define day:<util.time_now.duration_since[<time[1970/01/01]>].in_days.round_down>
         
-      - if <[location]> != <empty>:
-        # chest
-        - define netherite_block:<context.inventory.quantity_item[netherite_block]||0>
-        - define netherite_ingot:<context.inventory.quantity_item[netherite_ingot]||0>
-        - define diamond:<context.inventory.quantity_item[diamond]||0>
-        - define emerald:<context.inventory.quantity_item[emerald]||0>
-        - define iron_ingot:<context.inventory.quantity_item[iron_ingot]||0>
+        - if <[location]> == <empty>:
+          - define location:<context.inventory.note_name||<empty>>
+          - define server:null
+          
+        - if <[location]> != <empty>:
+          # chest
+          - define netherite_block:<context.inventory.quantity_item[netherite_block]||0>
+          - define netherite_ingot:<context.inventory.quantity_item[netherite_ingot]||0>
+          - define diamond:<context.inventory.quantity_item[diamond]||0>
+          - define emerald:<context.inventory.quantity_item[emerald]||0>
+          - define iron_ingot:<context.inventory.quantity_item[iron_ingot]||0>
+          
+          - define bucks:0
+          - define bucks:+:<[netherite_block].mul[117]>
+          - define bucks:+:<[netherite_ingot].mul[13]>
+          - define bucks:+:<[diamond]>
+          - define bucks:+:<[emerald]>
+          - define bucks:+:<[iron_ingot].mul[0.25]>
+          
+          - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` WHERE `server`<tern[<[server].equals[null]>].pass[is null].fail[=<&dq><[server]><&dq>]> AND `type`="<[type]>" AND `location`="<[location]>" AND `day`=<[day]>;'          
+          - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` (`server`,`type`,`location`,`amount`,`day`) VALUES (<tern[<[server].equals[null]>].pass[null].fail[<&dq><[server]><&dq>]>, "<[type]>", "<[location]>", <[bucks]>, <[day]>);'
+
+        - define netherite_block:<player.inventory.quantity_item[netherite_block]||0>
+        - define netherite_ingot:<player.inventory.quantity_item[netherite_ingot]||0>
+        - define diamond:<player.inventory.quantity_item[diamond]||0>
+        - define emerald:<player.inventory.quantity_item[emerald]||0>
+        - define iron_ingot:<player.inventory.quantity_item[iron_ingot]||0>
         
         - define bucks:0
         - define bucks:+:<[netherite_block].mul[117]>
@@ -37,33 +55,19 @@ drustcraftw_currency:
         - define bucks:+:<[emerald]>
         - define bucks:+:<[iron_ingot].mul[0.25]>
         
-        - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` WHERE `server`="<[server]>" AND `type`="<[type]>" AND `location`="<[location]>";'
-        
-        - if <[bucks]> > 0:
-          - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` (`server`,`type`,`location`,`amount`) VALUES ("<[server]>", "<[type]>", "<[location]>", <[bucks]>);'
-        
-    on player quits server_flagged:drustcraft_currency:
-      - define netherite_block:<player.inventory.quantity_item[netherite_block]||0>
-      - define netherite_ingot:<player.inventory.quantity_item[netherite_ingot]||0>
-      - define diamond:<player.inventory.quantity_item[diamond]||0>
-      - define emerald:<player.inventory.quantity_item[emerald]||0>
-      - define iron_ingot:<player.inventory.quantity_item[iron_ingot]||0>
-      
-      - define bucks:0
-      - define bucks:+:<[netherite_block].mul[117]>
-      - define bucks:+:<[netherite_ingot].mul[13]>
-      - define bucks:+:<[diamond]>
-      - define bucks:+:<[emerald]>
-      - define bucks:+:<[iron_ingot].mul[0.25]>
-      
-      - define type:player
-      - define location:<player.uuid>
-      - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` WHERE `type`="<[type]>" AND `location`="<[location]>";'
-      - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency`(`type`,`location`,`amount`) VALUES ("<[type]>", "<[location]>", <[bucks]>);'
+        - define type:player
+        - define location:<player.uuid>
+        - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` WHERE `type`="<[type]>" AND `location`="<[location]>" AND `day`=<[day]>;'
+        - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency`(`type`,`location`,`amount`,`day`) VALUES ("<[type]>", "<[location]>", <[bucks]>, <[day]>);'
 
-
-    on block drops item from breaking:
-      - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` WHERE `server`="<bungee.server>" AND location`="<context.location>";'
+    on player breaks block server_flagged:drustcraft_currency:
+      - define type:chest
+      - define server:<bungee.server||null>
+      - define location:<context.location>
+      - define day:<util.time_now.duration_since[<time[1970/01/01]>].in_days.round_down>
+      
+      - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` WHERE `server`<tern[<[server].equals[null]>].pass[is null].fail[=<&dq><[server]><&dq>]> AND `type`="<[type]>" AND `location`="<[location]>" AND `day`=<[day]>;'
+      
       
 
 
