@@ -37,7 +37,13 @@ drustcraftw_plot:
               - inventory set slot:<[key]> o:air d:<context.inventory>
               
 
-    # on player closes inventory:
+    on player closes inventory:
+      - if <context.inventory.inventory_type> == CHEST:
+        - foreach <player.inventory.map_slots.filter_tag[<[filter_value].is_book>].filter_tag[<[filter_value].book_title.strip_color.starts_with[Plot<&sp>Deed:<&sp>]>]>:
+          - define plot_name:<[value].lore.space_separated.after[id:]||<empty>>
+          - if <[plot_name]> != <empty>:
+            - run drustcraftt_plot.owner def:<[plot_name]>|<player.uuid>
+      
       # todo remove NPC trading_with flag
       
 #       - if <context.inventory.inventory_type> == MERCHANT:
