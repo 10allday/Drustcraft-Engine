@@ -357,7 +357,10 @@ drustcraftc_plot:
                 - if <proc[drustcraftp_region.list].context[<[plot_world]>].contains[<[plot_region]>]>:
                   - run drustcraftt_plot.create def:<[plot_name]>|<[plot_region]>|<player.location.world.name>
                   - run drustcraftt_plot.save
+                  - execute as_server 'rg priority <[plot_region]> -w <player.location.world.name> 1000'
                   - execute as_server 'rg flag <[plot_region]> -w <player.location.world.name> -g nonmembers build deny'
+                  - execute as_server 'rg flag <[plot_region]> -w <player.location.world.name> -g nonmembers interact deny'
+                  # - execute as_server 'rg flag <[plot_region]> -w <player.location.world.name> -g nonmembers chest-access deny'
                   - execute as_server 'rg removemember <[plot_region]> -w <player.location.world.name> -a'
                   - execute as_server 'rg removeowner <[plot_region]> -w <player.location.world.name> -a'
                   - narrate '<&e>The plot <&f><[plot_name]> <&e>was created'
@@ -518,7 +521,7 @@ drustcraftt_plot_interactor:
           - define 'greetings:|:Hey, Im talking to <[player_name]>'
           - define 'greetings:|:One sec, Im trading with <[player_name]> first'
           
-          - narrate <proc[drustcraftp_chat_format].context[<[target_npc]>|<[greetings].random>]>
+          - narrate <proc[drustcraftp_message_format].context[<[target_npc]>|<[greetings].random>]>
           - determine false
         
         - foreach <yaml[drustcraft_plot].list_keys[plots]||<list[]>>:
@@ -559,7 +562,7 @@ drustcraftt_plot_interactor:
           - define 'greetings:|:I am all sold out of plots'
           - define 'greetings:|:I<&sq>ve got nothing left'
           
-          - narrate <proc[drustcraftp_chat_format].context[<[target_npc]>|<[greetings].random>]>
+          - narrate <proc[drustcraftp_message_format].context[<[target_npc]>|<[greetings].random>]>
         
         - determine false
 
