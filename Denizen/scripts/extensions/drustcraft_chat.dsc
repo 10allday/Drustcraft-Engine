@@ -83,7 +83,7 @@ drustcraftw_chat:
         - define type:command
         - define sender:<player.uuid>
         - define receiver:<empty>
-        - define 'content:<context.command> <context.raw_args>'
+        - define 'content:<context.command.sql_escaped> <context.raw_args.sql_escaped>'
         - define channel:<empty>
         - define rule:<empty>
         
