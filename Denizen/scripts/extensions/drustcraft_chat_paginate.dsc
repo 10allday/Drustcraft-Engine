@@ -58,17 +58,17 @@ drustcraftt_chat_paginate:
             - define item_title:<[paginate_map].get[<[item_id]>]>
                       
           - if <[cmd_info]> != <empty>:
-            - define 'info: <&7><element[<&lb>Info<&rb>].on_click[/<[cmd_info]> <tern[<[item_id].contains[<&sp>]>].pass[<&dq><[item_id]><&dq>].fail[<[item_id]>]>].on_hover[Click for info]>'
+            - define 'info: <&7><element[<&lb>Info<&rb>].on_click[/<[cmd_info]> <tern[<[item_id].contains_text[<&sp>]>].pass[<&dq><[item_id]><&dq>].fail[<[item_id]>]>].on_hover[Click for info]>'
           - else:
             - define info:<empty>
           
           - if <[cmd_edit]> != <empty>:
-            - define 'edit: <&7><element[<&lb>Edit<&rb>].on_click[/<[cmd_edit]> <tern[<[item_id].contains[<&sp>]>].pass[<&dq><[item_id]><&dq>].fail[<[item_id]>]>].on_hover[Click to edit item]>'
+            - define 'edit: <&7><element[<&lb>Edit<&rb>].on_click[/<[cmd_edit]> <tern[<[item_id].contains_text[<&sp>]>].pass[<&dq><[item_id]><&dq>].fail[<[item_id]>]>].on_hover[Click to edit item]>'
           - else:
             - define edit:<empty>
           
           - if <[cmd_remove]> != <empty>:
-            - define 'remove: <&c><element[<&lb>Rem<&rb>].on_click[/<[cmd_remove]> <tern[<[item_id].contains[<&sp>]>].pass[<&dq><[item_id]><&dq>].fail[<[item_id]>]>].on_hover[Click to remove item]>'
+            - define 'remove: <&c><element[<&lb>Rem<&rb>].on_click[/<[cmd_remove]> <tern[<[item_id].contains_text[<&sp>]>].pass[<&dq><[item_id]><&dq>].fail[<[item_id]>]>].on_hover[Click to remove item]>'
           - else:
             - define remove:<empty>
           
