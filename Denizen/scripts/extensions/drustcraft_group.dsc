@@ -34,7 +34,7 @@ drustcraftt_group:
           - run drustcraftt_tab_complete.completions def:group|create
           - run drustcraftt_tab_complete.completions def:group|remove|_*groups
           - run drustcraftt_tab_complete.completions def:group|list|_*pageno
-          - run drustcraftt_tab_complete.completions def:group|info|_*quests
+          - run drustcraftt_tab_complete.completions def:group|info|_*groups
           - run drustcraftt_tab_complete.completions def:group|addmember|_*groups|_^players
           - run drustcraftt_tab_complete.completions def:group|remmember|_*groups|_^players
           - run drustcraftt_tab_complete.completions def:group|addowner|_*groups|_^players
@@ -50,6 +50,7 @@ drustcraftt_group:
 
     - if <[group_name]> != <empty>:
       - execute as_server 'lp creategroup <[group_name]>'
+      - execute as_server 'lp creategroup <[group_name]>_edit'
            
   remove:
     - define group_name:<[1]||<empty>>
@@ -57,6 +58,7 @@ drustcraftt_group:
     # todo need a better way than this. Can we use the non existant of owner?
     - if <[group_name]> != <empty> && <list[default|moderator|builder|leader|staff].contains[<[group_name]>]> == false:
       - execute as_server 'lp deletegroup <[group_name]>'
+      - execute as_server 'lp deletegroup <[group_name]>_edit'
   
   add_owner:
     - define group_name:<[1]||<empty>>
@@ -138,7 +140,7 @@ drustcraftp_group:
   exists:
     - define group_name:<[1]||<empty>>
 
-    - if <[group_name]> != <empty> && <server.permission_groups.contains[<[group_name]>]>:
+    - if <[group_name]> != <empty> && <proc[drustcraftp_group.list].contains[<[group_name]>]>:
       - determine true
 
     - determine false
@@ -152,7 +154,7 @@ drustcraftp_group:
       
       - determine <list[]>
 
-    - determine <server.permission_groups>
+    - determine <server.permission_groups.filter[ends_with[_edit].not].exclude[default]>
     
 
 drustcraftc_group:
@@ -175,7 +177,7 @@ drustcraftc_group:
           - define id:<context.args.get[2]||<empty>>
   
           - if <[id]> != <empty> && <[id].to_lowercase.matches_character_set[abcdefghijklmnopqrstuvwxyz0123456789_]>:
-            - if <server.permission_groups.contains[<[id]>]> == false:
+            - if <proc[drustcraftp_group.list].contains[<[id]>]> == false:
               - run drustcraftt_group.create def:<[id]>
               
               - if <context.server||false> == false:
@@ -192,7 +194,7 @@ drustcraftc_group:
   
           - if <[id]> != <empty>:
             - if <proc[drustcraftp_group.exists].context[<[id]>]>:
-              - if <context.server> || <player.has_permission[drustcraftt_group.override]> || <player.has.has_permission<proc[drustcraftp_group.is_owner].context[<[id]>|<player>]>:
+              - if <context.server> || <player.has_permission[drustcraft.group.override]> || <player.has.has_permission<proc[drustcraftp_group.is_owner].context[<[id]>|<player>]>:
                 - run drustcraftt_group.remove def:<[id]>
                 - narrate '<&e>The group <&sq><[id]><&sq> was removed'
               - else:
@@ -204,7 +206,7 @@ drustcraftc_group:
         
         - case list:
           - define page_no:<context.args.get[2]||1>
-          - run drustcraftt_chat_paginate 'def:<list[Groups|<[page_no]>].include_single[<server.permission_groups>].include[group list|group info]>'
+          - run drustcraftt_chat_paginate 'def:<list[Groups|<[page_no]>].include_single[<proc[drustcraftp_group.list].filter[ends_with[_edit].not].exclude[default]>].include[group list|group info]>'
         
         - case info:
           - define group_id:<context.args.get[2]||<empty>>
@@ -243,7 +245,7 @@ drustcraftc_group:
             - if <proc[drustcraftp_group.exists].context[<[group_name]>]>:
               - define player_list:<context.args.get[3]||<empty>>
               - if <[player_list]> != <empty>:
-                - if <context.server> || <player.has_permission[drustcraftt_group.override]> || <proc[drustcraftp_group.is_owner].context[<[group_name]>|<player>]>:
+                - if <context.server> || <player.has_permission[drustcraft.group.override]> || <proc[drustcraftp_group.is_owner].context[<[group_name]>|<player>]>:
                   - define player_items:<[player_list].split[,]>
                   - foreach <[player_items]>:
                     - define target_player:<server.match_offline_player[<[value]>]||<empty>>
@@ -272,7 +274,7 @@ drustcraftc_group:
             - if <proc[drustcraftp_group.exists].context[<[group_name]>]>:
               - define player_list:<context.args.get[3]||<empty>>
               - if <[player_list]> != <empty>:
-                - if <context.server> || <player.has_permission[drustcraftt_group.override]> || <proc[drustcraftp_group.is_owner].context[<[group_name]>|<player>]>:
+                - if <context.server> || <player.has_permission[drustcraft.group.override]> || <proc[drustcraftp_group.is_owner].context[<[group_name]>|<player>]>:
                   - define player_items:<[player_list].split[,]>
                   - foreach <[player_items]>:
                     - define target_player:<server.match_offline_player[<[value]>]||<empty>>
@@ -301,7 +303,7 @@ drustcraftc_group:
             - if <proc[drustcraftp_group.exists].context[<[group_name]>]>:
               - define player_list:<context.args.get[3]||<empty>>
               - if <[player_list]> != <empty>:
-                - if <context.server> || <player.has_permission[drustcraftt_group.override]> || <proc[drustcraftp_group.is_owner].context[<[group_name]>|<player>]>:
+                - if <context.server> || <player.has_permission[drustcraft.group.override]> || <proc[drustcraftp_group.is_owner].context[<[group_name]>|<player>]>:
                   - define player_items:<[player_list].split[,]>
                   - foreach <[player_items]>:
                     - define target_player:<server.match_offline_player[<[value]>]||<empty>>
@@ -330,7 +332,7 @@ drustcraftc_group:
             - if <proc[drustcraftp_group.exists].context[<[group_name]>]>:
               - define player_list:<context.args.get[3]||<empty>>
               - if <[player_list]> != <empty>:
-                - if <context.server> || <player.has_permission[drustcraftt_group.override]> || <proc[drustcraftp_group.is_owner].context[<[group_name]>|<player>]>:
+                - if <context.server> || <player.has_permission[drustcraft.group.override]> || <proc[drustcraftp_group.is_owner].context[<[group_name]>|<player>]>:
                   - define player_items:<[player_list].split[,]>
                   - foreach <[player_items]>:
                     - define target_player:<server.match_offline_player[<[value]>]||<empty>>
