@@ -186,3 +186,11 @@ drustcraftp_tab_complete_hostile:
     - if <server.has_flag[drustcraft_tab_complete_hostile_mobs]>:
       - determine <server.flag[drustcraft_tab_complete_hostile_mobs].as_list>
     - determine <list[]>
+
+drustcraftp_tab_complete_regions:
+  type: procedure
+  debug: false
+  script:
+    - if <player||<empty>> != <empty>:
+      - determine <player.location.world.list_regions.parse[id]>
+    - determine <list[]>
