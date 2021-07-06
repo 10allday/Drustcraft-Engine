@@ -10,7 +10,6 @@ drustcraftw_group:
     on server start:
       - run drustcraftt_group.load
     
-    
     on script reload:
       - run drustcraftt_group.load
 
@@ -169,7 +168,7 @@ drustcraftc_group:
       - define command:group
       - determine <proc[drustcraftp_tab_complete].context[<list[<[command]>].include_single[<context.raw_args.escaped>]>]>
   script:
-    - if <server.flag[]||false>:
+    - if <server.flag[drustcraftt_group]||false>:
     
       - choose <context.args.get[1]||<empty>>:
         - case create define add:
