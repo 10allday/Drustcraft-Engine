@@ -47,18 +47,22 @@ drustcraftp:
   message_format:
     - define type:<[1]||<empty>>
     - define message:<[2]||<empty>>
+    - define prefix:<element[]>
+    - define base_colour:e
     
     - choose <[type]>:
       - case warning:
         - define 'prefix:<&8><&l>[<&c><&l>-<&8><&l>] <&e>'
       - case error:
+        - define base_colour:c
         - define 'prefix:<&8><&l>[<&c><&l>!<&8><&l>] <&c>'
       - case announcement:
+        - define base_colour:6
         - define 'prefix:<&8><&l>[<&6><&l>!!!<&8><&l>] <&6>'
       - default:
         - define 'prefix:<&8><&l>[<&a><&l>+<&8><&l>] <&e>'
       
-      - determine <[prefix]><[message].replace_text[%f].with[<&f>].replace_text[%r].with[<&e>]>
+    - determine <[prefix]><[message].replace_text[$f].with[<&f>].replace_text[$r].with[<element[&<[base_colour]>]>].parse_color>
   
   script_exists:
     - define script_name:<[1]||<empty>>
