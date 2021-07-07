@@ -29,7 +29,7 @@ drustcraftw_discord:
       - define 'message:<discord_embed.with[color].as[#ff0000].with[author_icon_url].as[https://crafatar.com/avatars/<context.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<context.name> left Drustcraft]>'
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> <[message]>
 
-    on player joins:
+    on player joins server_flagged:drustcraft_discord:
       - wait 60t
       - define 'message:<discord_embed.with[color].as[#00ffff].with[author_icon_url].as[https://crafatar.com/avatars/<player.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<player.name> arrived in <bungee.server.to_titlecase>]>'
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> <[message]>
@@ -37,14 +37,14 @@ drustcraftw_discord:
       
       #ex discord id:drustcraft_discord_bot add_role user:846286915413082124 role:787809504833699850 group:782787130334248973 
       
-    on player chats priority:100:
+    on player chats priority:100 server_flagged:drustcraft_discord:
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> '**<player.name>** » <context.message.strip_color>'
     
-    on command:
+    on command server_flagged:drustcraft_discord:
       - if <context.source_type> == PLAYER:
         - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> '**<player.name>** /<context.command> <context.raw_args>'
     
-    on player death:
+    on player death server_flagged:drustcraft_discord:
       - define 'message:<discord_embed.with[color].as[#000000].with[author_icon_url].as[https://crafatar.com/avatars/<player.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<context.message.strip_color||died>]>'
       - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_bot]> <[message]>
       
