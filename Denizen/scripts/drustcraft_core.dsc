@@ -20,7 +20,7 @@ drustcraftw:
 
 drustcraftt:
   type: task
-  debug: true
+  debug: false
   script:
     - determine <empty>
   
@@ -52,15 +52,15 @@ drustcraftp:
     
     - choose <[type]>:
       - case warning:
-        - define 'prefix:<&8><&l>[<&c><&l>-<&8><&l>] <&e>'
+        - define 'prefix:<&8>[<&c>-<&8>] <&e>'
       - case error:
         - define base_colour:c
-        - define 'prefix:<&8><&l>[<&c><&l>!<&8><&l>] <&c>'
+        - define 'prefix:<&8>[<&c><&l>!<&8>] <&c>'
       - case announcement:
         - define base_colour:6
-        - define 'prefix:<&8><&l>[<&6><&l>!!!<&8><&l>] <&6>'
+        - define 'prefix:<&8>[<&6><&l>!!!<&8>] <&6>'
       - default:
-        - define 'prefix:<&8><&l>[<&a><&l>+<&8><&l>] <&e>'
+        - define 'prefix:<&8>[<&a>+<&8>] <&e>'
       
     - determine <[prefix]><[message].replace_text[$f].with[<&f>].replace_text[$r].with[<element[&<[base_colour]>]>].parse_color>
   
