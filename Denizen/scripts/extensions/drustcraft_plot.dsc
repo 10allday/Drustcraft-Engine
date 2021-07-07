@@ -527,7 +527,7 @@ drustcraftt_plot_interactor:
           - define 'greetings:|:Hey, Im talking to <[player_name]>'
           - define 'greetings:|:One sec, Im trading with <[player_name]> first'
           
-          - narrate <proc[drustcraftp_message_format].context[<[target_npc]>|<[greetings].random>]>
+          - narrate <proc[drustcraftp_chat_format].context[<[target_npc]>|<[greetings].random>]>
           - determine false
         
         - foreach <yaml[drustcraft_plot].list_keys[plots]||<list[]>>:
@@ -568,7 +568,7 @@ drustcraftt_plot_interactor:
           - define 'greetings:|:I am all sold out of plots'
           - define 'greetings:|:I<&sq>ve got nothing left'
           
-          - narrate <proc[drustcraftp_message_format].context[<[target_npc]>|<[greetings].random>]>
+          - narrate <proc[drustcraftp_chat_format].context[<[target_npc]>|<[greetings].random>]>
         
         - determine false
 
