@@ -25,7 +25,7 @@ drustcraftw_player:
           
         - if <[skip]> == false:
           - take slot:<[key]> quantity:<[item].quantity>
-          - drop <[item]> <player.location.add[-2,-2,-2].to_cuboid[<player.location.add[2,2,2]>].spawnable_blocks.random>
+          - drop <[item]> <player.location.add[-2,-2,-2].to_cuboid[<player.location.add[2,2,2]>].spawnable_blocks.random||<player.location>>
     
     after player joins:
       - define time_now:<util.time_now>
@@ -58,6 +58,11 @@ drustcraftw_player:
             
             - if <player.has_flag[drustcraft_player_cakeday_<[time_now].year>_received]> == false:
               - flag player drustcraft_player_cakeday_<[time_now].year>_received:true
+    
+    on player teleports:
+      - if <context.origin.world> != <context.destination.world>:
+        - define drustcraft_last_locations:<player.flag[drustcraft_last_locations]||<map[]>>        
+        - flag player drustcraft_last_locations:<[drustcraft_last_locations].with[<context.origin.world.name>].as[<context.origin>]>
     
     on entity death:
       - if <context.entity.is_player||false> || <context.entity.is_npc||false>:
