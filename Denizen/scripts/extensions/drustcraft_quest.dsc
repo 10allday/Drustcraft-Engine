@@ -86,6 +86,7 @@ drustcraftt_quest:
 
       - run drustcraftt_tab_complete.completions def:quest|list|_*pageno
       - run drustcraftt_tab_complete.completions def:quest|npclist|_*npcs
+      - run drustcraftt_tab_complete.completions def:quest|regionlist|_*regions|_*pageno
       - run drustcraftt_tab_complete.completions def:quest|info|_*quests
       - run drustcraftt_tab_complete.completions def:quest|create
       - run drustcraftt_tab_complete.completions def:quest|remove|_*quests
@@ -877,6 +878,34 @@ drustcraftc_quest:
         - else:
           - narrate '<&c>No NPC is selected'
 
+      - case regionlist:
+        - define region_id:<context.args.get[2]||<empty>>
+        
+        - if <[region_id]> != <empty>:
+          - define page_no:<context.args.get[3]||1>
+          - define quest_ids:<proc[drustcraftp_quest.list]>
+          - define quest_map:<map[]>
+
+          - foreach <[quest_ids]> as:quest_id:
+            - define add_quest:false
+            - define quest_info:<proc[drustcraftp_quest.info].context[<[quest_id]>]>
+            
+            # - narrate <server.npcs.parse[id].contains[<[quest_info].get[npc_start]>]>
+            
+            - if <[quest_info].get[npc_start]||0> != 0 && <server.npcs.parse[id].contains[<[quest_info].get[npc_start]>]> && <npc[<[quest_info].get[npc_start]>].location.in_region[<[region_id]>]>:
+              - define add_quest:true
+            - if <[quest_info].get[npc_end]||0> != 0 && <server.npcs.parse[id].contains[<[quest_info].get[npc_end]>]> && <npc[<[quest_info].get[npc_end]>].location.in_region[<[region_id]>]>:
+              - define add_quest:true
+              
+            - if <[add_quest]>:
+              - define 'quest_title:<[quest_info].get[title]||<empty>> <&e>(ID: <[quest_id]>)'
+              - define quest_map:<[quest_map].with[<[quest_id]>].as[<[quest_title]>]>
+          
+          - run drustcraftt_chat_paginate 'def:<list[Quests located in <[region_id]>|<[page_no]>].include_single[<[quest_map]>].include[quest list|quest info]>'
+          
+        - else:
+          - narrate '<proc[drustcraftp.message_format].context[error|A region ID is required to list the quests of a region]>'
+        
       - case info:
         - define quest_id:<context.args.get[2]||<empty>>
         # todo: check that chat_gui is installed
@@ -939,7 +968,7 @@ drustcraftc_quest:
           - if <[title]> != <empty>:
             - define 'give_list:<list[ ]>'
             - foreach <[title]>:
-              - define 'txt_events:<element[<&7><&lb>Edit<&rb>].on_click[/quest editgiv <[quest_id]> <[key]> <[value]>].type[SUGGEST_COMMAND].on_hover[Click to edit item]> '
+              - define 'txt_events:<element[<&7><&lb>Edit<&rb>].on_click[/quest editgive <[quest_id]> <[key]> <[value]>].type[SUGGEST_COMMAND].on_hover[Click to edit item]> '
               - define 'txt_events:<[txt_events]><element[<&c><&lb>Rem<&rb>].on_click[/quest remgive <[quest_id]> <[key]> ].type[SUGGEST_COMMAND].on_hover[Click to remove item]> '
               - define 'give_list:->:  <&e><[key]> <&6><[value]> <[txt_events]>'
             
@@ -1063,7 +1092,7 @@ drustcraftc_quest:
         - define quest_id:<context.args.get[2]||<empty>>
         - if <[quest_id]> != <empty>:
           - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
-            - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+            - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
               - run drustcraftt_quest.remove def:<[quest_id]>
               - narrate '<&e>The Quest ID <&sq><[quest_id]><&sq> has been removed'
             - else:
@@ -1077,7 +1106,7 @@ drustcraftc_quest:
         - define quest_id:<context.args.get[2]||<empty>>
         - if <[quest_id]> != <empty>:
           - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
-            - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+            - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
               - if <context.args.size> > 2:
                 - define quest_title:<context.args.remove[1|2].space_separated>
                 - if <[quest_title].length> <= 20:
@@ -1098,7 +1127,7 @@ drustcraftc_quest:
         - define quest_id:<context.args.get[2]||<empty>>
         - if <[quest_id]> != <empty>:
           - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
-            - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+            - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
               - if <context.args.size> > 2:
                 - define quest_description:<context.args.remove[1|2].space_separated>
                 - run drustcraftt_quest.description def:<[quest_id]>|<[quest_description]>
@@ -1116,7 +1145,7 @@ drustcraftc_quest:
         - define quest_id:<context.args.get[2]||<empty>>
         - if <[quest_id]> != <empty>:
           - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
-            - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+            - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
               - define target_player:<context.args.get[3]||<empty>>
               - if <[target_player]> != <empty>:
                 - define found_player:<server.match_offline_player[<[target_player]>]>
@@ -1141,7 +1170,7 @@ drustcraftc_quest:
             - define npc_id:<context.args.get[3]||<empty>>
             - if <[npc_id]> != <empty>:
               - if <server.npcs.parse[id].contains[<[npc_id]>]>:
-                - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+                - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                   - run drustcraftt_quest.npc_start def:<[quest_id]>|<[npc_id]>
                   - narrate '<&e>Quest ID <&sq><[quest_id]><&sq> has been updated'
                 - else:
@@ -1162,7 +1191,7 @@ drustcraftc_quest:
             - define npc_id:<context.args.get[3]||<empty>>
             - if <[npc_id]> != <empty>:
               - if <server.npcs.parse[id].contains[<[npc_id]>]>:
-                - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+                - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                   - run drustcraftt_quest.npc_end def:<[quest_id]>|<[npc_id]>
                   - narrate '<&e>Quest ID <&sq><[quest_id]><&sq> has been updated'
                 - else:
@@ -1182,7 +1211,7 @@ drustcraftc_quest:
         - if <[quest_id]> != <empty>:
           - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
             - define speak:<context.args.remove[1|2].space_separated||<empty>>
-            - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+            - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
               - define quest_end_speak:<context.args.remove[1|2].space_separated>
               - run drustcraftt_quest.npc_end_speak def:<[quest_id]>|<[quest_end_speak]>
               - narrate '<&e>Quest ID <&sq><[quest_id]><&sq> has been updated'
@@ -1201,7 +1230,7 @@ drustcraftc_quest:
             
             - if <[requirements]> != <empty> && <[requirements].size> > 0:
               - if <[requirements].contains[<[quest_id]>]> == false:
-                - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+                - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                   - foreach <[requirements]>:
                     - if <proc[drustcraftp_quest.list].as_list.contains[<[value]>]>:
                       - run drustcraftt_quest.add_requirement def:<[quest_id]>|<[value]>
@@ -1226,7 +1255,7 @@ drustcraftc_quest:
             - define requirements:<context.args.get[3].split[,]||<empty>>
             
             - if <[requirements]> != <empty> && <[requirements].size> > 0:
-              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+              - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                 - foreach <[requirements]>:
                   - if <proc[drustcraftp_quest.list].as_list.contains[<[value]>]>:
                     - run drustcraftt_quest.remove_requirement def:<[quest_id]>|<[value]>
@@ -1246,7 +1275,7 @@ drustcraftc_quest:
         - define quest_id:<context.args.get[2]||<empty>>
         - if <[quest_id]> != <empty>:
           - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
-            - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+            - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
               - run drustcraftt_quest.clear_requirements def:<[quest_id]>
               - narrate '<&e>Requirements cleared for Quest ID <&sq><[quest_id]><&sq>'
             - else:
@@ -1263,7 +1292,7 @@ drustcraftc_quest:
             - define repeatable:<context.args.get[3]||<empty>>
             
             - if <[repeatable]> != <empty> && <list[true|false].contains[<[repeatable]>]>:
-              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+              - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                 - run drustcraftt_quest.repeatable def:<[quest_id]>|<[repeatable]>
                 - narrate '<&e>Quest ID <&sq><[value]><&sq> has been updated'
               - else:
@@ -1284,7 +1313,7 @@ drustcraftc_quest:
             - define quantity:<context.args.get[5]||<empty>>
             - define region:<context.args.get[6]||<empty>>
             - if <[type]> != <empty>:
-              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+              - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                 - run drustcraftt_quest.add_objective def:<[quest_id]>|<[type]>|<[data]>|<[quantity]>|<[region]>
                 - narrate '<&e>The objectives for Quest ID <&sq><[quest_id]><&sq> was updated'
               - else:
@@ -1304,7 +1333,7 @@ drustcraftc_quest:
             - if <[objective_id]> != <empty>:
               - define quest_map:<proc[drustcraftp_quest.info].context[<[quest_id]>]||<map[]>>
               - if <[quest_map].get[objectives].keys.contains[<[objective_id]>]||false>:
-                - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+                - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                   - run drustcraftt_quest.remove_objective def:<[quest_id]>|<[objective_id]>
                   - narrate '<&e>The objectives for Quest ID <&sq><[quest_id]><&sq> was updated'
                 - else:
@@ -1331,7 +1360,7 @@ drustcraftc_quest:
                 - define quantity:<context.args.get[6]||<empty>>
                 - define region:<context.args.get[7]||<empty>>
                 - if <[type]> != <empty>:
-                  - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+                  - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                     - run drustcraftt_quest.update_objective def:<[quest_id]>|<[objective_id]>|<[type]>|<[data]>|<[quantity]>|<[region]>
                     - narrate '<&e>The objectives for Quest ID <&sq><[quest_id]><&sq> was updated'
                   - else:
@@ -1354,7 +1383,7 @@ drustcraftc_quest:
             - define item:<context.args.get[3]||<empty>>
             - define quantity:<context.args.get[4]||1>
             - if <[item]> != <empty>:
-              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+              - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                 - run drustcraftt_quest.add_reward def:<[quest_id]>|<[item]>|<[quantity]>
                 - narrate '<&e>The rewards for Quest ID <&sq><[quest_id]><&sq> was updated'
               - else:
@@ -1373,7 +1402,7 @@ drustcraftc_quest:
             - define item:<context.args.get[3]||<empty>>
             - define quantity:<context.args.get[4]||1>
             - if <[item]> != <empty>:
-              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+              - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                 - run drustcraftt_quest.update_reward def:<[quest_id]>|<[item]>|<[quantity]>
                 - narrate '<&e>The rewards for Quest ID <&sq><[quest_id]><&sq> was updated'
               - else:
@@ -1391,7 +1420,7 @@ drustcraftc_quest:
           - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
             - define item:<context.args.get[3]||<empty>>
             - if <[item]> != <empty>:
-              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+              - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                 - run drustcraftt_quest.remove_reward def:<[quest_id]>|<[item]>
                 - narrate '<&e>The rewards for Quest ID <&sq><[quest_id]><&sq> was updated'
               - else:
@@ -1411,7 +1440,7 @@ drustcraftc_quest:
             - define item:<context.args.get[3]||<empty>>
             - define quantity:<context.args.get[4]||1>
             - if <[item]> != <empty>:
-              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+              - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                 - run drustcraftt_quest.add_give def:<[quest_id]>|<[item]>|<[quantity]>
                 - narrate '<&e>The give items for Quest ID <&sq><[quest_id]><&sq> was updated'
               - else:
@@ -1430,7 +1459,7 @@ drustcraftc_quest:
             - define item:<context.args.get[3]||<empty>>
             - define quantity:<context.args.get[4]||1>
             - if <[item]> != <empty>:
-              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+              - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                 - run drustcraftt_quest.update_give def:<[quest_id]>|<[item]>|<[quantity]>
                 - narrate '<&e>The give item for Quest ID <&sq><[quest_id]><&sq> was updated'
               - else:
@@ -1448,7 +1477,7 @@ drustcraftc_quest:
           - if <proc[drustcraftp_quest.list].as_list.contains[<[quest_id]>]>:
             - define item:<context.args.get[3]||<empty>>
             - if <[item]> != <empty>:
-              - if <context.server||false> || <player.has_permission[drustcraft_quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
+              - if <context.server||false> || <player.has_permission[drustcraft.quest.override]||false> || <proc[drustcraftp_quest.is_owner].context[<[quest_id]>|<player>]>:
                 - run drustcraftt_quest.remove_give def:<[quest_id]>|<[item]>
                 - narrate '<&e>The give items for Quest ID <&sq><[quest_id]><&sq> was updated'
               - else:
