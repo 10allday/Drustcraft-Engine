@@ -531,31 +531,42 @@ drustcraftt_region:
               - define rate:<[values].get[2]>
             - define quantity:<[values].get[1]>
             
-            - define cuboid:<region[<[target_region]>,<[target_world]>].cuboid||<empty>>
+            - define cuboid:<region[<[target_region]>,<[target_world]>].area||<empty>>
             - if <[cuboid]> != <empty>:
-              - define current:<region[<[target_region]>,<[target_world]>].cuboid.blocks[<[key]>].size||9999>
+              - chunkload <[cuboid].chunks> duration:5m
               
-              - if <[current]> < <[quantity]>:
-                - if <[quantity].sub[<[current]>]> < <[rate]>:
-                  - define rate:<[quantity].sub[<[current]>]>
-                  
-                - define attempts:10
-                - define max_y:<[cuboid].max.y>
-                - while <[attempts]> >= 0 && <[rate]> > 0:
-                  - define x:<util.random.int[<[cuboid].min.x>].to[<[cuboid].max.x>]>
-                  - define y:<[cuboid].min.y>
-                  - define z:<util.random.int[<[cuboid].min.z>].to[<[cuboid].max.z>]>
-    
-                  - while <[y]> < <[max_y]>:
-                    - define loc:<location[<[x]>,<[y]>,<[z]>,<[target_world]>]>
-                    - if <[loc].material.name> == air:
-                      - modifyblock <location[<[x]>,<[y]>,<[z]>,<[target_world]>]> <[key]>
-                      - define rate:--
-                      - while stop
-                    - else:
-                      - define y:++
-                  
-                  - define attempts:--
+              - define chunks_loaded:false
+              - repeat 3:
+                - foreach <[cuboid].chunks>:
+                  - if <[cuboid].chunks.size> == <[cuboid].chunks.filter[is_loaded].size>:
+                    - define chunks_loaded:true
+                    - foreach stop
+                - wait 60t
+              
+              - if <[chunks_loaded]>:
+                - define current:<region[<[target_region]>,<[target_world]>].area.blocks[<[key]>].size||9999>
+                
+                - if <[current]> < <[quantity]>:
+                  - if <[quantity].sub[<[current]>]> < <[rate]>:
+                    - define rate:<[quantity].sub[<[current]>]>
+                    
+                  - define attempts:10
+                  - define max_y:<[cuboid].max.y>
+                  - while <[attempts]> >= 0 && <[rate]> > 0:
+                    - define x:<util.random.int[<[cuboid].min.x>].to[<[cuboid].max.x>]>
+                    - define y:<[cuboid].min.y>
+                    - define z:<util.random.int[<[cuboid].min.z>].to[<[cuboid].max.z>]>
+      
+                    - while <[y]> < <[max_y]>:
+                      - define loc:<location[<[x]>,<[y]>,<[z]>,<[target_world]>]>
+                      - if <list[air|water].contains[<[loc].material.name>]>:
+                        - modifyblock <location[<[x]>,<[y]>,<[z]>,<[target_world]>]> <[key]>
+                        - define rate:--
+                        - while stop
+                      - else:
+                        - define y:++
+                    
+                    - define attempts:--
                   
   update_spawns:
     - foreach <yaml[drustcraft_regions].list_keys[regions]||<list[]>>:
