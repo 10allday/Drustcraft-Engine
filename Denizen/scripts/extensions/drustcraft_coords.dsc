@@ -10,7 +10,6 @@ drustcraftw_coords:
     on player walks:
       - run drustcraftt_coords.update def:<player>|<context.new_location>
 
-
     on player changes gamemode:
       - if <player.has_flag[drustcraft_coords_show]>:
         - flag player drustcraft_coords_show:!
