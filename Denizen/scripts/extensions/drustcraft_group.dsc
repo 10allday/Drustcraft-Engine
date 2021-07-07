@@ -373,4 +373,4 @@ drustcraftc_groups:
   permission message: <&c>I'm sorry, you do not have permission to perform this command
   script:
     - narrate '<&e>You are in the following groups:'
-    - narrate '<&f><player.groups.separated_by[<&e>, <&f>]>'
+    - narrate '<&f><player.groups.filter[ends_with[_edit].not].exclude[default].separated_by[<&e>, <&f>]>'
