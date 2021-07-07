@@ -262,7 +262,7 @@ drustcraftc_shop:
                 - if <[npc_id]> != <empty>:
                   - if <[npc_id].is_integer>:
                     - if <server.npcs.parse[id].contains[<[npc_id]>]>:
-                      - yaml id:drustcraft_shop set npc.<player.selected_npc.id>:<[shop_name]>
+                      - yaml id:drustcraft_shop set npc.<[npc_id]>:<[shop_name]>
                       - run drustcraftt_npc.interactor def:<[npc_id]>|drustcraftt_shop_interactor
                       
                       - ~run drustcraftt_shop.save
