@@ -13,7 +13,7 @@ drustcraftw_builder:
       - run drustcraftt_builder.update_player def:<player>|<context.to||<empty>>|<context.from||<empty>>
                         
     on player places block:
-      - if <player.in_group[staff]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:
+      - if !<player.location.world.name.starts_with[workshop_]> && <player.in_group[staff]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:
         - define can_build:false
 
         - foreach <context.location.regions||<list[]>> as:target_region:
@@ -26,7 +26,7 @@ drustcraftw_builder:
           - determine cancelled
 
     on player breaks block:
-      - if <player.in_group[staff]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:        
+      - if !<player.location.world.name.starts_with[workshop_]> && <player.in_group[staff]> == false && <proc[drustcraftp_region.gamemode].context[<context.location>]> != <player.gamemode>:        
         - define can_build:false
         
         - foreach <context.location.regions||<list[]>> as:target_region:
@@ -73,7 +73,7 @@ drustcraftt_builder:
     - define target_to:<[2]>
     - define target_from:<[3]>
     
-    - if <[target_player].in_group[builder]> && <[target_player].in_group[staff]> == false:
+    - if !<[target_player].location.world.name.starts_with[workshop_]> && <[target_player].in_group[builder]> && <[target_player].in_group[staff]> == false:
       - if <[target_player].gamemode> == CREATIVE:
         - define allow:false
 
@@ -139,7 +139,7 @@ drustcraftc_builder:
           - else:
             - define allow:false
 
-            - if <player.in_group[staff]> == false:
+            - if !<player.location.world.name.starts_with[workshop_]> && <player.in_group[staff]> == false:
               - foreach <player.location.regions||<list[]>> as:target_region:
                 - if <proc[drustcraftp_region.is_member].context[<[target_region]>|<player>]||false> || <proc[drustcraftp_region.is_owner].context[<[target_region]>|<player>]||false>:
                   - define allow:true
@@ -185,3 +185,4 @@ drustcraftc_builder:
           - narrate '<&c>Unknown option. Try <queue.script.data_key[usage].parsed>'
     - else:
       - narrate '<&c>This command can only be run by a player'
+  
