@@ -413,6 +413,7 @@ drustcraftt_region:
                     - execute as_server 'dmarker clearcorners'
                     - foreach <[target_poly].corners||<list[]>>:
                       - execute as_server 'dmarker addcorner <[value].x> 64 <[value].z> <[target_world].name>'
+                    - execute as_server 'dmarker deletearea id:<[target_region].id>_<[target_world].name>
                     - execute as_server 'dmarker addarea id:<[target_region].id>_<[target_world].name> "<[region_title]>" icon:<[region_map_icon]>'
 
                   - execute as_server 'dmarker add id:<[target_region].id>_<[target_world].name> "<[region_title]>" icon:<[region_map_icon]> set:<[region_map_set]> x:<[target_cuboid].center.x.round> y:64 z:<[target_cuboid].center.z.round> world:<[target_cuboid].center.world.name>'
