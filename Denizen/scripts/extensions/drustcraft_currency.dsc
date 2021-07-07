@@ -40,7 +40,8 @@ drustcraftw_currency:
           - define bucks:+:<[iron_ingot].mul[0.25]>
           
           - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` WHERE `server`<tern[<[server].equals[null]>].pass[is null].fail[=<&dq><[server]><&dq>]> AND `type`="<[type]>" AND `location`="<[location]>" AND `day`=<[day]>;'          
-          - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` (`server`,`type`,`location`,`amount`,`day`) VALUES (<tern[<[server].equals[null]>].pass[null].fail[<&dq><[server]><&dq>]>, "<[type]>", "<[location]>", <[bucks]>, <[day]>);'
+          - if <[bucks]> > 0:
+            - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` (`server`,`type`,`location`,`amount`,`day`) VALUES (<tern[<[server].equals[null]>].pass[null].fail[<&dq><[server]><&dq>]>, "<[type]>", "<[location]>", <[bucks]>, <[day]>);'
 
         - define netherite_block:<player.inventory.quantity_item[netherite_block]||0>
         - define netherite_ingot:<player.inventory.quantity_item[netherite_ingot]||0>
@@ -58,7 +59,8 @@ drustcraftw_currency:
         - define type:player
         - define location:<player.uuid>
         - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency` WHERE `type`="<[type]>" AND `location`="<[location]>" AND `day`=<[day]>;'
-        - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency`(`type`,`location`,`amount`,`day`) VALUES ("<[type]>", "<[location]>", <[bucks]>, <[day]>);'
+        - if <[bucks]> > 0:
+          - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_currency`(`type`,`location`,`amount`,`day`) VALUES ("<[type]>", "<[location]>", <[bucks]>, <[day]>);'
 
     on player breaks block server_flagged:drustcraft_currency:
       - define type:chest
