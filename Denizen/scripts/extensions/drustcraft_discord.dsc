@@ -52,7 +52,7 @@ drustcraftw_discord:
     #   - define 'message:<discord_embed.with[color].as[#FFFF00].with[author_icon_url].as[https://crafatar.com/avatars/<player.uuid>?size=128&default=MHF_Steve&overlay].with[author_name].as[<player.name> has made the advancement <context.advancement>]>'
     #   - discordmessage id:drustcraft_discord_bot channel:<server.flag[drustcraft_discord_channel_chat]> <[message]>
     
-    on system time minutely every:12:
+    on system time minutely every:12 server_flagged:drustcraft_discord:
       - run drustcraftt_discord.update_status
 
     on discord user joins:
