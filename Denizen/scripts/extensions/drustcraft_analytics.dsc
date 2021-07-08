@@ -68,6 +68,18 @@ drustcraftw_analytics:
       - flag <player> drustcraft_analytics_session_gamemode:<player.gamemode>
       - flag <player> drustcraft_analytics_session_gamemode_time:<util.time_now>
       - flag <player> drustcraft_analytics_session_gamemode_world:<player.location.world.name>
+      
+    on player enters polygon:
+      - ~run drustcraftt_analytics.player.enter_region def:<player>|<context.area>
+    
+    on player enters cuboid:
+      - ~run drustcraftt_analytics.player.enter_region def:<player>|<context.area>
+
+    on player exits polygon:
+      - ~run drustcraftt_analytics.player.exit_region def:<player>|<context.area>
+
+    on player exits cuboid:
+      - ~run drustcraftt_analytics.player.exit_region def:<player>|<context.area>
 
 
     on player quits:
@@ -76,6 +88,7 @@ drustcraftw_analytics:
       - run drustcraftt_analytics.player.end_afk_time def:<player>
 
       #- ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_sessions` SET `session_end`=<util.time_now.epoch_millis.div[1000].round> WHERE `id`=<player.flag[drustcraft_analytics_session_id]>;'
+      - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_region_times` SET `exited`=<util.time_now.epoch_millis.div[1000].round> WHERE `session_id`=<player.flag[drustcraft_analytics_session_id]> AND `server`="<bungee.server||<empty>>" AND `exited`=0;'
       - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_sessions` SET `session_end`=<util.time_now.epoch_millis.div[1000].round> WHERE `player_uuid`="<player.uuid>" AND `session_end`=0;'
           
       - ~run drustcraftt_analytics.player.update_world_time def:<player>
@@ -141,7 +154,7 @@ drustcraftw_analytics:
         - else if <[target_entity].mythicmob.internal_name||<empty>> != <empty>:
           - define entity_id:<[target_entity].mythicmob.internal_name>
         
-        - ~sql id:drustcraft_database 'update:INSERT `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_deaths` (`session_id`, `date`, `reason`, `entity_type`, `entity_id`) VALUES(<context.entity.flag[drustcraft_analytics_session_id]>, <[date]>, "<context.cause>", <[entity_type]>, "<[entity_id]>");'
+        - ~sql id:drustcraft_database 'update:INSERT `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_deaths` (`session_id`, `date`, `reason`, `entity_type`, `entity_id`) VALUES(<context.entity.flag[drustcraft_analytics_session_id]>, <[date]>, "<context.cause||UNKNOWN>", <[entity_type]>, "<[entity_id]>");'
         
 
 drustcraftt_analytics:
@@ -152,19 +165,27 @@ drustcraftt_analytics:
     
     
     load:
-      - flag server drustcraft_analytics:true
+      - flag server drustcraft_analytics:!
       - waituntil <server.sql_connections.contains[drustcraft_database]>
 
       - define create_tables:true
+      - define update_tables_from:0
+      
       - ~sql id:drustcraft_database 'query:SELECT version FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_version WHERE name="drustcraft_analytics";' save:sql_result
       - if <entry[sql_result].result.size||0> >= 1:
-        - define row:<entry[sql_result].result.get[1].split[/]||0>
+        - define row:<entry[sql_result].result.get[1].split[/].get[1].unescaped||0>
+        - debug log <[row]>
         - define create_tables:false
-        - if <[row]> >= 2 || <[row]> < 1:
-          # Weird version error
-          - flag server drustcraft_analytics:!
+        - if <[row]> < 1:
+          - debug log 'Invalid Analytics table version'
+          - stop
+        - else if <[row]> < 2:
+          - define update_tables_from:1
+        - else:
+          - define create_tables:true
 
       - if <[create_tables]>:
+        - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_version` WHERE `name`="drustcraft_analytics";
         - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_version` (`name`,`version`) VALUES ("drustcraft_analytics",'1');'
         - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_uptime` (`id` INT NOT NULL AUTO_INCREMENT, `server` VARCHAR(255) NOT NULL, `session_start` INT NOT NULL, `session_end` INT NOT NULL, PRIMARY KEY (`id`));'
         - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_tps` (`server` VARCHAR(255) NOT NULL, `date` INT NOT NULL, `tps` INT NOT NULL, `players_online` INT NOT NULL, `ram_usage` INT NOT NULL, `entities` INT NOT NULL, `chunks_loaded` INT NOT NULL, `free_disk_space` INT NOT NULL);'
@@ -175,7 +196,13 @@ drustcraftt_analytics:
         - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_worlds` (`id` INT NOT NULL AUTO_INCREMENT, `world_name` VARCHAR(255) NOT NULL, `server` VARCHAR(255) NOT NULL, PRIMARY KEY (`id`));'
         - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_world_times` (`id` INT NOT NULL AUTO_INCREMENT, `world_id` INT NOT NULL, `session_id` INT NOT NULL, `server` VARCHAR(255) NOT NULL, `survival_time` INT NOT NULL DEFAULT "0", `creative_time` INT NOT NULL DEFAULT "0", `adventure_time` INT NOT NULL DEFAULT "0", `spectator_time` INT NOT NULL DEFAULT "0", PRIMARY KEY (`id`));'
         - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_kicked` (`id` INT NOT NULL AUTO_INCREMENT, `session_id` INT NOT NULL, `server` VARCHAR(255) NOT NULL, `date` INT NOT NULL, `reason` TEXT, PRIMARY KEY (`id`));'
+
+      - if <[update_tables_from]> == 1:
+        - ~sql id:drustcraft_database 'update:DELETE FROM `<server.flag[drustcraft_database_table_prefix]>drustcraft_version` WHERE `name`="drustcraft_analytics";
+        - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_version` (`name`,`version`) VALUES ("drustcraft_analytics",'2');'
+        - ~sql id:drustcraft_database 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_region_times` (`id` INT NOT NULL AUTO_INCREMENT, `region_id` VARCHAR(255) NOT NULL, `session_id` INT NOT NULL, `server` VARCHAR(255) NOT NULL, `entered` INT NOT NULL DEFAULT "0", `exited` INT NOT NULL DEFAULT "0", PRIMARY KEY (`id`));'
     
+      - flag server drustcraft_analytics:true
     
     player:
       end_afk_time:
@@ -209,3 +236,24 @@ drustcraftt_analytics:
               - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_world_times` SET `<[gamemode_field]>`=`<[gamemode_field]>`+<[seconds]> WHERE `id`=<[world_time_id]>;'
             - else:
               - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_world_times` (`world_id`, `session_id`, `server`, `<[gamemode_field]>`) VALUES(<[world_id]>, <[target_player].flag[drustcraft_analytics_session_id]>, "<bungee.server||<empty>>", <[seconds]>);'
+
+      enter_region:
+        - waituntil <server.sql_connections.contains[drustcraft_database]>
+        - wait 2t
+        
+        - define target_player:<[1]||<empty>>
+        - define target_region:<[2]||<empty>>
+        
+        - if <[target_player].flag[drustcraft_analytics_session_id]||0> > 0 && <[target_region].note_name||<empty>> != <empty>:
+          - define region_id:<[target_region].note_name>          
+          - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_region_times` (`region_id`, `session_id`, `server`, `entered`, `exited`) VALUES("<[region_id]>", <[target_player].flag[drustcraft_analytics_session_id]>, "<bungee.server||<empty>>", <util.time_now.epoch_millis.div[1000].round>, 0);'
+
+      exit_region:
+        - waituntil <server.sql_connections.contains[drustcraft_database]>
+        
+        - define target_player:<[1]||<empty>>
+        - define target_region:<[2]||<empty>>
+
+        - if <[target_player].flag[drustcraft_analytics_session_id]||0> > 0 && <[target_region].note_name||<empty>> != <empty>:
+          - define region_id:<[target_region].note_name>          
+          - ~sql id:drustcraft_database 'update:UPDATE `<server.flag[drustcraft_database_table_prefix]>drustcraft_analytics_region_times` SET `exited`=<util.time_now.epoch_millis.div[1000].round> WHERE `region_id`="<[region_id]>" AND `session_id`=<[target_player].flag[drustcraft_analytics_session_id]> AND `server`="<bungee.server||<empty>>" AND `exited`=0;'
