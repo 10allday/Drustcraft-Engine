@@ -38,7 +38,7 @@ drustcraftw_quest:
             - run drustcraftt_quest.abandon def:<player>|<[quest_id]>
       
       - foreach <player.inventory.map_slots>:
-        - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Quest:<&sp>]>:
+        - if <[value].is_book> && <[value].book_title.strip_color.starts_with[Quest:<&sp>]||false>:
           - define quest_id:<proc[drustcraftp_quest.title_to_id].context[<[value].book_title.after[Quest:<&sp>]>]||0>
           - if <[quest_id]> != 0 && <proc[drustcraftp_quest.state].context[<[quest_id]>|<player>]> == available:
             - run drustcraftt_quest.start def:<player>|<[quest_id]>
