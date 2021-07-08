@@ -552,12 +552,12 @@ drustcraftt_quest:
     - define target_player:<[1]||<empty>>
     - define force:<[2]||false>
 
-    - if <[target_player].object_type||<empty>> == PLAYER:
+    - if <[target_player].object_type||<empty>> == PLAYER && <server.online_players.contains[<[target_player]>]>:
       - if <[force]> == true || <util.time_now.is_after[<[target_player].flag[drustcraft_quest_update_makers]||<util.time_now.sub[5s]>>]>:
         - flag <[target_player]> drustcraft_quest_update_makers:<util.time_now.add[5s]>
   
         - foreach <[target_player].fake_entities>:
-          - fakespawn <[value]> cancel
+          - fakespawn <[value]> cancel players:<[target_player]>
   
         - define npc_list:<[target_player].location.find.npcs.within[30]>
         
