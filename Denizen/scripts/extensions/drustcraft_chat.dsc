@@ -277,27 +277,30 @@ drustcraftc_chat_tell:
     - else if <context.args.size||0> == 1:
       - narrate '<&c>No message was entered'
     - else:
-      - define target_player:<context.args.get[1]||<empty>>
+      - define target_player_name:<context.args.get[1]||<empty>>
       - define message:<context.args.remove[1].space_separated>
     
-      - define target_player:<server.match_player[<[target_player]>]||<empty>>
+      - define target_player:<server.match_player[<[target_player_name]>]||<empty>>
 
       - if <server.flag[drustcraft_chat]||false>:
-        - define 'type:private message'
-        - define sender:<player.uuid>
-        - define receiver:<[target_player].uuid>
-        - define content:<[message]>
-        - define channel:<empty>
-        - define rule:<proc[drustcraftp_chat.apply_rules].context[<[content]>]>
-        
-        - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_chat` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
-
-        - if <[rule]> == <empty>:
-          - narrate '<&7>[You <&gt> <[target_player].name>] <&f><[message]>'
-          - bungeerun <bungee.list_servers> drustcraftt_chat_message def:<player.uuid>|<player.name>|<[target_player].uuid>|<[message]>
+        - if <[target_player].object_type> == PLAYER:
+          - define 'type:private message'
+          - define sender:<player.uuid>
+          - define receiver:<[target_player].uuid>
+          - define content:<[message]>
+          - define channel:<empty>
+          - define rule:<proc[drustcraftp_chat.apply_rules].context[<[content]>]>
+          
+          - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_chat` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
+  
+          - if <[rule]> == <empty>:
+            - narrate '<&7>[You <&gt> <[target_player].name>] <&f><[message]>'
+            - bungeerun <bungee.list_servers> drustcraftt_chat_message def:<player.uuid>|<player.name>|<[target_player].uuid>|<[message]>
+          - else:
+            - narrate '<&8><&l>[<&c><&l>!<&8><&l>] <&c>You message was not sent as it breaks the rule: <[rule]>'
+            - determine CANCELLED
         - else:
-          - narrate '<&8><&l>[<&c><&l>!<&8><&l>] <&c>You message was not sent as it breaks the rule: <[rule]>'
-          - determine CANCELLED
+          - narrate '<proc[drustcraftp.message_format].context[error|The player $e<[target_player_name]> $rwas not found on the network]>'
       - else:
         - narrate '<&8><&l>[<&c><&l>!<&8><&l>] <&c>Chat is currently disabled'
         - determine CANCELLED
