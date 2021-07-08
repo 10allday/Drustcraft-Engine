@@ -112,17 +112,17 @@ drustcraftw_chat:
         - define type:book
         - define sender:<player.uuid>
         - define receiver:<empty>,
-        - define content:<context.title>|<context.book>
+        - define content:<context.title||<empty>>|<context.book>
         - define channel:<empty>
         - define rule:<proc[drustcraftp_chat.apply_rules].context[<[content]>]>
         
         - ~sql id:drustcraft_database 'update:INSERT INTO `<server.flag[drustcraft_database_table_prefix]>drustcraft_chat` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
         - if <[rule]> != <empty>:
-          - narrate '<&8><&l>[<&c><&l>!<&8><&l>] <&c>You message was not sent as it breaks the rule: <[rule]>'
+          - narrate '<&8><&l>[<&c><&l>!<&8><&l>] <&c>You edit was not saved as it breaks the rule: <[rule]>'
           - determine CANCELLED
 
       - else:
-        - narrate '<&8><&l>[<&c><&l>!<&8><&l>] <&c>Chat is currently disabled'
+        - narrate '<&8><&l>[<&c><&l>!<&8><&l>] <&c>Book editing is currently disabled'
         - determine CANCELLED
 
 
@@ -149,7 +149,7 @@ drustcraftt_chat:
       - define create_tables:true
       - ~sql id:drustcraft_database 'query:SELECT version FROM <server.flag[drustcraft_database_table_prefix]>drustcraft_version WHERE name="drustcraft_chat";' save:sql_result
       - if <entry[sql_result].result.size||0> >= 1:
-        - define row:<entry[sql_result].result.get[1].split[/]||0>
+        - define row:<entry[sql_result].result.get[1].split[/].get[1].unescaped||0>
         - define create_tables:false
         - if <[row]> >= 2 || <[row]> < 1:
           # Weird version error
