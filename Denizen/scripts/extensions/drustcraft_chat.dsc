@@ -11,7 +11,6 @@ drustcraftf_chat:
   type: format
   format: <&7>[<name>] <&f><text>
 
-
 drustcraftw_chat:
   type: world
   debug: false
@@ -109,7 +108,6 @@ drustcraftt_chat:
     
   load:
     - flag server drustcraft_chat:!
-    - flag server drustcraft_skip_player_announcement:<list[]>
 
     - if <server.has_file[/drustcraft_data/chat.yml]>:
       - yaml load:/drustcraft_data/chat.yml id:drustcraft_chat

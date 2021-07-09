@@ -49,6 +49,7 @@ drustcraftt_bungee:
     - flag server drustcraft_bungee:!
     - flag server drustcraft_bungee_master:!
     - flag server drustcraft_bungee_priority:!
+    - flag server drustcraft_skip_player_announcement:<list[]>
     
     - if <yaml.list.contains[drustcraft_bungee]>:
       - ~yaml id:drustcraft_bungee unload
