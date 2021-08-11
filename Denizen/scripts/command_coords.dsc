@@ -16,7 +16,7 @@ drustcraftw_coords:
     on player walks:
       - run drustcraftt_coords_update def:<player>|<context.new_location>
 
-    on player changes gamemode:
+    on player changes gamemode to SURVIVAL:
       - if <player.has_flag[drustcraft.coords]>:
         - flag player drustcraft.coords:!
         - sidebar remove
