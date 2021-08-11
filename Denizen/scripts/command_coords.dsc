@@ -13,18 +13,16 @@ drustcraftw_coords:
     on script reload:
       - run drustcraftt_coords_load
 
-    on player walks:
+    on player walks flagged:drustcraft.coords:
       - run drustcraftt_coords_update def:<player>|<context.new_location>
 
-    on player changes gamemode to SURVIVAL:
-      - if <player.has_flag[drustcraft.coords]>:
-        - flag player drustcraft.coords:!
-        - sidebar remove
+    on player changes gamemode to SURVIVAL flagged:drustcraft.coords:
+      - flag player drustcraft.coords:!
+      - sidebar remove
 
-    on player quits:
-      - if <player.has_flag[drustcraft.coords]>:
-        - flag player drustcraft.coords:!
-        - sidebar remove
+    on player quits flagged:drustcraft.coords:
+      - flag player drustcraft.coords:!
+      - sidebar remove
 
     on npc command:
       - wait 5t
