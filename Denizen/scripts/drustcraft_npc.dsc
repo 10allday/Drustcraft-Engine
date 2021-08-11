@@ -22,6 +22,7 @@ drustcraftw_npc:
     on system time secondly every:5:
       - foreach <server.npcs.filter[location.find_entities[Player].within[25].size.is[OR_MORE].than[1]].filter[is_spawned.not]>:
         - spawn <[value]> <[value].location>
+        - run drustcraftt_npc_job_run def:<[value]>|spawn
         - if <[value].has_flag[drustcraft.npc.job.title]>:
           - adjust <[value]> hologram_lines:<list[&e<[value].flag[drustcraft.npc.job.title]>]>
         - else:
@@ -30,6 +31,7 @@ drustcraftw_npc:
     on system time minutely:
       - foreach <server.npcs.filter[location.find_entities[Player].within[50].size.is[==].to[0]].filter[is_spawned].filter[not[is_navigating]]>:
         - despawn <[value]>
+        - run drustcraftt_npc_job_run def:<[value]>|despawn
 
     on tab complete:
       - if <context.command> == npc:
@@ -148,6 +150,7 @@ drustcraftt_npc_spawn_near:
   script:
     - foreach <server.npcs.filter[location.distance[<[location]>].is[OR_LESS].than[25]].filter[is_spawned.not]>:
       - spawn <[value]> <[value].location>
+      - run drustcraftt_npc_job_run def:<[value]>|spawn
 
 
 drustcraftt_npc_job_register:
