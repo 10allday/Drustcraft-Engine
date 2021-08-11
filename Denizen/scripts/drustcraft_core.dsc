@@ -1,94 +1,76 @@
 # Drustcraft - Core
-# The bare core of Drustcraft
 # https://github.com/drustcraft/drustcraft
 
-drustcraftw:
+drustcraftw_core:
   type: world
   debug: false
   version: 1
   events:
-    on server start:
-      - ~run drustcraftt.load      
-      - foreach <yaml[drustcraft_server].read[drustcraft.run.startup]||<list[]>>:
-        - execute as_server <[value]>
+    on server start priority:-100:
+      - ~run drustcraftt_core_load def:startup
 
-    on script reload:
-      - ~run drustcraftt.load
-      - foreach <yaml[drustcraft_server].read[drustcraft.run.reload]||<list[]>>:
-        - execute as_server <[value]>
+    on script reload priority:-100:
+      - ~run drustcraftt_core_load def:reload
+
+    on player joins  priority:-100:
+      - flag player drustcraft:!
 
 
-drustcraftt:
+drustcraftt_core_load:
   type: task
   debug: false
+  definitions: mode
   script:
-    - determine <empty>
-  
-  load:
-    - if <yaml.list.contains[drustcraft_server]>:
-      - ~yaml unload id:drustcraft_server
+    - flag server drustcraft:!
 
-    - if <server.has_file[/drustcraft_data/server.yml]>:
-      - yaml load:/drustcraft_data/server.yml id:drustcraft_server
-    - else:
-      - yaml create id:drustcraft_server
-      - yaml savefile:/drustcraft_data/server.yml id:drustcraft_server
-    
-    - foreach <server.notables>:
-      - note remove as:<[value].note_name>
+    - foreach <server.notes.parse[note_name].filter[starts_with[drustcraft]]> as:note_name:
+      - note remove as:<[note_name]>
+
+    - if !<server.scripts.parse[name].contains[drustcraftp_util_to_version]>:
+      - debug ERROR 'Drustcraft Core requires Drustcraft Utils version 1.0 or higher installed'
+      - stop
+    - if !<server.scripts.parse[name].contains[drustcraftw_chatgui]>:
+      - debug ERROR 'Drustcraft Core requires Drustcraft ChatGUI version 1.0 or higher installed'
+      - stop
+
+    - flag server drustcraft.module.core:<script[drustcraftw_core].data_key[version]>
+    - wait 2t
+
+    - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
+      - waituntil <server.has_flag[drustcraft.module.tabcomplete]>
+      - run drustcraftt_tabcomplete_completion def:drustcraft|version
+
+    - if <server.scripts.parse[name].contains[drustcraftw_setting]>:
+      - waituntil <server.has_flag[drustcraft.module.setting]>
+      - ~run drustcraftt_setting_get def:run.<[mode]>|null|yaml save:result
+      - if <entry[result].created_queue.determination.get[1].object_type> == LIST:
+        - foreach <entry[result].created_queue.determination.get[1]>:
+          - debug LOG 'Running <[mode]> command "<[value]>"'
+          - execute as_server <[value]>
 
 
-drustcraftp:
-  type: procedure
+drustcraftc_drustcraft:
+  type: command
   debug: false
+  name: drustcraft
+  description: Returns Drustcraft Data
+  usage: /drustcraft <&lt>version<&gt>
+  permission: drustcraft.core
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to this command
+  tab complete:
+    - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
+      - define command:drustcraft
+      - determine <proc[drustcraftp_tabcomplete].context[<list[<[command]>].include_single[<context.raw_args.escaped>]>]>
   script:
-    - determine <empty>
-  
-  message_format:
-    - define type:<[1]||<empty>>
-    - define message:<[2]||<empty>>
-    - define prefix:<element[]>
-    - define base_colour:e
-    
-    - choose <[type]>:
-      - case warning:
-        - define 'prefix:<&8>[<&c>-<&8>] <&e>'
-      - case error:
-        - define base_colour:c
-        - define 'prefix:<&8>[<&c><&l>!<&8>] <&c>'
-      - case announcement:
-        - define base_colour:6
-        - define 'prefix:<&8>[<&6><&l>!!!<&8>] <&6>'
+    - choose <context.args.get[1]||<empty>>:
+      - case version:
+        - ~run drustcraftt_chatgui_clear
+        - foreach <server.flag[drustcraft.module]> as:version key:module:
+          - define line:<proc[drustcraftp_chatgui_option].context[<[module]>]>
+          - define line:<[line]><proc[drustcraftp_chatgui_value].context[<proc[drustcraftp_util_to_version].context[<[version]>]>]>
+
+          - ~run drustcraftt_chatgui_item def:<[line]>
+        - ~run drustcraftt_chatgui_render 'def:drustcraft version|Drustcraft Modules|<context.args.get[2]||1>'
+
       - default:
-        - define 'prefix:<&8>[<&a>+<&8>] <&e>'
-      
-    - determine <[prefix]><[message].replace_text[$f].with[<&f>].replace_text[$r].with[<element[&<[base_colour]>]>].parse_color>
-  
-  script_exists:
-    - define script_name:<[1]||<empty>>
-    
-    - if <[script_name]> != <empty>:
-      - define script_key:<[script_name].after[.]>
-      - define script_name:<[script_name].before[.]>
-      
-      - if <server.scripts.parse[name].contains[<[script_name]>]>:
-        - if <[script_key].length> == 0 || <script[<[script_name]>].list_keys.contains[<[script_key]>]>:
-          - determine TRUE
-    
-    - determine FALSE
-  
-  determine_map:
-    - define determine_list:<queue.definition[raw_context]||<empty>>
-    - define determine_map:<map[]>
-    
-    - if <[determine_list].object_type> == LIST:
-      - foreach <[determine_list]>:
-        - define key:<[value].before[:]>
-        - define val:<[value].after[:]>
-        
-        - if <[val].length> == 0:
-          - define val:true
-        
-        - define determine_map:<[determine_map].with[<[key]>].as[<[val]>]>
-    
-    - determine <[determine_map]>
+        - narrate '<proc[drustcraftp_msg_format].context[error|Unknown option. Try <queue.script.data_key[usage].parsed>]>'
