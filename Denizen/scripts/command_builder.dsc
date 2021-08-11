@@ -303,8 +303,11 @@ drustcraftc_builder_noclip:
   script:
     - if <list[CREATIVE|SPECTATOR].contains[<player.gamemode>]>:
       - if <player.has_flag[drustcraft.builder.noclip]>:
-        - flag <player> drustcraft.builder.noclip:!
-        - narrate '<proc[drustcraftp_msg_format].context[arrow|No clip has been disabled]>'
+        - if <player.gamemode> == CREATIVE:
+          - flag <player> drustcraft.builder.noclip:!
+          - narrate '<proc[drustcraftp_msg_format].context[arrow|No clip has been disabled]>'
+        - else:
+          - narrate '<proc[drustcraftp_msg_format].context[error|You need to be in a safe location to disable noclip]>'
         - adjust <player> gamemode:CREATIVE
       - else:
         - flag <player> drustcraft.builder.noclip:true
