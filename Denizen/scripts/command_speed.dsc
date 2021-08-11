@@ -18,7 +18,7 @@ drustcraftw_speed:
         - adjust <player> fly_speed:<server.flag[drustcraft.speed.default_fly]>
         - adjust <player> walk_speed:<server.flag[drustcraft.speed.default_walk]>
 
-    on player changes gamemode:
+    on player changes gamemode to SURVIVAL:
       - adjust <player> fly_speed:<server.flag[drustcraft.speed.default_fly]>
       - adjust <player> walk_speed:<server.flag[drustcraft.speed.default_walk]>
 
