@@ -283,6 +283,8 @@ drustcraftc_builder_nightvision:
         - cast NIGHT_VISION remove <player>
       - else:
         - cast NIGHT_VISION duration:1639s <player> hide_particles no_icon
+    - else:
+      - narrate '<proc[drustcraftp_msg_format].context[error|You are required to be in $e/builder $rmode to use this command]>'
 
 
 drustcraftc_builder_noclip:
