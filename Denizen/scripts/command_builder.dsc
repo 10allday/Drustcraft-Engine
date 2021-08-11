@@ -69,6 +69,25 @@ drustcraftw_builder:
     on luckperms|lp command:
       - run drustcraftt_util_run_once_later def:drustcraftt_builder_update_groups|5
 
+    on player walks flagged:drustcraft.builder.noclip:
+      - if <player.gamemode> == CREATIVE:
+        - define noclip:false
+        - if <player.location.sub[0,0.1,0].material.name> != AIR && <player.is_sneaking>:
+          - define noclip:true
+        - else:
+          - define noclip:<proc[drustcraftp_builder_isnoclip].context[<player>]>
+
+        - if <[noclip]>:
+          - adjust <player> gamemode:SPECTATOR
+      - else if <player.gamemode> == SPECTATOR:
+        - define noclip:false
+        - if <player.location.sub[0,0.1,0].material.name> != AIR:
+          - define noclip:true
+          - define noclip:<proc[drustcraftp_builder_isnoclip].context[<player>]>
+
+        - if !<[noclip]>:
+          - adjust <player> gamemode:CREATIVE
+
 
 drustcraftt_builder_load:
   type: task
@@ -147,6 +166,34 @@ drustcraftt_builder_update_player:
           - narrate '<proc[drustcraftp_msg_format].context[error|You do not have permission to build in this region]>'
           - adjust <[target_player]> gamemode:SURVIVAL
 
+
+drustcraftp_builder_isnoclip:
+  type: procedure
+  debug: false
+  definitions: player
+  script:
+    - if <[player].location.add[0.4,0,0].material.name> != AIR:
+      - determine true
+    - if <[player].location.sub[0.4,0,0].material.name> != AIR:
+      - determine true
+    - if <[player].location.add[0,0,0.4].material.name> != AIR:
+      - determine true
+    - if <[player].location.sub[0,0,0.4].material.name> != AIR:
+      - determine true
+    - if <[player].location.add[0.4,1,0].material.name> != AIR:
+      - determine true
+    - if <[player].location.add[-0.4,1,0].material.name> != AIR:
+      - determine true
+    - if <[player].location.add[-0.4,1,0].material.name> != AIR:
+      - determine true
+    - if <[player].location.add[0,1,0.4].material.name> != AIR:
+      - determine true
+    - if <[player].location.add[0,1,-0.4].material.name> != AIR:
+      - determine true
+    - if <[player].location.add[0,1.9,0].material.name> != AIR:
+      - determine true
+
+    - determine false
 
 drustcraftc_builder:
   type: command
@@ -236,3 +283,23 @@ drustcraftc_builder_nightvision:
         - cast NIGHT_VISION remove <player>
       - else:
         - cast NIGHT_VISION duration:1639s <player> hide_particles no_icon
+
+
+drustcraftc_builder_noclip:
+  type: command
+  debug: false
+  name: noclip
+  description: Toggle noclip
+  usage: /noclip
+  permission: drustcraft.builder
+  permission message: <&c>I'm sorry, you do not have permission to perform this command
+  script:
+    - if <player.gamemode> == CREATIVE:
+      - if <player.has_flag[drustcraft.builder.noclip]>:
+        - flag <player> drustcraft.builder.noclip:!
+        - narrate '<proc[drustcraftp_msg_format].context[error|No clip has been disabled]>'
+      - else:
+        - flag <player> drustcraft.builder.noclip:true
+        - narrate '<proc[drustcraftp_msg_format].context[error|No clip has been enabled]>'
+    - else:
+      - narrate '<proc[drustcraftp_msg_format].context[error|You are required to be in $e/builder $rmode to use this command]>'
