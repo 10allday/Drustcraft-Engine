@@ -69,24 +69,27 @@ drustcraftw_builder:
     on luckperms|lp command:
       - run drustcraftt_util_run_once_later def:drustcraftt_builder_update_groups|5
 
-    on player walks flagged:drustcraft.builder.noclip:
-      - if <player.gamemode> == CREATIVE:
-        - define noclip:false
-        - if <player.location.sub[0,0.1,0].material.name> != AIR && <player.is_sneaking>:
-          - define noclip:true
-        - else:
-          - define noclip:<proc[drustcraftp_builder_isnoclip].context[<player>]>
+    # on player walks flagged:drustcraft.builder.noclip:
+    on system time secondly server_flagged:drustcraft.module.builder:
+      - foreach <server.online_players.filter[has_flag[drustcraft.builder.noclip]]> as:player:
+        - if <[player].gamemode> == CREATIVE:
+          - define noclip:false
+          - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.sub[0,0.1,0].material.name>]> && <[player].is_sneaking>:
+            - define noclip:true
+          - else:
+            - define noclip:<proc[drustcraftp_builder_isnoclip].context[<[player]>]>
 
-        - if <[noclip]>:
-          - adjust <player> gamemode:SPECTATOR
-      - else if <player.gamemode> == SPECTATOR:
-        - define noclip:false
-        - if <player.location.sub[0,0.1,0].material.name> != AIR:
-          - define noclip:true
-          - define noclip:<proc[drustcraftp_builder_isnoclip].context[<player>]>
+          - if <[noclip]>:
+            - adjust <[player]> gamemode:SPECTATOR
+        - else if <[player].gamemode> == SPECTATOR:
+          - define noclip:false
+          - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.sub[0,0.1,0].material.name>]>:
+            - define noclip:true
+          - else:
+            - define noclip:<proc[drustcraftp_builder_isnoclip].context[<[player]>]>
 
-        - if !<[noclip]>:
-          - adjust <player> gamemode:CREATIVE
+          - if !<[noclip]>:
+            - adjust <[player]> gamemode:CREATIVE
 
 
 drustcraftt_builder_load:
@@ -113,6 +116,8 @@ drustcraftt_builder_load:
       - run drustcraftt_tabcomplete_completion def:builder|toggle
       - run drustcraftt_tabcomplete_completion def:builder|enable
       - run drustcraftt_tabcomplete_completion def:builder|disable
+
+    - flag server drustcraft.builder.noclip.blocks:<list[AIR|RAIL|WATER|CAVE_AIR|LAVA]>
 
     - flag server drustcraft.module.builder:<script[drustcraftw_builder].data_key[version]>
 
@@ -172,25 +177,25 @@ drustcraftp_builder_isnoclip:
   debug: false
   definitions: player
   script:
-    - if <[player].location.add[0.4,0,0].material.name> != AIR:
+    - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.add[0.4,0,0].material.name>]>:
       - determine true
-    - if <[player].location.sub[0.4,0,0].material.name> != AIR:
+    - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.sub[0.4,0,0].material.name>]>:
       - determine true
-    - if <[player].location.add[0,0,0.4].material.name> != AIR:
+    - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.add[0,0,0.4].material.name>]>:
       - determine true
-    - if <[player].location.sub[0,0,0.4].material.name> != AIR:
+    - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.sub[0,0,0.4].material.name>]>:
       - determine true
-    - if <[player].location.add[0.4,1,0].material.name> != AIR:
+    - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.add[0.4,1,0].material.name>]>:
       - determine true
-    - if <[player].location.add[-0.4,1,0].material.name> != AIR:
+    - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.add[-0.4,1,0].material.name>]>:
       - determine true
-    - if <[player].location.add[-0.4,1,0].material.name> != AIR:
+    - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.add[-0.4,1,0].material.name>]>:
       - determine true
-    - if <[player].location.add[0,1,0.4].material.name> != AIR:
+    - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.add[0,1,0.4].material.name>]>:
       - determine true
-    - if <[player].location.add[0,1,-0.4].material.name> != AIR:
+    - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.add[0,1,-0.4].material.name>]>:
       - determine true
-    - if <[player].location.add[0,1.9,0].material.name> != AIR:
+    - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.add[0,1.9,0].material.name>]>:
       - determine true
 
     - determine false
@@ -296,12 +301,13 @@ drustcraftc_builder_noclip:
   permission: drustcraft.builder
   permission message: <&c>I'm sorry, you do not have permission to perform this command
   script:
-    - if <player.gamemode> == CREATIVE:
+    - if <list[CREATIVE|SPECTATOR].contains[<player.gamemode>]>:
       - if <player.has_flag[drustcraft.builder.noclip]>:
         - flag <player> drustcraft.builder.noclip:!
-        - narrate '<proc[drustcraftp_msg_format].context[error|No clip has been disabled]>'
+        - narrate '<proc[drustcraftp_msg_format].context[arrow|No clip has been disabled]>'
+        - adjust <player> gamemode:CREATIVE
       - else:
         - flag <player> drustcraft.builder.noclip:true
-        - narrate '<proc[drustcraftp_msg_format].context[error|No clip has been enabled]>'
+        - narrate '<proc[drustcraftp_msg_format].context[arrow|No clip has been enabled]>'
     - else:
       - narrate '<proc[drustcraftp_msg_format].context[error|You are required to be in $e/builder $rmode to use this command]>'
