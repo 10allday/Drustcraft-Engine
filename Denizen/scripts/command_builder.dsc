@@ -65,7 +65,6 @@ drustcraftw_builder:
       - if <player.has_effect[NIGHT_VISION]>:
         - cast NIGHT_VISION remove <player>
 
-
     # only when group_name starts with group_
     on luckperms|lp command:
       - run drustcraftt_util_run_once_later def:drustcraftt_builder_update_groups|5
