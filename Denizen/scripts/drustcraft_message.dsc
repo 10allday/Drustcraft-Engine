@@ -12,6 +12,17 @@ drustcraftw_msg:
     on script reload:
       - run drustcraftt_msg_load
 
+    on player receives message:
+      - if <context.system_message>:
+        # the following is required due to weirdness from FAWE
+        - define message:<context.raw_json.from_raw_json.strip_color||<empty>>
+
+        - if '<[message].starts_with[(FAWE) You are lacking the permission node]>':
+          - determine 'MESSAGE:<&e>WorldEdit commands are not available outside of <&f>/builder<&e> mode'
+        - else if '<[message].starts_with[Hey! Sorry]>':
+          - determine 'MESSAGE:<&e><[message].after[Hey! ]>'
+
+
 drustcraftt_msg_load:
   type: task
   debug: false
