@@ -61,6 +61,11 @@ drustcraftw_builder:
       - foreach <proc[drustcraftp_group_player_member_list].context[<player>].filter[starts_with[builder_]]>:
         - run drustcraftt_group_remove_member context:<[value]>|<player>
 
+    on player changes gamemode:
+      - if <player.has_effect[NIGHT_VISION]>:
+        - cast NIGHT_VISION remove <player>
+
+
     # only when group_name starts with group_
     on luckperms|lp command:
       - run drustcraftt_util_run_once_later def:drustcraftt_builder_update_groups|5
@@ -214,3 +219,21 @@ drustcraftc_builder:
           - narrate '<proc[drustcraftp_msg_format].context[error|Unknown option. Try <queue.script.data_key[usage].parsed>]>'
     - else:
       - narrate '<&c>This command can only be run by a player'
+
+
+drustcraftc_builder_nightvision:
+  type: command
+  debug: false
+  name: nightvision
+  description: FAWE Pos 1
+  usage: /nightvision
+  aliases:
+    - nv
+  permission: drustcraft.builder
+  permission message: <&c>I'm sorry, you do not have permission to perform this command
+  script:
+    - if <player.gamemode> == CREATIVE:
+      - if <player.has_effect[NIGHT_VISION]>:
+        - cast NIGHT_VISION remove <player>
+      - else:
+        - cast NIGHT_VISION duration:1639s <player> hide_particles no_icon
