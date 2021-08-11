@@ -224,7 +224,7 @@ drustcraftc_builder_nightvision:
   type: command
   debug: false
   name: nightvision
-  description: FAWE Pos 1
+  description: Toggle night vision
   usage: /nightvision
   aliases:
     - nv
