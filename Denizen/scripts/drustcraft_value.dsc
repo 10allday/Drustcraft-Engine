@@ -272,20 +272,6 @@ drustcraftc_value:
       - stop
 
     - choose <context.args.get[1]||<empty>>:
-      - case get:
-        - define material:<context.args.get[2]||<empty>>
-        - getmythicitems save:mythicitems
-
-        - if <server.material_types.parse[name].contains[<[material]>]> || <entry[mythicitems].mythicitems.parse[type].contains[<[material]>]>:
-          - define value:<proc[drustcraftp_value_item_get].context[<[material]>]>
-          - if <[value]> > 0:
-            - define formatted:<proc[drustcraftp_value_item_to_currency_formatted].context[<[material]>]>
-            - narrate '<proc[drustcraftp_msg_format].context[arrow|The material/item $e<[material]> $rhas a value of $e<[value]> $remeralds or <[formatted]>]>'
-          - else:
-            - narrate '<proc[drustcraftp_msg_format].context[arrow|The material/item $e<[material]> $rhas no value]>'
-        - else:
-          - narrate '<proc[drustcraftp_msg_format].context[error|The material/item $e<[material]> $rwas not found on this server]>'
-
       - case set:
         - define material:<context.args.get[2]||<empty>>
         - define value:<context.args.get[3]||0>
@@ -302,7 +288,22 @@ drustcraftc_value:
           - narrate '<proc[drustcraftp_msg_format].context[error|The material/item $e<[material]> $rwas not found on this server]>'
 
       - default:
-        - narrate '<proc[drustcraftp_msg_format].context[error|Unknown option. Try <queue.script.data_key[usage].parsed>]>'
+        - define material:<context.args.get[1]||<empty>>
+        - if <[material]> == get:
+          - define material:<context.args.get[2]||<empty>>
+
+        - getmythicitems save:mythicitems
+
+        - if <server.material_types.parse[name].contains[<[material]>]> || <entry[mythicitems].mythicitems.parse[type].contains[<[material]>]>:
+          - define value:<proc[drustcraftp_value_item_get].context[<[material]>]>
+          - if <[value]> > 0:
+            - define formatted:<proc[drustcraftp_value_item_to_currency_formatted].context[<[material]>]>
+            - define material:<[material].replace[_].with[<&sp>].to_sentence_case>
+            - narrate '<proc[drustcraftp_msg_format].context[arrow|The material/item $e<[material]> $rhas a value of <[formatted]>]>'
+          - else:
+            - narrate '<proc[drustcraftp_msg_format].context[arrow|The material/item $e<[material]> $rhas no value]>'
+        - else:
+          - narrate '<proc[drustcraftp_msg_format].context[error|The material/item $e<[material]> $rwas not found on this server]>'
 
 
 drustcraftp_tab_complete_value:
