@@ -16,14 +16,17 @@ drustcraftw_chest:
       - if <context.inventory.location||<empty>> != <empty>:
         - if !<server.flag[drustcraft.chest.stocked].contains[<context.inventory.location>]||false> && !<server.flag[drustcraft.chest.ignore].contains[<context.inventory.location>]||false>:
           - flag server drustcraft.chest.stocked:->:<context.inventory.location>
-          - if <server.has_flag[drustcraft.chest.items.any]>:
-            - foreach <server.flag[drustcraft.chest.items.any].keys> as:item:
-              - if <util.random.decimal[0].to[1]> <= <server.flag[drustcraft.chest.items.any.<[item]>.chance]||1>:
-                - give <item[<[item]>]> quantity:<util.random.int[<server.flag[drustcraft.chest.items.any.<[item]>.min_qty]||1>].to[<server.flag[drustcraft.chest.items.any.<[item]>.max_qty]||1>]> to:<context.inventory>
-          - if <server.has_flag[drustcraft.chest.items.<context.inventory.location.biome.name>]>:
-            - foreach <server.flag[drustcraft.chest.items.<context.inventory.location.biome.name>].keys> as:item:
-              - if <util.random.decimal[0].to[1]> <= <server.flag[drustcraft.chest.items.<context.inventory.location.biome.name>.<[item]>.chance]||1>:
-                - give <item[<[item]>]> quantity:<util.random.int[<server.flag[drustcraft.chest.items.<context.inventory.location.biome.name>.<[item]>.min_qty]||1>].to[<server.flag[drustcraft.chest.items.<context.inventory.location.biome.name>.<[item]>.max_qty]||1>]> to:<context.inventory>
+
+          - define item_ids:<list[]>
+          - define item_ids:|:<server.flag[drustcraft.chest.items.<context.inventory.location.biome.name>]||<list[]>>
+          - define item_ids:|:<server.flag[drustcraft.chest.items.<context.inventory.location.world.environment>]||<list[]>>
+          - define item_ids:<[item_ids].deduplicate>
+
+          - foreach <[item_ids].random[<util.random.int[5].to[20]>]>:
+            - if <util.random.decimal[0].to[1]> <= <server.flag[drustcraft.chest.items.<[value]>.chance]>:
+              - define item:<server.flag[drustcraft.chest.items.<[value]>.item]>
+              - define qty:<util.random.int[<server.flag[drustcraft.chest.items.<[value]>.min_qty]>].to[<server.flag[drustcraft.chest.items.<[value]>.max_qty]>]>
+              - give <item[<[item]>]> quantity:<[qty]> to:<context.inventory>
 
           - waituntil <server.sql_connections.contains[drustcraft]>
           - sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chest_stocked`(`server`,`location`,`day`) VALUES(NULL, "<context.inventory.location>", <server.flag[drustcraft.util.day]>);'
@@ -68,7 +71,9 @@ drustcraftt_chest_load:
       - else:
         - ~sql id:drustcraft 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft.db.prefix]>chest_ignore` (`id` INT NOT NULL AUTO_INCREMENT, `server` TEXT, `location` TEXT NOT NULL, PRIMARY KEY (`id`));'
         - ~sql id:drustcraft 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft.db.prefix]>chest_stocked` (`id` INT NOT NULL AUTO_INCREMENT, `server` TEXT, `location` TEXT NOT NULL, `day` INT NOT NULL, PRIMARY KEY (`id`));'
-        - ~sql id:drustcraft 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft.db.prefix]>chest_items` (`id` INT NOT NULL AUTO_INCREMENT, `item` TEXT NOT NULL, `biome` TEXT, `chance` DOUBLE NOT NULL, `min_qty` INT NOT NULL, `max_qty` INT NOT NULL, PRIMARY KEY (`id`));'
+        - ~sql id:drustcraft 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft.db.prefix]>chest_item` (`id` INT NOT NULL AUTO_INCREMENT, `item` VARCHAR(255) NOT NULL, `chance` DOUBLE NOT NULL, `min_qty` INT NOT NULL, `max_qty` INT NOT NULL, PRIMARY KEY (`id`));'
+        - ~sql id:drustcraft 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft.db.prefix]>chest_item_environment` (`id` INT NOT NULL AUTO_INCREMENT, `item_id` INT NOT NULL, `environment` VARCHAR(255) NOT NULL, PRIMARY KEY (`id`));'
+        - ~sql id:drustcraft 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft.db.prefix]>chest_item_biome` (`id` INT NOT NULL AUTO_INCREMENT, `item_id` INT NOT NULL, `biome` VARCHAR(255) NOT NULL, PRIMARY KEY (`id`));'
         - ~run drustcraftt_setting_set def:<list[chest.containers].include_single[<list[ANVIL|BARREL|BEACON|BEE_NEST|BEEHIVE|BLACK_SHULKER_BOX|BLAST_FURNACE|BLUE_SHULKER_BOX|BREWING_STAND|BROWN_SHULKER_BOX|CAMPFIRE|CARTOGRAPHY_TABLE|CHEST|CHIPPED_ANVIL|COMPOSTER|CYAN_SHULKER_BOX|DAMAGED_ANVIL|DISPENSER|DROPPER|ENCHANTING_TABLE|ENDER_CHEST|FLETCHING_TABLE|FURNACE|GRAY_SHULKER_BOX|GREEN_SHULKER_BOX|GRINDSTONE|HOPPER|JUKEBOX|LECTERN|LIGHT_BLUE_SHULKER_BOX|LIGHT_GRAY_SHULKER_BOX|LIME_SHULKER_BOX|LOOM|MAGENTA_SHULKER_BOX|ORANGE_SHULKER_BOX|PINK_SHULKER_BOX|PURPLE_SHULKER_BOX|RED_SHULKER_BOX|SHULKER_BOX|SMITHING_TABLE|SMOKER|SOUL_CAMPFIRE|STONECUTTER|TRAPPED_CHEST|WHITE_SHULKER_BOX|YELLOW_SHULKER_BOX]>]>
         - run drustcraftt_db_set_version def:drustcraft.chest|1
 
@@ -90,21 +95,28 @@ drustcraftt_chest_load:
         - define location:<[row].get[1].unescaped||<empty>>
         - flag server drustcraft.chest.stocked:->:<[location]>
 
-    - ~sql id:drustcraft 'query:SELECT `item`, `biome`, `chance`, `min_qty`, `max_qty` FROM `<server.flag[drustcraft.db.prefix]>chest_items`;' save:sql_result
-    - if <entry[sql_result].result.size||0> >= 1:
-      - foreach <entry[sql_result].result>:
-        - define row:<[value].split[/].unescaped||<list[]>>
-        - define item:<[row].get[1].unescaped||<empty>>
-        - define biome:<[row].get[2].unescaped||<empty>>
-        - define chance:<[row].get[3]||<empty>>
-        - define min_qty:<[row].get[4]||<empty>>
-        - define max_qty:<[row].get[5]||<empty>>
+    - ~sql id:drustcraft 'query:SELECT `id`, `item`, `chance`, `min_qty`, `max_qty` FROM `<server.flag[drustcraft.db.prefix]>chest_item`;' save:sql_result
+    - foreach <entry[sql_result].result>:
+      - define row:<[value].split[/].unescaped||<list[]>>
+      - define id:<[row].get[1]||<empty>>
+      - define item:<[row].get[2].unescaped||<empty>>
+      - define chance:<[row].get[3]||<empty>>
+      - define min_qty:<[row].get[4]||<empty>>
+      - define max_qty:<[row].get[5]||<empty>>
 
-        - if <[biome]> == null:
-          - define biome:any
+      - flag server drustcraft.chest.items.<[id]>.item:<[item]>
+      - flag server drustcraft.chest.items.<[id]>.chance:<[chance]>
+      - flag server drustcraft.chest.items.<[id]>.min_qty:<[min_qty]>
+      - flag server drustcraft.chest.items.<[id]>.max_qty:<[max_qty]>
 
-        - flag server drustcraft.chest.items.<[biome]>.<[item]>.chance:<[chance]>
-        - flag server drustcraft.chest.items.<[biome]>.<[item]>.min_qty:<[min_qty]>
-        - flag server drustcraft.chest.items.<[biome]>.<[item]>.max_qty:<[max_qty]>
+      - ~sql id:drustcraft 'query:SELECT `biome` FROM `<server.flag[drustcraft.db.prefix]>chest_item_biome` WHERE `item_id` = <[id]>;' save:sql_sub_result
+      - foreach <entry[sql_sub_result].result>:
+        - define sub_row:<[value].split[/].unescaped||<list[]>>
+        - flag server drustcraft.chest.items.<[sub_row].get[1]>:<[id]>
+
+      - ~sql id:drustcraft 'query:SELECT `environment` FROM `<server.flag[drustcraft.db.prefix]>chest_item_environment` WHERE `item_id` = <[id]>;' save:sql_sub_result
+      - foreach <entry[sql_sub_result].result>:
+        - define sub_row:<[value].split[/].unescaped||<list[]>>
+        - flag server drustcraft.chest.items.<[sub_row].get[1]>:<[id]>
 
     - flag server drustcraft.module.value:<script[drustcraftw_value].data_key[version]>
