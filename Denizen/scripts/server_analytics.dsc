@@ -138,37 +138,6 @@ drustcraftw_analytics:
 
         - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>analytics_deaths` (`session_id`, `date`, `reason`, `entity_type`, `entity_id`) VALUES(<context.entity.flag[drustcraft_analytics_session_id]>, <[date]>, "<context.cause>", <[entity_type]>, "<[entity_id]>");'
 
-    on player breaks block server_flagged:drustcraft.module.analytics:
-      - if <list[chest|ender_chest].contains[<context.material.name>]> || <context.material.name.ends_with[shulker_box]>:
-        - waituntil <server.sql_connections.contains[drustcraft]>
-        - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>analytics_currency` WHERE `server` = "<bungee.server||<empty>>" AND `type` = "chest" AND `location` = "<context.location>" AND `day` = <server.flag[drustcraft.util.day]>;'
-        - sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>analytics_currency` (`server`, `type`, `location`, `amount`, `day`) VALUES("<bungee.server||<empty>>", "chest", "<context.location>", 0, <server.flag[drustcraft.util.day]>)'
-
-    on player closes inventory priority:-1 server_flagged:drustcraft.module.analytics:
-      - if <player.gamemode> == SURVIVAL:
-        - waituntil <server.sql_connections.contains[drustcraft]>
-        - if <context.inventory.note_name.contains_text[bank]||false>:
-          - define amount:<proc[drustcraftp_analytics_chest_currency].context[<context.inventory>]>
-
-          # WHERE `server`<tern[<[server].equals[null]>].pass[is null].fail[=<&dq><[server]><&dq>]>
-          - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>analytics_currency` WHERE `server` is null AND `type` = "chest" AND `location` = "<context.inventory.note_name>" AND `day` = <server.flag[drustcraft.util.day]>;'
-          - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>analytics_currency` (`server`,`type`,`location`,`amount`,`day`) VALUES (null, "chest", "<context.inventory.note_name>", <[amount]>, <server.flag[drustcraft.util.day]>);'
-        - else if <context.inventory.id_type> == LOCATION:
-          - define amount:<proc[drustcraftp_analytics_chest_currency].context[<context.inventory>]>
-
-          - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>analytics_currency` WHERE `server` = "<bungee.server||<empty>>" AND `type` = "chest" AND `location` = "<context.inventory.location>" AND `day` = <server.flag[drustcraft.util.day]>;'
-          - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>analytics_currency` (`server`,`type`,`location`,`amount`,`day`) VALUES ("<bungee.server||<empty>>", "chest", "<context.inventory.location>", <[amount]>, <server.flag[drustcraft.util.day]>);'
-
-        - define amount:<proc[drustcraftp_analytics_chest_currency].context[<player.inventory>]>
-        - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>analytics_currency` WHERE `server` is null AND `type` = "player" AND `location` = "<player.uuid>" AND `day` = <server.flag[drustcraft.util.day]>;'
-        - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>analytics_currency` (`server`,`type`,`location`,`amount`,`day`) VALUES (null, "player", "<player.uuid>", <[amount]>, <server.flag[drustcraft.util.day]>);'
-
-    on player quits priority:-1 server_flagged:drustcraft.module.analytics:
-      - waituntil <server.sql_connections.contains[drustcraft]>
-      - define amount:<proc[drustcraftp_analytics_chest_currency].context[<player.inventory>]>
-      - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>analytics_currency` WHERE `server` is null AND `type` = "player" AND `location` = "<player.uuid>" AND `day` = <server.flag[drustcraft.util.day]>;'
-      - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>analytics_currency` (`server`,`type`,`location`,`amount`,`day`) VALUES (null, "player", "<player.uuid>", <[amount]>, <server.flag[drustcraft.util.day]>);'
-
 
 drustcraftt_analytics_load:
   type: task
@@ -213,13 +182,6 @@ drustcraftt_analytics_load:
       - define version:2
 
     - if <[version]> == 2:
-      - ~run drustcraftt_db_get_version def:drustcraft_currency save:result
-      - if <entry[result].created_queue.determination.get[1]||<empty>> == 1:
-        - ~run drustcraftt_db_clear_version: def:drustcraft_currency
-        - ~sql id:drustcraft 'update:RENAME TABLE `<server.flag[drustcraft.db.prefix]>currency` TO `<server.flag[drustcraft.db.prefix]>analytics_currency`;'
-      - else:
-        - ~sql id:drustcraft 'update:CREATE TABLE IF NOT EXISTS `<server.flag[drustcraft.db.prefix]>analytics_currency` (`id` INT NOT NULL AUTO_INCREMENT, `server` VARCHAR(255), `type` VARCHAR(255) NOT NULL, `location` VARCHAR(255) NOT NULL, `amount` DOUBLE NOT NULL, `day` INT NOT NULL, PRIMARY KEY (`id`));'
-
       - run drustcraftt_db_set_version def:drustcraft.analytics|3
       - define version:3
 
@@ -292,25 +254,3 @@ drustcraftt_analytics_player_region_exit:
     - if <[player].flag[drustcraft_analytics_session_id]||0> > 0 && <[region].note_name||<empty>> != <empty>:
       - define region_id:<[region].note_name>
       - ~sql id:drustcraft 'update:UPDATE `<server.flag[drustcraft.db.prefix]>analytics_region_times` SET `exited`=<util.time_now.epoch_millis.div[1000].round> WHERE `region_id`="<[region_id]>" AND `session_id`=<[player].flag[drustcraft_analytics_session_id]> AND `server`="<bungee.server||<empty>>" AND `exited`=0;'
-
-
-drustcraftp_analytics_chest_currency:
-  type: procedure
-  debug: false
-  definitions: inventory
-  script:
-    - define amount:0
-
-    - foreach <[inventory].map_slots> as:item:
-      - if <[item].material.name> == shulker_box:
-        - define amount:<[amount].add[<proc[drustcraftp_analytics_chest_currency].context[<[item].inventory>]>]>
-
-    - define amount:<[amount].add[<[inventory].quantity_item[netherite_block].mul[117]>]>
-    - define amount:<[amount].add[<[inventory].quantity_item[netherite_ingot].mul[13]>]>
-    - define amount:<[amount].add[<[inventory].quantity_item[emerald_block].mul[9]>]>
-    - define amount:<[amount].add[<[inventory].quantity_item[emerald].mul[1]>]>
-    - define amount:<[amount].add[<[inventory].quantity_item[diamond].mul[1]>]>
-    - define amount:<[amount].add[<[inventory].quantity_item[copper_ingot].mul[0.5]>]>
-    - define amount:<[amount].add[<[inventory].quantity_item[iron_ingot].mul[0.25]>]>
-
-    - determine <[amount]>
