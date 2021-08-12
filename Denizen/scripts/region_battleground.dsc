@@ -30,7 +30,7 @@ drustcraftw_region_battleground:
           - if !<context.entity.has_flag[drustcraft.battleground.engaged]> || !<context.entity.flag[drustcraft.battleground.engaged].contains[<context.damager.uuid>]>:
             - flag <context.entity> drustcraft.battleground.engaged:|:<context.damager.uuid>
           - if !<context.damager.has_flag[drustcraft.battleground.engaged]> || !<context.damager.flag[drustcraft.battleground.engaged].contains[<context.entity.uuid>]>:
-            - flag <context.entdamagerity> drustcraft.battleground.engaged:|:<context.entity.uuid>
+            - flag <context.damager> drustcraft.battleground.engaged:|:<context.entity.uuid>
 
 
 drustcraftt_region_battleground_load:
