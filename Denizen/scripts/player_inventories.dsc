@@ -25,6 +25,7 @@ drustcraftw_inventories:
       - inventory set d:<player.inventory> o:<player.flag[drustcraft.inventories.<player.gamemode>]||<map[]>>
 
     on player quits:
+      - flag player drustcraft.inventories.<player.gamemode>:<player.inventory.map_slots>
       - ~run drustcraftt_setting_set def:drustcraft.inventories.<player.uuid>.adventure|<player.flag[drustcraft.inventories.adventure]> save:result
       - ~run drustcraftt_setting_set def:drustcraft.inventories.<player.uuid>.creative|<player.flag[drustcraft.inventories.creative]> save:result
       - ~run drustcraftt_setting_set def:drustcraft.inventories.<player.uuid>.survival|<player.flag[drustcraft.inventories.survival]> save:result
