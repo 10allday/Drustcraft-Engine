@@ -181,7 +181,7 @@ drustcraftw_discord:
                 - if <[target_player]> != <empty>:
                   - ~discordmessage id:drustcraft channel:<context.channel> "The uuid of **<[target_player].name>** is <[target_player].uuid>"
                 - else:
-                  - ~discordmessage id:drustcraft channel:<context.channel> "Could not find any info on **<[player_name]>**"
+                  - ~discordmessage id:drustcraft channel:<context.channel> "Could not find a player with the UUID of **<[player_name]>**"
               - else:
                 - ~discordmessage id:drustcraft channel:<context.channel> "Which player did you want to know about?"
 
