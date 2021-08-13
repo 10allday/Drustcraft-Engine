@@ -36,13 +36,13 @@ drustcraftw_chest:
         - if <server.flag[drustcraft.chests.containers].contains[<context.material.name>]>:
           - flag server drustcraft.chest_restock.ignore:->:<context.location>
           - waituntil <server.sql_connections.contains[drustcraft]>
-          - sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>chest_ignore`(`server`,`location`) VALUES(NULL,"<context.location>"); INSERT INTO `<server.flag[drustcraft.db.prefix]>chest_ignore`(`server`,`location`) VALUES(NULL,"<context.location>");'
+          - sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>chest_ignore` WHERE `server` IS NULL AND `location` = "<context.location>"; INSERT INTO `<server.flag[drustcraft.db.prefix]>chest_ignore`(`server`,`location`) VALUES(NULL,"<context.location>");'
 
     on player breaks block:
       - if <player.gamemode> == SURVIVAL:
         - flag server drustcraft.chest.ignore:<-:<context.location>
         - waituntil <server.sql_connections.contains[drustcraft]>
-        - sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>chest_ignore`(`server`,`location`) VALUES(NULL,"<context.location>");'
+        - sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>chest_ignore` WHERE `server` IS NULL AND `location` = "<context.location>";'
 
 
 drustcraftt_chest_load:
