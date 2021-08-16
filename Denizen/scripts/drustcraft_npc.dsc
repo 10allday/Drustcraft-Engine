@@ -203,7 +203,7 @@ drustcraftt_npc_job_clear:
   debug: false
   definitions: npc
   script:
-    - ~run drustcraftt_npc_job_run def:<player.selected_npc>|remove|<player>|null
+    - ~run drustcraftt_npc_job_run def:<[npc]>|remove|<player>|null
     - waituntil <server.sql_connections.contains[drustcraft]>
     - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>npc` WHERE `server` IS NULL AND `npc_id` = <player.selected_npc.id>;'
 
@@ -213,18 +213,18 @@ drustcraftt_npc_job_set:
   debug: false
   definitions: npc|job
   script:
-    - ~run drustcraftt_npc_job_run def:<player.selected_npc>|remove|<player>|null
-    - flag <player.selected_npc> drustcraft.npc.job.id:<[job]>
-    - flag <player.selected_npc> drustcraft.npc.job.task:<yaml[drustcraft_npc_job].read[<[job]>.task]>
+    - ~run drustcraftt_npc_job_run def:<[npc]>|remove|<player>|null
+    - flag <[npc]> drustcraft.npc.job.id:<[job]>
+    - flag <[npc]> drustcraft.npc.job.task:<yaml[drustcraft_npc_job].read[<[job]>.task]>
     - if <yaml[drustcraft_npc_job].list_keys[<[job]>].contains[title]>:
-      - adjust <player.selected_npc> hologram_lines:<list[&e<yaml[drustcraft_npc_job].read[<[job]>.title]>]>
-      - flag <player.selected_npc> drustcraft.npc.job.title:<yaml[drustcraft_npc_job].read[<[job]>.title]>
+      - adjust <[npc]> hologram_lines:<list[&e<yaml[drustcraft_npc_job].read[<[job]>.title]>]>
+      - flag <[npc]> drustcraft.npc.job.title:<yaml[drustcraft_npc_job].read[<[job]>.title]>
 
     - waituntil <server.sql_connections.contains[drustcraft]>
-    - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>npc` WHERE `server` IS NULL AND `npc_id` = <player.selected_npc.id>;'
-    - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>npc`(`npc_id`, `job`, `data`) VALUES(<player.selected_npc.id>, "<[job]>", NULL);'
-    - ~run drustcraftt_npc_job_run def:<list[<player.selected_npc>|add|<player>].include_single[<context.args.remove[1|2]>]>
-    - ~run drustcraftt_npc_job_run def:<player.selected_npc>|init|null|null
+    - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>npc` WHERE `server` IS NULL AND `npc_id` = <[npc].id>;'
+    - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>npc`(`npc_id`, `job`, `data`) VALUES(<[npc].id>, "<[job]>", NULL);'
+    - ~run drustcraftt_npc_job_run def:<list[<[npc]>|add|<player>].include_single[<context.args.remove[1|2]>]>
+    - ~run drustcraftt_npc_job_run def:<[npc]>|init|null|null
 
 
 drustcraftp_npc_title:
