@@ -259,6 +259,28 @@ drustcraftc_job_trader:
         - else:
           - narrate '<proc[drustcraftp_msg_format].context[error|No trader ID was entered]>'
 
+      - case title:
+        - define trader_id:<context.args.get[2]||<empty>>
+        - if <[trader_id]> != <empty>:
+          - if <server.has_flag[]>:
+            - if <context.args.size> == 2:
+              - narrate '<proc[drustcraftp_msg_format].context[arrow|The title of trader type $e<[trader_id]> $ris $e<server.flag[drustcraft.job_trader.traders.<[trader_id]>.title]>]>'
+            - else:
+              - if !<server.has_flag[drustcraft.job_trader.traders.<[trader_id]>.owner]> || <server.flag[drustcraft.job_trader.traders.<[trader_id]>.owner]> == <player.uuid||console> || <context.server||false> || <player.has_permission[drustcraft.trader.override]||false>:
+                - flag <server> drustcraft.job_trader.traders.<[trader_id]>.title:<context.args.get[3]>
+                - waituntil <server.sql_connections.contains[drustcraft]>
+                - ~sql id:drustcraft 'update:UPDATE `<server.flag[drustcraft.db.prefix]>job_trader_type` SET `title` = "<context.args.get[3]>" WHERE `trader_id` = "<[trader_id]>";'
+                - foreach <server.flag[drustcraft.job_trader.traders.<[trader_id]>.npcs]||<list[]>> as:npc:
+                  - run drustcraftt_npc_title def:<[npc]>|<context.args.get[3]>
+                - narrate '<proc[drustcraftp_msg_format].context[success|Trader type title updated]>'
+              - else:
+                - narrate '<proc[drustcraftp_msg_format].context[error|You do not have permission to edit this trader type]>'
+          - else:
+            - narrate '<proc[drustcraftp_msg_format].context[error|The trader type $e<[trader_id]> $rwas not found]>'
+        - else:
+          - narrate '<proc[drustcraftp_msg_format].context[error|No trader ID was entered]>'
+
+
 #       - case setowner:
 #         - define shop_name:<context.args.get[2]||<empty>>
 #         - if <[shop_name]> != <empty>:
