@@ -399,7 +399,7 @@ drustcraftc_job_trader:
 #           - narrate '<&e>No shop name was entered'
 
       - default:
-        - narrate '<proc[drustcraft_msg_format].context[error|Unknown option. Try <queue.script.data_key[usage].parsed>]>'
+        - narrate '<proc[drustcraftp_msg_format].context[error|Unknown option. Try <queue.script.data_key[usage].parsed>]>'
 
 
 drustcraftt_job_trader:
