@@ -147,7 +147,7 @@ drustcraftw_region:
                 - if !<server.has_flag[drustcraft.region.list.<[world]>.<[region]>.title]>:
                   - narrate '<&9>Title: <&c>(none)'
                 - else:
-                  - narrate '<&9>Title: <&7><server.flag[exdrustcraft.region.list.<[world]>.<[region]>.title]>'
+                  - narrate '<&9>Title: <&7><server.flag[drustcraft.region.list.<[world]>.<[region]>.title]>'
 
                 - if !<server.has_flag[drustcraft.region.list.<[world]>.<[region]>.type]>:
                   - narrate '<&9>Type: <&c>(none)'
