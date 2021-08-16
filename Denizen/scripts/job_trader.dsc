@@ -32,6 +32,7 @@ drustcraftt_job_trader_load:
       - debug ERROR 'Drustcraft Job Trader: Drustcraft Value is required to be installed'
       - stop
 
+    - waituntil <server.sql_connections.contains[drustcraft]>
     - define create_tables:true
     - ~run drustcraftt_db_get_version def:drustcraft.job_trader save:result
     - define version:<entry[result].created_queue.determination.get[1]>
