@@ -225,6 +225,10 @@ drustcraftc_job_trader:
             - if !<server.has_flag[drustcraft.job_trader.traders.<[trader_id]>.owner]> || <server.flag[drustcraft.job_trader.traders.<[trader_id]>.owner]> == <player.uuid||console> || <context.server||false> || <player.has_permission[drustcraft.trader.override]||false>:
               - foreach <server.flag[drustcraft.job_trader.traders.<[trader_id]>.npcs]||<list[]>> as:npc:
                 - run drustcraftt_npc_job_clear def:<[npc]>
+              - waituntil <server.sql_connections.contains[drustcraft]>
+              - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>job_trader_type` WHERE `trader_id` = "<[trader_id]>";'
+              - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>job_trader_item` WHERE `trader_id` = "<[trader_id]>";'
+              - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>job_trader_npc` WHERE `trader_id` = "<[trader_id]>";'
               - flag <server> drustcraft.job_trader.traders.<[trader_id]>:!
               - narrate '<proc[drustcraftp_msg_format].context[success|The trader type $e<[trader_id]> $rwas deleted]>'
             - else:
