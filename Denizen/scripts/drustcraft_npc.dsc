@@ -55,7 +55,7 @@ drustcraftw_npc:
 
           - foreach <server.npcs>:
             - if !<[value].name.starts_with[<&ss>]>:
-              - adjust <[value]> name:<&e><[value].name>
+              - adjust <[value]> name:<&e><[value].name.to_titlecase>
 
         - case remove:
           - wait 5t
@@ -183,7 +183,7 @@ drustcraftt_npc_job_run:
   definitions: npc|action|player|data
   script:
     - if <[npc].has_flag[drustcraft.npc.job.task]>:
-      - run <[npc].flag[drustcraft.npc.job.task]> def:<[action]>|<[npc]>|<[player]>|<[data]> save:result
+      - run <[npc].flag[drustcraft.npc.job.task]> def:<[action]>|<[npc]>|<[player]||null>|<[data]||null> save:result
       - determine <entry[result].created_queue.determination.get[1]||null>
     - determine null
 
