@@ -63,34 +63,34 @@ drustcraftc_ptime:
           - stop
         - case day:
           - if <context.args.get[2]||null> == freeze:
+            - time player 8000t freeze
+          - else:
+            - time player 8000t
+        - case night:
+          - if <context.args.get[2]||null> == freeze:
             - time player 1000t freeze
           - else:
             - time player 1000t
-        - case night:
-          - if <context.args.get[2]||null> == freeze:
-            - time player 13000t freeze
-          - else:
-            - time player 13000t
         - case midday noon:
-          - if <context.args.get[2]||null> == freeze:
-            - time player 6000t freeze
-          - else:
-            - time player 6000t
-        - case midnight:
           - if <context.args.get[2]||null> == freeze:
             - time player 18000t freeze
           - else:
             - time player 18000t
+        - case midnight:
+          - if <context.args.get[2]||null> == freeze:
+            - time player 4000t freeze
+          - else:
+            - time player 4000t
         - case dawn sunrise:
+          - if <context.args.get[2]||null> == freeze:
+            - time player 9000t freeze
+          - else:
+            - time player 9000t
+        - case dusk sunset:
           - if <context.args.get[2]||null> == freeze:
             - time player 23000t freeze
           - else:
             - time player 23000t
-        - case dusk sunset:
-          - if <context.args.get[2]||null> == freeze:
-            - time player 12000t freeze
-          - else:
-            - time player 12000t
         - default:
           - if <context.args.get[1].is_integer>:
             - if <context.args.get[2]||null> == freeze:
