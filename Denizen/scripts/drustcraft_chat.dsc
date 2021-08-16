@@ -105,9 +105,14 @@ drustcraftw_chat:
 
             - define player_list:<server.online_players.filter_tag[<proc[drustcraftp_chat_channel_ids].context[<[filter_value]>].contains[<[channel]>]>]>
             - if <[player_list].size> > 1:
-              - determine passively RECIPIENTS:<[player_list]>
-              - determine passively FORMAT:drustcraftf_chat
-              - determine '<[channel_title]><player.chat_prefix.parse_color><player.name><&f>: <[message].strip_color>'
+              - if <player.has_flag[drustcraft.chat.last]> && <player.flag[drustcraft.chat.last].from_now.in_seconds> > <server.flag[drustcraft.chat.time_between]>:
+                - narrate '<proc[drustcraftp_msg_format].context[error|Please wait at least $e<server.flag[drustcraft.chat.time_between]> $rseconds between messages]>'
+                - determine CANCELLED
+              - else:
+                - flag <player> drustcraft.chat.last:<util.time_now>
+                - determine passively RECIPIENTS:<[player_list]>
+                - determine passively FORMAT:drustcraftf_chat
+                - determine '<[channel_title]><player.chat_prefix.parse_color><player.name><&f>: <[message].strip_color>'
             - else:
               - if <[channel]> == null:
                 - narrate '<proc[drustcraftp_msg_format].context[error|You are not connected to any chat channels]>'
@@ -196,6 +201,10 @@ drustcraftt_chat_load:
     - wait 2t
     - waituntil <server.has_flag[drustcraft.module.core]>
 
+    - if !<server.scripts.parse[name].contains[drustcraftw_setting]>:
+      - debug ERROR 'Drustcraft Chat requires Drustcraft Setting installed'
+      - stop
+
     - if !<server.scripts.parse[name].contains[drustcraftw_db]>:
       - debug ERROR 'Drustcraft Chat requires Drustcraft DB installed'
       - stop
@@ -259,6 +268,10 @@ drustcraftt_chat_load:
       - run drustcraftt_tabcomplete_completion def:chat|_*channels
       - run drustcraftt_tabcomplete_completion def:mute|_*players|_*duration|_*reason
       - run drustcraftt_tabcomplete_completion def:unmute|_*mutedplayers
+
+    - waituntil <server.has_flag[drustcraft.module.setting]>
+    - ~run drustcraftt_setting_get def:drustcraft.chat.time_between|3 save:result
+    - flag server drustcraft.chat.time_between:<entry[result].created_queue.determination.get[1]>
 
     - flag server drustcraft.module.chat:<script[drustcraftw_chat].data_key[version]>
     - run drustcraftt_chat_register def:all|<&7>All|drustcraftp_chat_channel_all
