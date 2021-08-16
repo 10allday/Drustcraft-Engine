@@ -234,36 +234,25 @@ drustcraftc_job_trader:
         - else:
           - narrate '<proc[drustcraftp_msg_format].context[error|You need to enter a trader id]>'
 
-#       - case info:
-#         - define shop_name:<context.args.get[2]||<empty>>
-#         - if <[shop_name]> != <empty>:
-#           - run drustcraftt_chat_gui.title 'def:Shop: <[shop_name]>'
+      - case info:
+        - define trader_id:<context.args.get[2]||<empty>>
+        - if <[trader_id]> != <empty>:
+          - ~run drustcraftt_chatgui_clear
+          - narrate '<proc[drustcraftp_chatgui_title].context[Trader: <[trader_id]>]>'
 
-#           - define shop_info:<proc[drustcraftp_shop.info].context[<[shop_name]>]>
-#           - if <[shop_info]> != <empty>:
+          # title
+          - narrate '<proc[drustcraftp_chatgui_option].context[Title]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.title]||<&4>(none)>]><proc[drustcraftp_chatgui_button].context[add|Set|trader title <[trader_id]> |Set trader type title]>'
 
-#             # Owner
-#             - define owner:<[shop_info].get[owner]||<empty>>
-#             - define owner:<player[<[owner]>].name||<&c>(none)>
-#             - define 'row:<&9>Owner: <&6><[owner]> <element[<&7><&lb>Edit<&rb>].on_click[/shop setowner <[shop_name]> ].type[SUGGEST_COMMAND].on_hover[Click to edit]>'
-#             - narrate <[row]>
+          # Owner
+          - narrate '<proc[drustcraftp_chatgui_option].context[Owner]><proc[drustcraftp_chatgui_value].context[<player[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.owner].name>]||console>]><proc[drustcraftp_chatgui_button].context[add|Set|trader owner <[trader_id]> |Set trader type owner]>'
 
-#             # NPCs
-#             - define npc_list:<yaml[drustcraft_shop].read[npc].filter_tag[<[filter_value].equals[<[shop_name]>]>].keys||<list[]>>
+          # NPCs
+          - narrate '<proc[drustcraftp_chatgui_option].context[NPCs]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.npcs].size||0>]><proc[drustcraftp_chatgui_button].context[edit|View|trader npcs <[trader_id]> |View trader type npcs]><proc[drustcraftp_chatgui_button].context[add|Add|trader addnpc <[trader_id]> |Change NPC trader type]>'
 
-#             - define 'row:<&9>NPCs: <&6><[npc_list].size> NPCs <element[<&7><&lb>View<&rb>].on_click[/shop npc <[shop_name]> list].on_hover[Click to view]> <element[<&a><&lb>Add<&rb>].on_click[/shop npc <[shop_name]> add ].type[SUGGEST_COMMAND].on_hover[Click to add]>'
-#             - narrate <[row]>
-
-#             # Items
-#             - define item_list:<yaml[drustcraft_shop].read[shop.<[shop_name]>.items]||<list[]>>
-
-#             - define 'row:<&9>Items: <&6><[item_list].size> items <element[<&7><&lb>View<&rb>].on_click[/shop item <[shop_name]> list].on_hover[Click to view]> <element[<&a><&lb>Add<&rb>].on_click[/shop item <[shop_name]> add ].type[SUGGEST_COMMAND].on_hover[Click to add]>'
-#             - narrate <[row]>
-
-#           - else:
-#             - narrate '<&e>There was an error getting the shop information'
-#         - else:
-#           - narrate '<&e>No shop name was entered'
+          # Items
+          - narrate '<proc[drustcraftp_chatgui_option].context[Items]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.items].size||0>]><proc[drustcraftp_chatgui_button].context[edit|View|trader items <[trader_id]> |View trader type items]><proc[drustcraftp_chatgui_button].context[add|Add|trader additem <[trader_id]> |Add item to trader type]>'
+        - else:
+          - narrate '<proc[drustcraftp_msg_format].context[error|No trader ID was entered]>'
 
 #       - case setowner:
 #         - define shop_name:<context.args.get[2]||<empty>>
