@@ -92,6 +92,7 @@ drustcraftt_job_trader_load:
       - run drustcraftt_tabcomplete_completion def:trader|create
       - run drustcraftt_tabcomplete_completion def:trader|remove|_*traders
       - run drustcraftt_tabcomplete_completion def:trader|info|_*traders
+      - run drustcraftt_tabcomplete_completion def:trader|title|_*traders
 
       - run drustcraftt_tabcomplete_completion def:npc|job|trader|_*traders
 
@@ -242,27 +243,30 @@ drustcraftc_job_trader:
       - case info:
         - define trader_id:<context.args.get[2]||<empty>>
         - if <[trader_id]> != <empty>:
-          - ~run drustcraftt_chatgui_clear
-          - narrate '<proc[drustcraftp_chatgui_title].context[Trader: <[trader_id]>]>'
+          - if <server.has_flag[drustcraft.job_trader.traders.<[trader_id]>]>:
+            - ~run drustcraftt_chatgui_clear
+            - narrate '<proc[drustcraftp_chatgui_title].context[Trader: <[trader_id]>]>'
 
-          # title
-          - narrate '<proc[drustcraftp_chatgui_option].context[Title]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.title]||<&4>(none)>]><proc[drustcraftp_chatgui_button].context[add|Set|trader title <[trader_id]> |Set trader type title]>'
+            # title
+            - narrate '<proc[drustcraftp_chatgui_option].context[Title]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.title]||<&4>(none)>]><proc[drustcraftp_chatgui_button].context[add|Set|trader title <[trader_id]> |Set trader type title]>'
 
-          # Owner
-          - narrate '<proc[drustcraftp_chatgui_option].context[Owner]><proc[drustcraftp_chatgui_value].context[<player[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.owner].name>]||console>]><proc[drustcraftp_chatgui_button].context[add|Set|trader owner <[trader_id]> |Set trader type owner]>'
+            # Owner
+            - narrate '<proc[drustcraftp_chatgui_option].context[Owner]><proc[drustcraftp_chatgui_value].context[<player[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.owner].name>]||console>]><proc[drustcraftp_chatgui_button].context[add|Set|trader owner <[trader_id]> |Set trader type owner]>'
 
-          # NPCs
-          - narrate '<proc[drustcraftp_chatgui_option].context[NPCs]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.npcs].size||0>]><proc[drustcraftp_chatgui_button].context[edit|View|trader npcs <[trader_id]> |View trader type npcs]><proc[drustcraftp_chatgui_button].context[add|Add|trader addnpc <[trader_id]> |Change NPC trader type]>'
+            # NPCs
+            - narrate '<proc[drustcraftp_chatgui_option].context[NPCs]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.npcs].size||0>]><proc[drustcraftp_chatgui_button].context[edit|View|trader npcs <[trader_id]> |View trader type npcs]><proc[drustcraftp_chatgui_button].context[add|Add|trader addnpc <[trader_id]> |Change NPC trader type]>'
 
-          # Items
-          - narrate '<proc[drustcraftp_chatgui_option].context[Items]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.items].size||0>]><proc[drustcraftp_chatgui_button].context[edit|View|trader items <[trader_id]> |View trader type items]><proc[drustcraftp_chatgui_button].context[add|Add|trader additem <[trader_id]> |Add item to trader type]>'
+            # Items
+            - narrate '<proc[drustcraftp_chatgui_option].context[Items]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.items].size||0>]><proc[drustcraftp_chatgui_button].context[edit|View|trader items <[trader_id]> |View trader type items]><proc[drustcraftp_chatgui_button].context[add|Add|trader additem <[trader_id]> |Add item to trader type]>'
+          - else:
+            - narrate '<proc[drustcraftp_msg_format].context[error|The trader type $e<[trader_id]> $rwas not found]>'
         - else:
           - narrate '<proc[drustcraftp_msg_format].context[error|No trader ID was entered]>'
 
       - case title:
         - define trader_id:<context.args.get[2]||<empty>>
         - if <[trader_id]> != <empty>:
-          - if <server.has_flag[]>:
+          - if <server.has_flag[drustcraft.job_trader.traders.<[trader_id]>]>:
             - if <context.args.size> == 2:
               - narrate '<proc[drustcraftp_msg_format].context[arrow|The title of trader type $e<[trader_id]> $ris $e<server.flag[drustcraft.job_trader.traders.<[trader_id]>.title]>]>'
             - else:
