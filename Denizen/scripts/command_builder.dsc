@@ -221,6 +221,10 @@ drustcraftc_builder:
       - define action:<context.args.get[1]||toggle>
 
       - if <[action]> == toggle:
+        - if <player.gamemode> == SPECTATOR:
+          - narrate '<proc[drustcraftp_msg_format].context[error|You need to be in a safe location to disable builder]>'
+          - stop
+
         - if <player.gamemode> == CREATIVE:
           - define action:disable
         - else:
