@@ -119,4 +119,4 @@ drustcraftt_chest_load:
         - define sub_row:<[value].split[/].unescaped||<list[]>>
         - flag server drustcraft.chest.items.<[sub_row].get[1]>:<[id]>
 
-    - flag server drustcraft.module.value:<script[drustcraftw_value].data_key[version]>
+    - flag server drustcraft.module.chest:<script[drustcraftw_chest].data_key[version]>
