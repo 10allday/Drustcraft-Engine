@@ -196,8 +196,8 @@ drustcraftc_job_trader:
         - ~run drustcraftt_chatgui_clear
         - foreach <server.flag[drustcraft.job_trader.traders].keys> as:trader_id:
           - define line:<proc[drustcraftp_chatgui_option].context[<[trader_id]>]>
-          - define 'line:<[line]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.title]> (<server.flag[drustcraft.job_trader.traders.<[trader_id]>.items].size> items, <server.flag[drustcraft.job_trader.traders.<[trader_id]>.npcs].size> NPCs)]>'
-          - define 'line:<[line]><proc[drustcraftp_chatgui_button].context[edit|Info|trader info <[trader_id]>|Show details about this trader]>'
+          - define 'line:<[line]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.title]> <&7>(<server.flag[drustcraft.job_trader.traders.<[trader_id]>.items].size> items, <server.flag[drustcraft.job_trader.traders.<[trader_id]>.npcs].size> NPCs)]>'
+          - define 'line:<[line]><proc[drustcraftp_chatgui_button].context[add|Info|trader info <[trader_id]>|Show details about this trader]>'
           - ~run drustcraftt_chatgui_item def:<[line]>
 
         - ~run drustcraftt_chatgui_render 'def:trader list|Trader types|<context.args.get[3]||1>'
@@ -218,17 +218,21 @@ drustcraftc_job_trader:
         - else:
           - narrate '<proc[drustcraftp_msg_format].context[error|You need to enter a unique trader id]>'
 
-#       - case remove delete del:
-#         - define name:<context.args.get[2]||<empty>>
-#         - if <[name]> != <empty>:
-#           - if <yaml[drustcraft_shop].list_keys[shop].contains[<[name]>]||false>:
-#             - yaml id:drustcraft_shop set shop.<[name]>:!
-#             - run drustcraftt_shop.save
-#             - narrate '<&e>The shop <&f><[name]> <&e>was deleted'
-#           - else:
-#             - narrate '<&e>The shop <&f><[name]> <&e>was not found'
-#         - else:
-#           - narrate '<&e>A shop name is required when deleting a shop'
+      - case remove delete del:
+        - define name:<context.args.get[2]||<empty>>
+        - if <[trader_id]> != <empty>:
+          - if <server.has_flag[drustcraft.job_trader.traders.<[trader_id]>]>:
+            - if !<server.has_flag[drustcraft.job_trader.traders.<[trader_id]>.owner]> || <server.flag[drustcraft.job_trader.traders.<[trader_id]>.owner]> == <player.uuid||console> || <context.server||false> || <player.has_permission[drustcraft.trader.override]||false>:
+              - foreach <server.flag[drustcraft.job_trader.traders.<[trader_id]>.npcs]||<list[]>> as:npc:
+                - run drustcraftt_npc_job_clear def:<[npc]>
+              - flag <server> drustcraft.job_trader.traders.<[trader_id]>:!
+              - narrate '<proc[drustcraftp_msg_format].context[success|The trader type $e<[trader_id]> $rwas deleted]>'
+            - else:
+              - narrate '<proc[drustcraftp_msg_format].context[error|You do not have permission to remove this trader type]>'
+          - else:
+            - narrate '<proc[drustcraftp_msg_format].context[error|The trader $e<[trader_id]> $rwas not found]>'
+        - else:
+          - narrate '<proc[drustcraftp_msg_format].context[error|You need to enter a trader id]>'
 
 #       - case info:
 #         - define shop_name:<context.args.get[2]||<empty>>
@@ -408,6 +412,10 @@ drustcraftt_job_trader:
   definitions: action|npc|player|data
   script:
     - choose <[action]>:
+      - case add:
+        # SAVE NPC DATA
+        - run drustcraftt_npc_title def:<[npc]>|<proc[drustcraftp_job_trader_find_npc_trader_type].context[<[npc]>]>
+
       - case init:
         - run drustcraftt_npc_title def:<[npc]>|<proc[drustcraftp_job_trader_find_npc_trader_type].context[<[npc]>]>
 
