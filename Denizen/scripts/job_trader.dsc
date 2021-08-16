@@ -93,6 +93,7 @@ drustcraftt_job_trader_load:
       - run drustcraftt_tabcomplete_completion def:trader|remove|_*traders
       - run drustcraftt_tabcomplete_completion def:trader|info|_*traders
       - run drustcraftt_tabcomplete_completion def:trader|title|_*traders
+      - run drustcraftt_tabcomplete_completion def:trader|owner|_*traders
 
       - run drustcraftt_tabcomplete_completion def:npc|job|trader|_*traders
 
@@ -284,26 +285,28 @@ drustcraftc_job_trader:
         - else:
           - narrate '<proc[drustcraftp_msg_format].context[error|No trader ID was entered]>'
 
-
-#       - case setowner:
-#         - define shop_name:<context.args.get[2]||<empty>>
-#         - if <[shop_name]> != <empty>:
-#           - if <yaml[drustcraft_shop].list_keys[shop].contains[<[shop_name]>]||false>:
-#             - define player_name:<context.args.get[3]||<empty>>
-#             - if <[player_name]> != <empty>:
-#               - define target_player:<server.match_offline_player[<[player_name]>]>
-#               - if <[target_player].object_type> == Player && <[target_player].name> == <[player_name]>:
-#                 - yaml id:drustcraft_shop set shop.<[shop_name]>.owner:<[target_player].uuid>
-#                 - run drustcraftt_shop.save
-#                 - narrate '<&e>The shop owner was updated'
-#               - else:
-#                 - narrate '<&e>The player <&f><[player_name]> <&e>was not found on this server'
-#             - else:
-#               - narrate '<&e>A new owner is required to be entered'
-#           - else:
-#             - narrate '<&e>The shop <&f><[shop_name]> <&e>was not found'
-#         - else:
-#           - narrate '<&e>No shop name was entered'
+      - case owner:
+        - define trader_id:<context.args.get[2]||<empty>>
+        - if <[trader_id]> != <empty>:
+          - if <server.has_flag[drustcraft.job_trader.traders.<[trader_id]>]>:
+            - if <context.args.size> == 2:
+              - narrate '<proc[drustcraftp_msg_format].context[arrow|The owner of trader type $e<[trader_id]> $ris $e<player[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.owner]>].name||console>]>'
+            - else:
+              - if !<server.has_flag[drustcraft.job_trader.traders.<[trader_id]>.owner]> || <server.flag[drustcraft.job_trader.traders.<[trader_id]>.owner]> == <player.uuid||console> || <context.server||false> || <player.has_permission[drustcraft.trader.override]||false>:
+                - define owner:<server.match_offline_player[<context.args.get[3]>]>
+                - if !<[owner].exists> && <[owner].name> == <context.args.get[3]>:
+                  - flag <server> drustcraft.job_trader.traders.<[trader_id]>.owner:<[owner].uuid>
+                  - waituntil <server.sql_connections.contains[drustcraft]>
+                  - ~sql id:drustcraft 'update:UPDATE `<server.flag[drustcraft.db.prefix]>job_trader_type` SET `owner` = "<[owner].uuid>" WHERE `trader_id` = "<[trader_id]>";'
+                  - narrate '<proc[drustcraftp_msg_format].context[success|Trader type owner updated]>'
+                - else:
+                  - narrate '<proc[drustcraftp_msg_format].context[error|The player $e<context.args.get[3]> $rwas not found]>'
+              - else:
+                - narrate '<proc[drustcraftp_msg_format].context[error|You do not have permission to edit this trader type]>'
+          - else:
+            - narrate '<proc[drustcraftp_msg_format].context[error|The trader type $e<[trader_id]> $rwas not found]>'
+        - else:
+          - narrate '<proc[drustcraftp_msg_format].context[error|No trader ID was entered]>'
 
 #       - case npc:
 #         - define shop_name:<context.args.get[2]||<empty>>
