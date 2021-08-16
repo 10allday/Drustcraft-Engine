@@ -87,6 +87,8 @@ drustcraftt_job_trader_load:
 
     - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
       - waituntil <server.has_flag[drustcraft.module.tabcomplete]>
+      # - run drustcraftt_tabcomplete_completion def:npc|job
+
       - run drustcraftt_tabcomplete_completion def:trader|list
       - run drustcraftt_tabcomplete_completion def:trader|create
       - run drustcraftt_tabcomplete_completion def:trader|remove|_*traders
