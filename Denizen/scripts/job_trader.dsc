@@ -196,7 +196,7 @@ drustcraftc_job_trader:
         - ~run drustcraftt_chatgui_clear
         - foreach <server.flag[drustcraft.job_trader.traders].keys> as:trader_id:
           - define line:<proc[drustcraftp_chatgui_option].context[<[trader_id]>]>
-          - define 'line:<[line]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.title]> (<server.flag[drustcraft.job_trader.traders.<[trader_id]>.items].size> items)]>'
+          - define 'line:<[line]><proc[drustcraftp_chatgui_value].context[<server.flag[drustcraft.job_trader.traders.<[trader_id]>.title]> (<server.flag[drustcraft.job_trader.traders.<[trader_id]>.items].size> items, <server.flag[drustcraft.job_trader.traders.<[trader_id]>.npcs].size> NPCs)]>'
           - define 'line:<[line]><proc[drustcraftp_chatgui_button].context[edit|Info|trader info <[trader_id]>|Show details about this trader]>'
           - ~run drustcraftt_chatgui_item def:<[line]>
 
