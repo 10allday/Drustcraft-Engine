@@ -69,7 +69,6 @@ drustcraftt_player_load:
     - run drustcraftt_player_update_groups
 
     - flag server drustcraft.module.player:<script[drustcraftw_player].data_key[version]>
-    - debug log 'Drustcraft player loaded'
 
 
 drustcraftt_player_update_groups:
