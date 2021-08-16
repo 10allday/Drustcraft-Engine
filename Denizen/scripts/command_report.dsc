@@ -25,6 +25,8 @@ drustcraftt_report_load:
       - run drustcraftt_tabcomplete_completion def:report|bug
       - run drustcraftt_tabcomplete_completion def:report|player|_*players
 
+    - flag server drustcraft.module.report:<script[drustcraftw_report].data_key[version]>
+
 
 drustcraftc_report:
   type: command
