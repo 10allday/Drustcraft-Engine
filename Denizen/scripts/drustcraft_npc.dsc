@@ -35,14 +35,7 @@ drustcraftw_npc:
 
     on tab complete:
       - if <context.command> == npc:
-        - define args:<context.buffer.split[<&sp>].remove[1]>
-        - if <context.buffer.ends_with[<&sp>]>:
-          - define args:->:<empty>
-
-        - if <[args].size> == 1:
-          - determine <context.completions.include[job]>
-        - else if <[args].size> == 2 && <[args].get[1]> == job:
-          - determine <yaml[drustcraft_npc_job].list_keys[]>
+        - determine <context.completions.include[<proc[drustcraftp_tabcomplete].context[<list[<context.command>].include_single[<context.buffer.escaped.after[&fs<context.command><&sp>]>]>]>]>
 
     on player closes inventory:
       - if <player.has_flag[drustcraft.npc.engaged]> && <player.flag[drustcraft.npc.engaged].has_flag[drustcraft.npc.engaged]> && <player.flag[drustcraft.npc.engaged].flag[drustcraft.npc.engaged]> == <player>:
@@ -82,7 +75,7 @@ drustcraftw_npc:
                 - waituntil <server.sql_connections.contains[drustcraft]>
                 - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>npc` WHERE `server` IS NULL AND `npc_id` = <player.selected_npc.id>;'
                 - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>npc`(`npc_id`, `job`, `data`) VALUES(<player.selected_npc.id>, "<[job]>", NULL);'
-                - ~run drustcraftt_npc_job_run def:<player.selected_npc>|add|<player>|null
+                - ~run drustcraftt_npc_job_run def:<list[<player.selected_npc>|add|<player>].include_single[<context.args.remove[1|2]>]>
                 - ~run drustcraftt_npc_job_run def:<player.selected_npc>|init|null|null
                 - narrate '<proc[drustcraftp_msg_format].context[success|The NPC<&sq>s job is now set to $e<[job]>]>'
               - else:
@@ -139,6 +132,11 @@ drustcraftt_npc_load:
       - if <server.npcs.parse[id].contains[<[npc_id]>]>:
         - flag <npc[<[npc_id]>]> drustcraft.npc.job.id:<[job]>
         - flag <npc[<[npc_id]>]> drustcraft.npc.job.data:<[data]>
+
+    - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
+      - waituntil <server.has_flag[drustcraft.module.tabcomplete]>
+      - run drustcraftt_tabcomplete_completion def:npc|job
+      - run drustcraftt_tabcomplete_completion def:npc|job|_*npc_jobs
 
     - flag server drustcraft.module.npc:<script[drustcraftw_npc].data_key[version]>
 
@@ -264,6 +262,15 @@ drustcrafta_npc:
 
   interact scripts:
   - drustcrafti_npc
+
+
+drustcraftp_tabcomplete_npc_jobs:
+  type: procedure
+  debug: false
+  script:
+    - if <yaml.list.contains[drustcraft_npc_job]>:
+      - determine <yaml[drustcraft_npc_job].list_keys[]||<list[]>>
+    - determine <list[]>
 
 
 drustcraftp_npc_chat_format:
