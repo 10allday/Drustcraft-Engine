@@ -26,6 +26,7 @@ drustcraftt_job_guard_load:
 
     - waituntil <server.has_flag[drustcraft.module.npc]>
     - run drustcraftt_npc_job_register def:guard|drustcraftt_job_guard
+    - flag server drustcraft.module.job_guard:<script[drustcraftw_job_guard].data_key[version]>
 
 
 drustcraftt_job_guard:
