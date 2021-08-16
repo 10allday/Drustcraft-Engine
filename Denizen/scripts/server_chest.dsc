@@ -12,18 +12,19 @@ drustcraftw_chest:
     on script reload:
       - run drustcraftt_chest_load
 
-    on player opens inventory:
+    on player opens inventory server_flagged:drustcraft.module.chest:
       - if <context.inventory.location||<empty>> != <empty>:
         - if !<server.flag[drustcraft.chest.stocked].contains[<context.inventory.location>]||false> && !<server.flag[drustcraft.chest.ignore].contains[<context.inventory.location>]||false>:
           - flag server drustcraft.chest.stocked:->:<context.inventory.location>
 
           - define item_ids:<list[]>
-          - define item_ids:|:<server.flag[drustcraft.chest.items.<context.inventory.location.biome.name>]||<list[]>>
-          - define item_ids:|:<server.flag[drustcraft.chest.items.<context.inventory.location.world.environment>]||<list[]>>
+          - define item_ids:|:<server.flag[drustcraft.chest.biomes.<context.inventory.location.biome.name>]||<list[]>>
+          - define item_ids:|:<server.flag[drustcraft.chest.environments.<context.inventory.location.world.environment>]||<list[]>>
           - define item_ids:<[item_ids].deduplicate>
 
-          - foreach <[item_ids].random[<util.random.int[5].to[20]>]>:
-            - if <util.random.decimal[0].to[1]> <= <server.flag[drustcraft.chest.items.<[value]>.chance]>:
+          - foreach <[item_ids].random[<util.random.int[10].to[40]>]>:
+            - define rand:<util.random.decimal[0].to[1]>
+            - if <[rand]> <= <server.flag[drustcraft.chest.items.<[value]>.chance]>:
               - define item:<server.flag[drustcraft.chest.items.<[value]>.item]>
               - define qty:<util.random.int[<server.flag[drustcraft.chest.items.<[value]>.min_qty]>].to[<server.flag[drustcraft.chest.items.<[value]>.max_qty]>]>
               - give <item[<[item]>]> quantity:<[qty]> to:<context.inventory>
@@ -31,14 +32,14 @@ drustcraftw_chest:
           - waituntil <server.sql_connections.contains[drustcraft]>
           - sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chest_stocked`(`server`,`location`,`day`) VALUES(NULL, "<context.inventory.location>", <server.flag[drustcraft.util.day]>);'
 
-    on player places block:
+    on player places block server_flagged:drustcraft.module.chest:
       - if <player.gamemode> == SURVIVAL:
         - if <server.flag[drustcraft.chests.containers].contains[<context.material.name>]>:
           - flag server drustcraft.chest_restock.ignore:->:<context.location>
           - waituntil <server.sql_connections.contains[drustcraft]>
           - sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>chest_ignore` WHERE `server` IS NULL AND `location` = "<context.location>"; INSERT INTO `<server.flag[drustcraft.db.prefix]>chest_ignore`(`server`,`location`) VALUES(NULL,"<context.location>");'
 
-    on player breaks block:
+    on player breaks block server_flagged:drustcraft.module.chest:
       - if <player.gamemode> == SURVIVAL:
         - flag server drustcraft.chest.ignore:<-:<context.location>
         - waituntil <server.sql_connections.contains[drustcraft]>
@@ -100,7 +101,7 @@ drustcraftt_chest_load:
       - define row:<[value].split[/].unescaped||<list[]>>
       - define id:<[row].get[1]||<empty>>
       - define item:<[row].get[2].unescaped||<empty>>
-      - define chance:<[row].get[3]||<empty>>
+      - define chance:<[row].get[3].unescaped||<empty>>
       - define min_qty:<[row].get[4]||<empty>>
       - define max_qty:<[row].get[5]||<empty>>
 
@@ -112,11 +113,11 @@ drustcraftt_chest_load:
       - ~sql id:drustcraft 'query:SELECT `biome` FROM `<server.flag[drustcraft.db.prefix]>chest_item_biome` WHERE `item_id` = <[id]>;' save:sql_sub_result
       - foreach <entry[sql_sub_result].result>:
         - define sub_row:<[value].split[/].unescaped||<list[]>>
-        - flag server drustcraft.chest.items.<[sub_row].get[1]>:<[id]>
+        - flag server drustcraft.chest.biomes.<[sub_row].get[1]>:|:<[id]>
 
       - ~sql id:drustcraft 'query:SELECT `environment` FROM `<server.flag[drustcraft.db.prefix]>chest_item_environment` WHERE `item_id` = <[id]>;' save:sql_sub_result
       - foreach <entry[sql_sub_result].result>:
         - define sub_row:<[value].split[/].unescaped||<list[]>>
-        - flag server drustcraft.chest.items.<[sub_row].get[1]>:<[id]>
+        - flag server drustcraft.chest.environments.<[sub_row].get[1]>:|:<[id]>
 
     - flag server drustcraft.module.chest:<script[drustcraftw_chest].data_key[version]>
