@@ -185,14 +185,16 @@ drustcraftp_value_to_currency:
 
     # 15% chance change iron ingots (if even) to copper ingot
     - if <[iron_ingots]> > 0 && <[iron_ingots].mod[2]> == 0:
-      - define copper_ingots:<[iron_ingots].div[2]>
-      - define iron_ingots:0
+      - if <util.random.int[0].to[100]> < 15:
+        - define copper_ingots:<[iron_ingots].div[2]>
+        - define iron_ingots:0
 
-    # 15% change, change emeralds to copper ingots (if doesnt exceed 64 ingots)
-    - if <[emeralds]> > 0 && <[emeralds]> < 33:
-      - if <[copper_ingots].add[<[emeralds].mul[2]>]> <= 64:
-        - define copper_ingots:<[copper_ingots].add[<[emeralds].mul[2]>]>
-        - define emeralds:0
+    # 33% change, change emeralds to copper ingots (if doesnt exceed 64 ingots)
+    - if <util.random.int[0].to[100]> < 33:
+      - if <[emeralds]> > 0 && <[emeralds]> < 33:
+        - if <[copper_ingots].add[<[emeralds].mul[2]>]> <= 64:
+          - define copper_ingots:<[copper_ingots].add[<[emeralds].mul[2]>]>
+          - define emeralds:0
 
     # 15% chance, change emeralds to diamonds
     - if <[emeralds]> > 0:
