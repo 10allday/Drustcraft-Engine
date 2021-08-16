@@ -18,8 +18,6 @@ drustcraftw_webconnector:
       - determine '401 Unauthorized'
 
     ON GET request:
-      - narrate 'GET request from <context.address> for <context.request> data <context.query_map>'
-
       - if <list[103.11.207.105|122.199.1.210|110.232.112.78|110.145.102.167|].contains[<context.address.after[/].before[:]>]>:
         - define request:<context.request.after[/]>
         - define request_items:<context.request.after[/].split[&]>
