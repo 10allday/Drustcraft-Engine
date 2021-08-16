@@ -227,6 +227,14 @@ drustcraftt_npc_job_set:
     - ~run drustcraftt_npc_job_run def:<[npc]>|init|null|null
 
 
+drustcraftp_npc_job_get:
+  type: procedure
+  debug: false
+  definitions: npc
+  script:
+    - determine <[npc].flag[drustcraft.npc.job.id]||null>
+
+
 drustcraftp_npc_title:
   type: procedure
   debug: false
