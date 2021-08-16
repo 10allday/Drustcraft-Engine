@@ -105,7 +105,7 @@ drustcraftw_chat:
 
             - define player_list:<server.online_players.filter_tag[<proc[drustcraftp_chat_channel_ids].context[<[filter_value]>].contains[<[channel]>]>]>
             - if <[player_list].size> > 1:
-              - if <player.has_flag[drustcraft.chat.last]> && <player.flag[drustcraft.chat.last].from_now.in_seconds> > <server.flag[drustcraft.chat.time_between]>:
+              - if <player.has_flag[drustcraft.chat.last]> && <player.flag[drustcraft.chat.last].from_now.in_seconds> < <server.flag[drustcraft.chat.time_between]>:
                 - narrate '<proc[drustcraftp_msg_format].context[error|Please wait at least $e<server.flag[drustcraft.chat.time_between]> $rseconds between messages]>'
                 - determine CANCELLED
               - else:
@@ -270,7 +270,7 @@ drustcraftt_chat_load:
       - run drustcraftt_tabcomplete_completion def:unmute|_*mutedplayers
 
     - waituntil <server.has_flag[drustcraft.module.setting]>
-    - ~run drustcraftt_setting_get def:drustcraft.chat.time_between|3 save:result
+    - ~run drustcraftt_setting_get def:drustcraft.chat.time_between|2 save:result
     - flag server drustcraft.chat.time_between:<entry[result].created_queue.determination.get[1]>
 
     - flag server drustcraft.module.chat:<script[drustcraftw_chat].data_key[version]>
