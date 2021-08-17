@@ -53,6 +53,13 @@ drustcraftt_tabcomplete_completion:
     - yaml id:drustcraft_tabcomplete set <queue.definition_map.exclude[raw_context].values.separated_by[.]>:end
 
 
+drustcraftt_tabcomplete_remove:
+  type: task
+  debug: false
+  script:
+    - yaml id:drustcraft_tabcomplete set <queue.definition_map.exclude[raw_context].values.separated_by[.]>:!
+
+
 drustcraftp_tabcomplete:
   type: procedure
   debug: false
@@ -97,25 +104,29 @@ drustcraftp_tabcomplete:
       - if <[value].starts_with[_]>:
         - define value:<[value].after[_]>
         - if <[value].starts_with[*]>:
-          - define ret:|:<proc[drustcraftp_tabcomplete_<[value].after[*]>].context[<[args]>]>
+          - if <server.scripts.parse[name].contains[drustcraftp_tabcomplete_<[value].after[*]>]>:
+            - define ret:|:<proc[drustcraftp_tabcomplete_<[value].after[*]>].context[<[args]>]>
         - if <[value].starts_with[&]>:
           - if <[raw_args].ends_with[,]>:
             - define parg:<[args].get[<[argsSize].sub[1]>]>
-            - define clist:<proc[drustcraftp_tabcomplete_<[value].after[&]>].context[<[args]>]>
-            - foreach <[clist]>:
-              - define ret:|:<[parg]><[value]>
+            - if <server.scripts.parse[name].contains[drustcraftp_tabcomplete_<[value].after[&]>]>:
+              - define clist:<proc[drustcraftp_tabcomplete_<[value].after[&]>].context[<[args]>]>
+              - foreach <[clist]>:
+                - define ret:|:<[parg]><[value]>
           - else:
             - define ret:|:<proc[drustcraftp_tabcomplete_<[value].after[&]>].context[<[args]>]>
         - if <[value].starts_with[^]>:
           - if <[raw_args].ends_with[,]>:
             - define parg:<[args].get[<[argsSize].sub[1]>]>
             - define pitems:<[parg].split[,]>
-            - define clist:<proc[drustcraftp_tabcomplete_<[value].after[^]>].context[<[args]>]>
-            - foreach <[clist]>:
-              - if !<[pitems].contains[<[value]>]>:
-                - define ret:|:<[parg]><[value]>
+            - if <server.scripts.parse[name].contains[drustcraftp_tabcomplete_<[value].after[^]>]>:
+              - define clist:<proc[drustcraftp_tabcomplete_<[value].after[^]>].context[<[args]>]>
+              - foreach <[clist]>:
+                - if !<[pitems].contains[<[value]>]>:
+                  - define ret:|:<[parg]><[value]>
           - else:
-            - define ret:|:<proc[drustcraftp_tabcomplete_<[value].after[^]>].context[<[args]>]>
+            - if <server.scripts.parse[name].contains[drustcraftp_tabcomplete_<[value].after[^]>]>:
+              - define ret:|:<proc[drustcraftp_tabcomplete_<[value].after[^]>].context[<[args]>]>
       - else if <[value].starts_with[?]>:
         - define 'perm:<[value].before[ ].after[?]>'
         - if <player.has_permission[<[perm]>]>:
