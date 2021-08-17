@@ -136,6 +136,13 @@ drustcraftp_tabcomplete_int:
     - determine <list[0|1|2|3|4|5|6|7|8|9]>
 
 
+drustcraftp_tabcomplete_int_nozero:
+  type: procedure
+  debug: false
+  script:
+    - determine <list[0|1|2|3|4|5|6|7|8|9]>
+
+
 drustcraftp_tabcomplete_bool:
   type: procedure
   debug: false
