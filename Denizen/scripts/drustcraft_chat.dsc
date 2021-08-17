@@ -85,7 +85,7 @@ drustcraftw_chat:
         - define sender:<player.uuid>
         - define receiver:<empty>
         - define content:<context.message.sql_escaped>
-        - define channel:<empty>
+        - define channel:<proc[drustcraftp_chat_default].context[<player>]>
         - define rule:<proc[drustcraftp_chat_filter].context[<[content]>]>
 
         - sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chat_log` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
@@ -96,14 +96,13 @@ drustcraftw_chat:
             - narrate '<proc[drustcraftp_msg_format].context[error|You are currently muted for $e<player.flag_expiration[drustcraft.chat.muted].from_now.formatted>]>'
             - determine CANCELLED
 
-          - if <player.has_flag[drustcraft.chat.default_channel]>:
-            - define channel:<proc[drustcraftp_chat_default].context[<player>]>
+          - if <[channel]> != null:
             - define 'channel_title:<proc[drustcraftp_chat_channel_title_from_id].context[<player>|<[channel]>]> <&gt> '
 
             - if <[channel]> == all:
               - define channel_title:<empty>
 
-            - define player_list:<server.online_players.filter_tag[<proc[drustcraftp_chat_channel_ids].context[<[filter_value]>].contains[<[channel]>]>]>
+            - define player_list:<server.online_players.filter_tag[<proc[drustcraftp_chat_channel_ids].context[<[filter_value]>].contains[<[channel]>]>].filter_tag[<[filter_value].has_flag[drustcraft.chat.muted].not>]>
             - if <[player_list].size> > 1:
               - if <player.has_flag[drustcraft.chat.last]> && <player.flag[drustcraft.chat.last].from_now.in_seconds> < <server.flag[drustcraft.chat.time_between]>:
                 - narrate '<proc[drustcraftp_msg_format].context[error|Please wait at least $e<server.flag[drustcraft.chat.time_between]> $rseconds between messages]>'
@@ -124,7 +123,8 @@ drustcraftw_chat:
             - determine CANCELLED
         - else:
           - narrate '<proc[drustcraftp_msg_format].context[error|Your message was not sent as it breaks the rule: $e<[rule]>]>'
-          # - narrate '<proc[drustcraftp_msg_format].context[warning|<server.flag[drustcraft.chat.registrations.mod.title]> <&gt> $e<player.name> $rbroke the chat rule $e<[rule]> $rby saying "$e<[content]>$r"]>' targets:<server.online_players.filter[has_flag[drustcraft.chat.channels.names.mod]]>
+          - if <server.has_flag[drustcraft.chat.rule_command]>:
+            - execute as_server <server.flag[drustcraft.chat.rule_command].replace_text[$PLAYER$].with[<player.name>].replace_text[$RULE$].with[<[rule]>]>
           - determine CANCELLED
       - else:
         - narrate '<proc[drustcraftp_msg_format].context[error|Chat is currently disabled]>'
@@ -163,7 +163,8 @@ drustcraftw_chat:
         - sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chat_log` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
         - if <[rule]> != <empty>:
           - narrate '<proc[drustcraftp_msg_format].context[error|The sign text was not updated as it breaks the rule: $e<[rule]>]>'
-          # - narrate '<proc[drustcraftp_msg_format].context[warning|<server.flag[drustcraft.chat.registrations.mod.title]> <&gt> $e<player.name> $rbroke the chat rule $e<[rule]> $rby putting "$e<[content]>$r" on a sign]>' targets:<server.online_players.filter[has_flag[drustcraft.chat.channels.names.mod]]>
+          - if <server.has_flag[drustcraft.chat.rule_command]>:
+            - execute as_server <server.flag[drustcraft.chat.rule_command].replace_text[$PLAYER$].with[<player.name>].replace_text[$RULE$].with[<[rule]>]>
           - determine CANCELLED
       - else:
         - narrate '<proc[drustcraftp_msg_format].context[error|Chat is currently disabled]>'
@@ -181,7 +182,8 @@ drustcraftw_chat:
         - sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chat_log` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
         - if <[rule]> != <empty>:
           - narrate '<proc[drustcraftp_msg_format].context[error|The book text was not updated as it breaks the rule: $e<[rule]>]>'
-          # - narrate '<proc[drustcraftp_msg_format].context[warning|$e<player.name> $rbroke the chat rule $e<[rule]> $rby writing "$e<[content]>$r" in a book]>' targets:<server.online_players.filter[has_flag[drustcraft.chat.channels.names.mod]]>
+          - if <server.has_flag[drustcraft.chat.rule_command]>:
+            - execute as_server <server.flag[drustcraft.chat.rule_command].replace_text[$PLAYER$].with[<player.name>].replace_text[$RULE$].with[<[rule]>]>
           - determine CANCELLED
 
       - else:
@@ -249,7 +251,10 @@ drustcraftt_chat_load:
         - define uuid:<[row].get[1]||<empty>>
         - define until:<[row].get[2]||<empty>>
 
-        - flag server drustcraft.chat.muted.<[uuid]>:true expire:<proc[drustcraftp_util_epoch_to_time].context[<[until]>].duration_since[<util.time_now>]>
+        - if <[until]> != -1:
+          - flag server drustcraft.chat.muted.<[uuid]>:true expire:<proc[drustcraftp_util_epoch_to_time].context[<[until]>].duration_since[<util.time_now>]>
+        - else:
+          - flag server drustcraft.chat.muted.<[uuid]>:true
 
     - if <server.has_flag[drustcraft.chat.muted]>:
       - foreach <server.online_players>:
@@ -266,7 +271,7 @@ drustcraftt_chat_load:
       - run drustcraftt_tabcomplete_completion def:chat|leave|_*channels
       - run drustcraftt_tabcomplete_completion def:chat|default|_*channels
       - run drustcraftt_tabcomplete_completion def:chat|_*channels
-      - run drustcraftt_tabcomplete_completion def:mute|_*players|_*duration|_*reason
+      - run drustcraftt_tabcomplete_completion def:mute|_*players|_*durations
       - run drustcraftt_tabcomplete_completion def:unmute|_*mutedplayers
 
     - waituntil <server.has_flag[drustcraft.module.setting]>
@@ -422,19 +427,23 @@ drustcrafp_chat_channel_id_to_name:
     - determine null
 
 
-# drustcraftt_chat_send_message_to_channel:
-#   type: task
-#   debug: false
-#   definitions: channel_id|channel_title|from|message
-#   script:
+drustcraftt_chat_mute_player:
+  type: task
+  debug: false
+  definitions: player|duration
+  script:
+    - if <[duration].exists> && <[duration]> != -1 && <[duration]> != perm:
+      - flag <[player]> drustcraft.chat.muted:true expires:<util.time_now.add[<[duration]>]>
+    - else:
+      - flag <[player]> drustcraft.chat.muted:true
 
-#             - define player_list:<server.online_players.filter_tag[<proc[drustcraftp_chat_channel_ids].context[<[filter_value]>].contains[<[channel]>]>]>
-#             - if <[player_list].size> > 1:
-#               - determine passively RECIPIENTS:<[player_list]>
-#               - determine 'RAW_FORMAT:<[channel_title]><player.chat_prefix.parse_color><player.name><&f>: <[message].strip_color>'
-#             - else:
-#               - narrate '<proc[drustcraftp_msg_format].context[error|There is no online players in the chat channel $e<proc[drustcraft_chat_channel_id_to_name].context[<player>|<[channel]>]>]>'
-#               - determine CANCELLED
+
+drustcraftt_chat_unmute_player:
+  type: task
+  debug: false
+  definitions: player
+  script:
+    - flag <[player]> drustcraft.chat.muted:!
 
 
 drustcraftc_chat:
@@ -459,7 +468,6 @@ drustcraftc_chat:
             - if <[id]> != null:
               - if !<proc[drustcraftp_chat_channel_ids].context[<player>].contains[<[id]>]>:
                 - run drustcraftt_chat_join def:<player>|<[name]>|<[id]>|false
-                # - narrate '<proc[drustcraftp_msg_format].context[success|You have joined the $e<[name]> $rchat channel]>'
               - else:
                 - narrate '<proc[drustcraftp_msg_format].context[error|You are already connected to this chat channel]>'
             - else:
@@ -477,7 +485,6 @@ drustcraftc_chat:
             - if <[id]> != null:
               - if <proc[drustcraftp_chat_channel_ids].context[<player>].contains[<[id]>]>:
                 - run drustcraftt_chat_leave def:<player>|<[name]>|false
-                # - narrate '<proc[drustcraftp_msg_format].context[warning|You have left the $e<[name]> $rchat channel]>'
               - else:
                 - narrate '<proc[drustcraftp_msg_format].context[error|You are not connected to this chat channel]>'
             - else:
@@ -567,23 +574,30 @@ drustcraftc_chat_pm:
       - define target_player:<server.match_player[<[target_player]>]||<empty>>
       - if <[target_player].object_type> == PLAYER && <[target_player].name> == <context.args.get[1]>:
         - if <server.has_flag[drustcraft.module.chat]||false>:
-          - define 'type:private message'
-          - define sender:<player.uuid>
-          - define receiver:<[target_player].uuid>
-          - define content:<[message]>
-          - define channel:<empty>
-          - define rule:<proc[drustcraftp_chat_filter].context[<[content]>]>
+          - if !<player.has_flag[drustcraft.chat.muted]>:
+            - if !<[target_player].has_flag[drustcraft.chat.muted]> || <player.has_permission[drustcraft.mute.override]>:
+              - define 'type:private message'
+              - define sender:<player.uuid>
+              - define receiver:<[target_player].uuid>
+              - define content:<[message]>
+              - define channel:<empty>
+              - define rule:<proc[drustcraftp_chat_filter].context[<[content]>]>
 
-          - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chat_log` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
+              - waituntil <server.sql_connections.contains[drustcraft]>
+              - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chat_log` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
 
-          - if <[rule]> == <empty>:
-            - narrate '<&7>You <&gt> <[target_player].name><&f>: <[message].strip_color>'
+              - if <[rule]> == <empty>:
+                - narrate '<&7>You <&gt> <[target_player].name><&f>: <[message].strip_color>'
 
-            - playsound <[target_player]> sound:ENTITY_CHICKEN_EGG volume:1.0 pitch:1.5
-            - narrate '<&7><player.name> <&gt> You<&f>: <[message].strip_color>' targets:<[target_player]>
-            - flag <[target_player]> drustcraft.chat.last_pm:<player>
+                - playsound <[target_player]> sound:ENTITY_CHICKEN_EGG volume:1.0 pitch:1.5
+                - narrate '<&7><player.name> <&gt> You<&f>: <[message].strip_color>' targets:<[target_player]>
+                - flag <[target_player]> drustcraft.chat.last_pm:<player>
+              - else:
+                - narrate '<proc[drustcraftp_msg_format].context[error|You message was not sent as it breaks the rule: $e<[rule]>]>'
+            - else:
+              - narrate '<proc[drustcraftp_msg_format].context[error|The player $e<[target_player].name> $rcannot receive messages as they are muted]>'
           - else:
-            - narrate '<proc[drustcraftp_msg_format].context[error|You message was not sent as it breaks the rule: $e<[rule]>]>'
+            - narrate '<proc[drustcraftp_msg_format].context[error|You cannot send messages as you are muted]>'
         - else:
           - narrate '<proc[drustcraftp_msg_format].context[error|Chat is currently disabled]>'
       - else:
@@ -614,23 +628,30 @@ drustcraftc_chat_reply:
           - define message:<context.args.space_separated>
 
           - if <server.has_flag[drustcraft.module.chat]||false>:
-            - define 'type:private message'
-            - define sender:<player.uuid>
-            - define receiver:<[target_player].uuid>
-            - define content:<[message]>
-            - define channel:<empty>
-            - define rule:<proc[drustcraftp_chat_filter].context[<[content]>]>
+            - if !<player.has_flag[drustcraft.chat.muted]>:
+              - if !<[target_player].has_flag[drustcraft.chat.muted]> || <player.has_permission[drustcraft.mute.override]>:
+                - define 'type:private message'
+                - define sender:<player.uuid>
+                - define receiver:<[target_player].uuid>
+                - define content:<[message]>
+                - define channel:<empty>
+                - define rule:<proc[drustcraftp_chat_filter].context[<[content]>]>
 
-            - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chat_log` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
+                - waituntil <server.sql_connections.contains[drustcraft]>
+                - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chat_log` (`server`,`world`,`date`,`type`,`sender`,`receiver`,`content`,`channel`,`rule`) VALUES ("<bungee.server||<empty>>", "<player.location.world.name>", <util.time_now.epoch_millis.div[1000].round>, "<[type]>", "<[sender]>", "<[receiver]>", "<[content]>", "<[channel]>", "<[rule]>");'
 
-            - if <[rule]> == <empty>:
-              - narrate '<&7>You <&gt> <[target_player].name><&f>: <[message].strip_color>'
+                - if <[rule]> == <empty>:
+                  - narrate '<&7>You <&gt> <[target_player].name><&f>: <[message].strip_color>'
 
-              - playsound <[target_player]> sound:ENTITY_CHICKEN_EGG volume:1.0 pitch:1.5
-              - narrate '<&7><player.name> <&gt> You<&f>: <[message].strip_color>' targets:<[target_player]>
-              - flag <[target_player]> drustcraft.chat.last_pm:<player>
+                  - playsound <[target_player]> sound:ENTITY_CHICKEN_EGG volume:1.0 pitch:1.5
+                  - narrate '<&7><player.name> <&gt> You<&f>: <[message].strip_color>' targets:<[target_player]>
+                  - flag <[target_player]> drustcraft.chat.last_pm:<player>
+                - else:
+                  - narrate '<proc[drustcraftp_msg_format].context[error|You message was not sent as it breaks the rule: $e<[rule]>]>'
+              - else:
+                - narrate '<proc[drustcraftp_msg_format].context[error|The player $e<[target_player].name> $rcannot receive messages as they are muted]>'
             - else:
-              - narrate '<proc[drustcraftp_msg_format].context[error|You message was not sent as it breaks the rule: $e<[rule]>]>'
+              - narrate '<proc[drustcraftp_msg_format].context[error|You cannot send messages as you are muted]>'
           - else:
             - narrate '<proc[drustcraftp_msg_format].context[error|Chat is currently disabled]>'
         - else:
@@ -695,3 +716,69 @@ drustcraftc_chat_silent:
     - else:
       - narrate '<proc[drustcraftp_msg_format].context[error|This command is only available to players]>'
 
+
+drustcraftc_chat_mute:
+  type: command
+  debug: false
+  name: mute
+  description: Mutes a player for a duration
+  usage: /mute
+  permission: drustcraft.mute
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to that command
+  tab complete:
+    - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
+      - define command:mute
+      - determine <proc[drustcraftp_tabcomplete].context[<list[<[command]>].include_single[<context.raw_args.escaped>]>]>
+  script:
+    - define target_player:<context.args.get[1]||<empty>>
+    - define duration:<context.args.get[2]||<empty>>
+
+    - define found_player:<server.match_offline_player[<[target_player]>]>
+    - if <[found_player].exists> && <[found_player].name> == <[target_player]>:
+      - if <[duration]> == perm || <duration[<[duration]>].exists>:
+        - waituntil <server.sql_connections.contains[drustcraft]>
+        - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>chat_muted` WHERE `uuid` = "<[found_player].uuid>";'
+        - if <[duration]> == perm:
+          - flag <[found_player]> drustcraft.chat.muted:true
+          - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chat_muted`(`uuid`,`until`) VALUES("<[found_player].uuid>", -1);'
+          - narrate '<proc[drustcraftp_msg_format].context[success|The player $e<[found_player].name> $rhas been permanently muted]>'
+          - narrate '<proc[drustcraftp_msg_format].context[warning|You have been permanently muted]>' targets:<[found_player]>
+        - else:
+          - define expires:<util.time_now.add[<[duration]>]>
+          - flag <[found_player]> drustcraft.chat.muted:true expire:<[expires]>
+          - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chat_muted`(`uuid`,`until`) VALUES("<[found_player].uuid>", <[expires].epoch_millis.div[1000].round>);'
+          - narrate '<proc[drustcraftp_msg_format].context[success|The player $e<[found_player].name> $rhas been muted for $e<[duration]>]>'
+          - narrate '<proc[drustcraftp_msg_format].context[warning|You have been muted for $e<[duration]>]>' targets:<[found_player]>
+      - else:
+        - narrate '<proc[drustcraftp_msg_format].context[error|The duration $e<[duration]> $ris not valid]>'
+    - else:
+      - narrate '<proc[drustcraftp_msg_format].context[error|The player $e<[target_player]> $rwas not found]>'
+
+
+drustcraftc_chat_unmute:
+  type: command
+  debug: false
+  name: unmute
+  description: Unmutes a player for a duration
+  usage: /unmute
+  permission: drustcraft.mute
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to that command
+  tab complete:
+    - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
+      - define command:unmute
+      - determine <proc[drustcraftp_tabcomplete].context[<list[<[command]>].include_single[<context.raw_args.escaped>]>]>
+  script:
+    - define target_player:<context.args.get[1]||<empty>>
+    - define duration:<context.args.get[2]||<empty>>
+
+    - define found_player:<server.match_offline_player[<[target_player]>]>
+    - if <[found_player].exists> && <[found_player].name> == <[target_player]>:
+      - if <[found_player].has_flag[drustcraft.chat.muted]>:
+        - waituntil <server.sql_connections.contains[drustcraft]>
+        - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>chat_muted` WHERE `uuid` = "<[found_player].uuid>";'
+        - narrate '<proc[drustcraftp_msg_format].context[success|The player $e<[found_player].name> $rhas been unmuted]>'
+        - narrate '<proc[drustcraftp_msg_format].context[warning|You have been unmuted]>' targets:<[found_player]>
+      - else:
+        - narrate '<proc[drustcraftp_msg_format].context[error|The player $e<[found_player].name> $ris not muted]>'
+    - else:
+      - narrate '<proc[drustcraftp_msg_format].context[error|The player $e<[target_player]> $rwas not found]>'
