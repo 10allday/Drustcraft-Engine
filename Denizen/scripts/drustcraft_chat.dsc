@@ -93,7 +93,11 @@ drustcraftw_chat:
           - define message:<context.message>
 
           - if <player.has_flag[drustcraft.chat.muted]>:
-            - narrate '<proc[drustcraftp_msg_format].context[error|You are currently muted for $e<player.flag_expiration[drustcraft.chat.muted].from_now.formatted>]>'
+            - define duration:<player.flag_expiration[drustcraft.chat.muted]||<empty>>
+            - if <[duration]> != <empty>:
+              - narrate '<proc[drustcraftp_msg_format].context[error|You cannot sent messages as you are muted for another $e<player.flag_expiration[drustcraft.chat.muted].from_now.formatted>]>'
+            - else:
+              - narrate '<proc[drustcraftp_msg_format].context[error|You cannot send message as you are permanently muted]>'
             - determine CANCELLED
 
           - if <[channel]> != null:
