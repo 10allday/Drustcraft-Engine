@@ -125,9 +125,9 @@ drustcraftp_chatgui_value:
 
     - define result_list:<list[]>
     - if <[option_value].object_type> != LIST:
-      - if <[option_value].char_at[1]> == (:
+      - if <[option_value].char_at[1]> == <element[(]>:
         - determine <&c><[option_value]>
-      - define value:<list[<[option_value]>]>
+      - determine <&e><[option_value]>
     - else:
       - if <[option_value].size> > 0:
         - foreach <[option_value]>:
