@@ -120,6 +120,8 @@ drustcraftp_chatgui_value:
   debug: false
   script:
     - define option_value:<queue.definition_map.exclude[raw_context].values>
+    - if <[option_value].size> == 1:
+      - define option_value:<[option_value].get[1]>
 
     - define result_list:<list[]>
     - if <[option_value].object_type> != LIST:
