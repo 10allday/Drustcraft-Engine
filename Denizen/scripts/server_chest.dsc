@@ -26,8 +26,9 @@ drustcraftw_chest:
             - define rand:<util.random.decimal[0].to[1]>
             - if <[rand]> <= <server.flag[drustcraft.chest.items.<[value]>.chance]>:
               - define item:<server.flag[drustcraft.chest.items.<[value]>.item]>
-              - define qty:<util.random.int[<server.flag[drustcraft.chest.items.<[value]>.min_qty]>].to[<server.flag[drustcraft.chest.items.<[value]>.max_qty]>]>
-              - give <item[<[item]>]> quantity:<[qty]> to:<context.inventory>
+              - if <item[<[item]>].exists>:
+                - define qty:<util.random.int[<server.flag[drustcraft.chest.items.<[value]>.min_qty]>].to[<server.flag[drustcraft.chest.items.<[value]>.max_qty]>]>
+                - give <item[<[item]>]> quantity:<[qty]> to:<context.inventory>
 
           - waituntil <server.sql_connections.contains[drustcraft]>
           - sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>chest_stocked`(`server`,`location`,`day`) VALUES(NULL, "<context.inventory.location>", <server.flag[drustcraft.util.day]>);'
