@@ -63,13 +63,13 @@ drustcraftt_chatgui_render:
 drustcraftp_chatgui_title:
   type: procedure
   debug: false
-  definitions: title|width
+  definitions: title
   script:
     - define horz_line:-------------------------
-    - define width:<tern[<[width].exists>].pass[<[width]>].fail[<[title].text_width.add[1]>]>
-
+    
     - define 'line: <[title]> '
-    - define horz_size:<[horz_line].text_width.sub[<[width].div[2].round_up>].div[6].round_down>
+    
+    - define horz_size:<[horz_line].text_width.sub[<[line].text_width.div[2].round_up>].div[6].round_down>
     - define line:<&e><[horz_line].substring[0,<[horz_size]>]><&f><[line]><&e><[horz_line].substring[0,<[horz_size]>]>
     - determine <[line]>
 
