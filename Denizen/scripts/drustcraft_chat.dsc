@@ -537,7 +537,7 @@ drustcraftc_chat_announce:
   description: Announces text across the network
   usage: /announce <&lt>text<&gt>
   permission: drustcraft.announce
-  permission message: <&c>I'm sorry, you do not have permission to perform this command
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to that command
   tab complete:
     - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
       - define command:announce
@@ -561,7 +561,7 @@ drustcraftc_chat_pm:
   description: Sends a message to a player
   usage: /pm <&lt>player<&gt> <&lt>text<&gt>
   permission: drustcraft.pm
-  permission message: <&c>I'm sorry, you do not have permission to perform this command
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to that command
   tab complete:
     - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
       - define command:pm
@@ -617,7 +617,7 @@ drustcraftc_chat_reply:
   description: Replies to the last message from a player
   usage: /r <&lt>text<&gt>
   permission: drustcraft.pm
-  permission message: <&c>I'm sorry, you do not have permission to perform this command
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to that command
   tab complete:
     - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
       - define command:r

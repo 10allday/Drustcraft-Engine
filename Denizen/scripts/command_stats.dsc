@@ -8,7 +8,7 @@ drustcraftc_stats:
   description: Displays stats of the server
   usage: /stats
   permission: drustcraft.stats
-  permission message: <&c>I'm sorry, you do not have permission to perform this command
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to that command
   script:
     - narrate '<&e>----- Server Information -----'
     - narrate '<&6>Online players: <&a><server.online_players.size> <&6>/ <&a><server.max_players>'

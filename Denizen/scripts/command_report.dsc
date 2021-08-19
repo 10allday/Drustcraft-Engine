@@ -35,7 +35,7 @@ drustcraftc_report:
   description: Reports a player or bug
   usage: /report [player|bug] [player]
   permission: drustcraft.report
-  permission message: <&c>I'm sorry, you do not have permission to perform this command
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to that command
   tab complete:
     - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
       - define command:report

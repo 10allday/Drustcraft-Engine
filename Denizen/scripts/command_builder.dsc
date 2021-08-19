@@ -207,7 +207,7 @@ drustcraftc_builder:
   description: Enables or disables builder mode
   usage: /builder [(toggle|enable|disable)]
   permission: drustcraft.builder
-  permission message: <&c>I'm sorry, you do not have permission to perform this command
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to that command
   tab complete:
     - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
       - define command:builder
@@ -285,7 +285,7 @@ drustcraftc_builder_nightvision:
   aliases:
     - nv
   permission: drustcraft.builder
-  permission message: <&c>I'm sorry, you do not have permission to perform this command
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to that command
   script:
     - if <player.gamemode> == CREATIVE:
       - if <player.has_effect[NIGHT_VISION]>:
@@ -303,7 +303,7 @@ drustcraftc_builder_noclip:
   description: Toggle noclip
   usage: /noclip
   permission: drustcraft.builder
-  permission message: <&c>I'm sorry, you do not have permission to perform this command
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to that command
   script:
     - if <list[CREATIVE|SPECTATOR].contains[<player.gamemode>]>:
       - if <player.has_flag[drustcraft.builder.noclip]>:
