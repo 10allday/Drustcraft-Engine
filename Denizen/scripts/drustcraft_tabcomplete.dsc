@@ -140,6 +140,13 @@ drustcraftp_tabcomplete:
     - determine <[ret].filter[starts_with[<[args].last>]]>
 
 
+drustcraftp_tabcomplete_gamemodes:
+  type: procedure
+  debug: false
+  script:
+    - determine <list[adventure|creative|survival|spectator]>
+
+
 drustcraftp_tabcomplete_int:
   type: procedure
   debug: false
