@@ -158,7 +158,7 @@ drustcraftp_tabcomplete_int_nozero:
   type: procedure
   debug: false
   script:
-    - determine <list[0|1|2|3|4|5|6|7|8|9]>
+    - determine <list[1|2|3|4|5|6|7|8|9]>
 
 
 drustcraftp_tabcomplete_bool:
@@ -187,6 +187,13 @@ drustcraftp_tabcomplete_durations:
   debug: false
   script:
     - determine <list[5m|10m|15m|30m|1h|2h|4h|1d|2d|3d|1w|2w|4w]>
+
+
+drustcraftp_tabcomplete_durations_perm:
+  type: procedure
+  debug: false
+  script:
+    - determine <list[5m|10m|15m|30m|1h|2h|4h|1d|2d|3d|1w|2w|4w|perm]>
 
 
 drustcraftp_tabcomplete_pageno:
