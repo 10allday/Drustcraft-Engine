@@ -58,11 +58,11 @@ drustcraftw_region:
                   - flag server drustcraft.region.list.<[world]>.<[region]>.title:<[title]>
                   - waituntil <server.sql_connections.contains[drustcraft]>
                   - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>region_title`(`region_id`,`world_id`,`title`) VALUES("<[region]>", <server.flag[drustcraft.region.world.<[world]>]>, "<[title]>") ON DUPLICATE KEY UPDATE `title` = "<[title]>";'
-                  - narrate '<proc[drustcraftp_msg_format].context[success|The title for region $e<[region]> has been updated]>'
+                  - narrate '<proc[drustcraftp_msg_format].context[success|The title for region $e<[region]> $rhas been updated]>'
                 - else:
                   - flag server drustcraft.region.list.<[world]>.<[region]>.title:!
                   - sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>region_title` WHERE `region_id` = "<[region]>" AND `world_id` = <server.flag[drustcraft.region.world.<[world]>]>;'
-                  - narrate '<proc[drustcraftp_msg_format].context[success|The title for region $e<[region]> has been cleared]>'
+                  - narrate '<proc[drustcraftp_msg_format].context[success|The title for region $e<[region]> $rhas been cleared]>'
               - else:
                 - narrate '<proc[drustcraftp_msg_format].context[error|The region $e<[region]> $rwas not found in world $e<[world]>]>'
             - else:
@@ -78,11 +78,11 @@ drustcraftw_region:
                   - flag server drustcraft.region.list.<[world]>.<[region]>.type:<[type]>
                   - waituntil <server.sql_connections.contains[drustcraft]>
                   - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>region_type`(`region_id`,`world_id`,`type`) VALUES("<[region]>", <server.flag[drustcraft.region.world.<[world]>]>, "<[type]>") ON DUPLICATE KEY UPDATE `type` = "<[type]>";'
-                  - narrate '<proc[drustcraftp_msg_format].context[success|The type for region $e<[region]> has been updated]>'
+                  - narrate '<proc[drustcraftp_msg_format].context[success|The type for region $e<[region]> $rhas been updated]>'
                 - else:
                   - flag server drustcraft.region.list.<[world]>.<[region]>.type:!
                   - sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>region_type` WHERE `region_id` = "<[region]>" AND `world_id` = <server.flag[drustcraft.region.world.<[world]>]>;'
-                  - narrate '<proc[drustcraftp_msg_format].context[success|The type for region $e<[region]> has been cleared]>'
+                  - narrate '<proc[drustcraftp_msg_format].context[success|The type for region $e<[region]> $rhas been cleared]>'
               - else:
                 - narrate '<proc[drustcraftp_msg_format].context[error|The region $e<[region]> $rwas not found in world $e<[world]>]>'
             - else:
@@ -336,7 +336,7 @@ drustcraftp_region_location_type:
     - define region_priority_map:<proc[drustcraftp_region_map].context[<[location]>]>
     - foreach <[region_priority_map]> key:region:
       - if <server.has_flag[drustcraft.region.list.<[location].world.name>.<[region]>.type]>:
-        - define type:<server.has_flag[drustcraft.region.list.<[location].world.name>.<[region]>.type]>
+        - define type:<server.flag[drustcraft.region.list.<[location].world.name>.<[region]>.type]>
 
     - determine <[type]>
 
