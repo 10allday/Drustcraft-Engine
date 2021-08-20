@@ -135,7 +135,6 @@ drustcraftt_punish_load:
       - run drustcraftt_tabcomplete_completion def:note|view|_*players
       - run drustcraftt_tabcomplete_completion def:note|remove|_*punish_noteids
 
-      # TODO: Test
       - run drustcraftt_tabcomplete_completion def:unpunish|_*punish_activeids
 
       - run drustcraftt_tabcomplete_completion def:punish|list
@@ -1112,14 +1111,13 @@ drustcraftp_tabcomplete_punish_types:
     - determine <list[mute|warn|kick|ban]>
 
 
-# TODO: This
 drustcraftp_tabcomplete_punish_mutedplayers:
   type: procedure
   debug: false
   script:
     - determine <server.players.parse[name]>
 
-# TODO: This
+
 drustcraftp_tabcomplete_punish_bannedplayers:
   type: procedure
   debug: false
