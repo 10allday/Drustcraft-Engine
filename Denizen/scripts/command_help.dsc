@@ -9,5 +9,5 @@ drustcraftc_help:
   usage: /help
   script:
     - narrate '<&e>Welcome to Drustcraft'
-    - narrate '<&f>This is a survival multiplayer server.'
-    - narrate '<&f>For more information, visit drustcraft.com.au'
+    - narrate '<&f>This is a survival multiplayer server with towns, shops, quests and events.'
+    - narrate '<&f>For more information, upcoming events and commands, visit <&n><element[www.drustcraft.com.au].on_click[https://www.drustcraft.com.au/].type[OPEN_URL].on_hover[Opens URL in browser]>'
