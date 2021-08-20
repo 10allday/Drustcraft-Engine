@@ -117,7 +117,7 @@ drustcraftp_util_epoch_to_time:
   debug: false
   definitions: epoch
   script:
-    - determine <time[1970/01/01_00:00:00].add[<[epoch]>s].to_local>
+    - determine <time[1970/01/01_00:00:00].add[<[epoch]>s].to_zone[<server.flag[drustcraft.util.timezone]>]>
 
 
 drustcraftp_util_to_version:
