@@ -6,6 +6,7 @@ patch_irongolem:
   debug: false
   events:
     on entity death:
-      - if <util.random.int[0].to[1]> == 0:
-        - determine <list[<item[iron_ingot]>]>
-      - determine NO_DROPS
+      - if <context.entity.name> == iron_golem:
+        - if <util.random.int[0].to[1]> == 0:
+          - determine <list[<item[iron_ingot]>]>
+        - determine NO_DROPS
