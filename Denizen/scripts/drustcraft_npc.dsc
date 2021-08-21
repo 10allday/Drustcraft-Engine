@@ -144,6 +144,7 @@ drustcraftt_npc_load:
       - waituntil <server.has_flag[drustcraft.module.tabcomplete]>
       - run drustcraftt_tabcomplete_completion def:npc|job
       - run drustcraftt_tabcomplete_completion def:npc|job|_*npc_jobs
+      - run drustcraftt_tabcomplete_completion def:tptonpc|_*npcs
 
     - flag server drustcraft.module.npc:<script[drustcraftw_npc].data_key[version]>
 
@@ -306,6 +307,28 @@ drustcrafta_npc:
 
   interact scripts:
   - drustcrafti_npc
+
+
+drustcraftc_npc_tp:
+  type: command
+  debug: false
+  name: tptonpc
+  description: Teleports to a NPC
+  usage: /tptonpc [<&lt>npc-id<&gt>]
+  permission: citizens.npc.select
+  permission message: <&8>[<&c><&l>!<&8>] <&c>You do not have access to that command
+  tab complete:
+    - if <server.scripts.parse[name].contains[drustcraftw_tabcomplete]>:
+      - define command:tptonpc
+      - determine <proc[drustcraftp_tabcomplete].context[<list[<[command]>].include_single[<context.raw_args.escaped>]>]>
+  script:
+    - if <context.args.get[1]||<empty>> != <empty>:
+      - if <npc[<context.args.get[1]>].exists>:
+        - teleport <player> <npc[<context.args.get[1]>].location>
+      - else:
+        - narrate '<proc[drustcraftp_msg_format].context[error|The NPC ID $e<context.args.get[1]> $rdoes not exist]>'
+    - else:
+      - narrate '<proc[drustcraftp_msg_format].context[error|No NPC ID was entered]>'
 
 
 drustcraftp_tabcomplete_npc_jobs:
