@@ -28,5 +28,5 @@ jobs:
           user: ${{ secrets.AZENTINA_USER }}
           password: ${{ secrets.AZENTINA_PASSWORD }}
           host: ${{ secrets.AZENTINA_HOST }}
-          src: /
-          dest: /plugins/
+          src: .
+          dest: ./plugins/
