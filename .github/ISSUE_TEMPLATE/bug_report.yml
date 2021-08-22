@@ -1,10 +1,12 @@
 name: Bug report
-description: Create a report to help us improve
+description: Create a report to help us improve the Engine
 body:
 - type: markdown
   attributes:
     value: |
-      Thanks for taking the time to fill out this bug report for the **Drustcraft Engine**! Fill out the following form to your best ability to help us fix the problem.
+      Thanks for taking the time to fill out this bug report for the **Drustcraft Engine**!
+      This is to report Engine bugs only, not Drustcraft in-game issues. Use https://github.com/Drustcraft/Drustcraft-Game/issues/new/choose for those.
+      Fill out the following form to your best ability to help us fix the problem.
       Only use this if you're absolutely sure that you found a bug and can reproduce it. For anything else, use: [our Discord server](https://drustcraft.com.au/discord), [the FAQ](https://github.com/Drustcraft/Drustcraft-Engine/wiki/FAQ) or the [Common Issues](https://github.com/Drustcraft/Drustcraft-Engine/wiki/Common-Issues).
 - type: textarea
   attributes:

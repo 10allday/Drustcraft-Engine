@@ -1,13 +1,14 @@
 name: Feature request
-description: Suggest an idea for this project
+description: Suggest an idea for the Engine
 labels: "Feature Request"
 body:
 - type: markdown
   attributes:
     value: |
-      Thanks for taking the time to fill out this feature request for the **Drustcraft Engine**! Fill out the following form to your best ability to help us add the feature.
-      This is only for Engine features, not for in-game content (ie adding a new type of Quest condition is a feature request, adding a new quest itself is not a feature request).
-      Any questions, use: [our Discord server](https://drustcraft.com.au/discord), [the FAQ](https://github.com/Drustcraft/Drustcraft-Engine/wiki/FAQ) or the [Common Issues](https://github.com/Drustcraft/Drustcraft-Engine/wiki/Common-Issues).
+      Thanks for taking the time to fill out this bug report for the **Drustcraft Engine**!
+      This is to request Engine features only, not Drustcraft in-game requests. Use https://github.com/Drustcraft/Drustcraft-Game/issues/new/choose for those.
+      Fill out the following form to your best ability to help us add the feature.
+      Only use this if you're absolutely sure that you found a bug and can reproduce it. For anything else, use: [our Discord server](https://drustcraft.com.au/discord), [the FAQ](https://github.com/Drustcraft/Drustcraft-Engine/wiki/FAQ) or the [Common Issues](https://github.com/Drustcraft/Drustcraft-Engine/wiki/Common-Issues).
 - type: textarea
   attributes:
     label: What feature do you want to see added?
