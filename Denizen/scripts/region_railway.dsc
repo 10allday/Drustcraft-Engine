@@ -33,9 +33,10 @@ drustcraftt_region_railway_load:
 drustcraftt_region_railway:
   type: task
   debug: false
-  definitions: command|world|region|type|title
+  definitions: command|world|region|type|title|data
   script:
     - choose <[command]>:
       - case enter:
-        - narrate '<proc[drustcraftp_msg_format].context[arrow|You are entering a railway. You cannot build near the tracks. Watch for moving carts]>'
+        - if <proc[drustcraftp_region_location_type].context[<[data]>]> != railway:
+          - narrate '<proc[drustcraftp_msg_format].context[arrow|You are entering a railway. You cannot build near the tracks. Watch for moving carts]>'
 
