@@ -2,7 +2,7 @@
 
 
 [![License: GPL-3.0](https://img.shields.io/github/license/Drustcraft/Drustcraft?color=blue)](LICENSE)
-[![Discord](https://img.shields.io/discord/782787130334248973.svg?color=%237289da&label=discord)](http://discord.drustcraft.com.au/)
+[![Discord](https://img.shields.io/discord/782787130334248973.svg?color=%237289da&label=discord)](http://drustcraft.com.au/discord)
 
 Drustcraft is a Minecraft network that enables players to participate in an open MMORPG, creating their own cities, quests, shops, NPCs and participanting in world events, dungeons and raids.
 
@@ -28,8 +28,7 @@ Take a look [here](https://github.com/Drustcraft/Drustcraft/wiki#Setup) for how 
 - Website: https://drustcraft.com.au
 - Docs: https://github.com/Drustcraft/Denizen/wiki
 - Download: https://github.com/drustcraft/denizen/zipball/master
-- Discord: http://discord.drustcraft.com.au/
-- Donate: https://donate.drustcraft.com.au/
+- Discord: http://drustcraft.com.au/discord
 
 ## What's Left to be Added/Fixed
 - Check the https://github.com/Drustcraft/Drustcraft-Engine/issues page
