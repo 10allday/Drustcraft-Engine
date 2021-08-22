@@ -20,6 +20,6 @@ jobs:
           password: ${{ secrets.AZENTINA_PASSWORD }}
           server-dir: plugins/
           exclude:
-            - **/*.md
-            - **/.git*
-            - **/.git*/**
+            - "**/*.md"
+            - "**/.git*"
+            - "**/.git*/**"
