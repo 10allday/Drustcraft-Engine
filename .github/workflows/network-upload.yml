@@ -1,25 +1,20 @@
-name: CI
-
+name: Drustcraft Network Deploy
 on:
   push:
     branches: [ main ]
-
-  workflow_dispatch:
-
 jobs:
-  build:
+  network-deploy:
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Get latest code
+        uses: actions/checkout@v2
 
-      - name: Deploy to Drustcraft Network (Azentina)
+      - name: Sync Azentina
         uses: SamKirkland/FTP-Deploy-Action@4.1.0
         with:
           server: ${{ secrets.AZENTINA_HOST }}
           username: ${{ secrets.AZENTINA_USER }}
           password: ${{ secrets.AZENTINA_PASSWORD }}
           server-dir: plugins/
-          exclude:
-            - "**/*.md"
-            - "**/.git*"
-            - "**/.git*/**"
+          exclude: '[**/*.md, **/.git*, **/.git*/**]'
