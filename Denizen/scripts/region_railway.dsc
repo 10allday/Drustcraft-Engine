@@ -38,7 +38,4 @@ drustcraftt_region_railway:
     - choose <[command]>:
       - case enter:
         - narrate '<proc[drustcraftp_msg_format].context[arrow|You are entering a railway. You cannot build near the tracks. Watch for moving carts]>'
-      # - case exit:
-      #   - if <proc[drustcraftp_region_location_type].context[<player.location>]> != railway:
-      #     - narrate '<proc[drustcraftp_msg_format].context[arrow|You have left the area of <[title]>]>'
 
