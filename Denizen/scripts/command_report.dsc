@@ -41,6 +41,10 @@ drustcraftc_report:
       - define command:report
       - determine <proc[drustcraftp_tabcomplete].context[<list[<[command]>].include_single[<context.raw_args.escaped>]>]>
   script:
+    - if !<server.has_flag[drustcraft.module.report]>:
+      - narrate '<proc[drustcraftp_msg_format].context[error|The reporter module not loaded. Check console for errors]>'
+      - stop
+
     - if <context.args.get[1]||<empty>> == PLAYER:
       - if <context.args.get[2]||<empty>> != <empty>:
         - define target_player:<server.match_offline_player[<context.args.get[2]>]>
