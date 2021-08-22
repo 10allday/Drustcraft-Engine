@@ -411,7 +411,7 @@ drustcraftc_kick:
             - narrate '<proc[drustcraftp_msg_format].context[warning|The kick command is reserved for direct cases. Moderators should use the $e/warn $rcommand instead]>'
             - narrate '<proc[drustcraftp_msg_format].context[warning|To confirm the use of this command, enter $e/kick confirm $rwithin the next 10 seconds]>'
           - else:
-            - narrate '<proc[drustcraftp_msg_format].context[error|The reason $e<[rule]> is not a valid reason]>'
+            - narrate '<proc[drustcraftp_msg_format].context[error|The reason $e<[rule]> $ris not a valid reason]>'
         - else:
           - narrate '<proc[drustcraftp_msg_format].context[error|No reason was entered to kick the player]>'
       - else:
@@ -481,7 +481,7 @@ drustcraftc_ban:
               - narrate '<proc[drustcraftp_msg_format].context[warning|The ban command is reserved for direct cases. Moderators should use the $e/warn $rcommand instead]>'
               - narrate '<proc[drustcraftp_msg_format].context[warning|To confirm the use of this command, enter $e/ban confirm $rwithin the next 10 seconds]>'
             - else:
-              - narrate '<proc[drustcraftp_msg_format].context[error|The reason $e<[rule]> is not a valid reason]>'
+              - narrate '<proc[drustcraftp_msg_format].context[error|The reason $e<[rule]> $ris not a valid reason]>'
           - else:
             - narrate '<proc[drustcraftp_msg_format].context[error|No reason was entered to ban the player]>'
         - else:
