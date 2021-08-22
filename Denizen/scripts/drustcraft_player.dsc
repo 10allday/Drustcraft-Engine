@@ -35,6 +35,10 @@ drustcraftw_player:
           - take slot:<[key]> quantity:<[item].quantity>
           - drop <[item]> <player.location.add[-2,-2,-2].to_cuboid[<player.location.add[2,2,2]>].spawnable_blocks.random||<player.location>>
 
+    on player death priority:100:
+      - if <context.message.exists>:
+        - determine <&7><&o><context.message>
+
     on luckperms|lp command:
       - run drustcraftt_util_run_once_later def:drustcraftt_player_update_groups|5
 
