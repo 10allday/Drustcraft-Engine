@@ -178,7 +178,7 @@ drustcraftt_punish_load:
 drustcraftt_punish_add:
   type: task
   debug: false
-  definitions: player|issuer|type|rule|duration|reason
+  definitions: target_player|issuer|type|rule|duration|reason
   script:
     - waituntil <server.sql_connections.contains[drustcraft]>
     - if <list[perm|NULL].contains[<[duration]>]>:
@@ -188,20 +188,20 @@ drustcraftt_punish_add:
 
     - define issuer_uuid:<tern[<[issuer].equals[console]>].pass[console].fail[<[issuer].uuid>]>
 
-    - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>punish_item`(`uuid`,`rule`,`issuer`,`reason`,`type`,`start`,`end`) VALUES("<[player].uuid>", "<[rule]>", "<[issuer].uuid>", <tern[<[reason].exists>].pass["<[reason]>"].fail[NULL]>, "<[type]>", <util.time_now.epoch_millis.div[1000].round>, <[ends]>);'
+    - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>punish_item`(`uuid`,`rule`,`issuer`,`reason`,`type`,`start`,`end`) VALUES("<[target_player].uuid>", "<[rule]>", "<[issuer].uuid>", <tern[<[reason].exists>].pass["<[reason]>"].fail[NULL]>, "<[type]>", <util.time_now.epoch_millis.div[1000].round>, <[ends]>);'
     - ~sql id:drustcraft 'query:SELECT LAST_INSERT_ID();' save:sql_result
     - define id:<entry[sql_result].result.get[1].split[/].get[1]>
 
-    - flag server drustcraft.punish.player.<[player].uuid>.<[id]>.rule:<[rule]>
-    - flag server drustcraft.punish.player.<[player].uuid>.<[id]>.issuer:<[issuer_uuid]>
-    - flag server drustcraft.punish.player.<[player].uuid>.<[id]>.reason:<[reason]||null>
-    - flag server drustcraft.punish.player.<[player].uuid>.<[id]>.type:<[type]>
-    - flag server drustcraft.punish.player.<[player].uuid>.<[id]>.start:<util.time_now.epoch_millis.div[1000].round>
-    - flag server drustcraft.punish.player.<[player].uuid>.<[id]>.end:<[ends]>
-    - flag server drustcraft.punish.player.<[player].uuid>.<[id]>.active:1
-    - flag server drustcraft.punish.player.<[player].uuid>.<[id]>.cancel_uuid:NULL
-    - flag server drustcraft.punish.player.<[player].uuid>.<[id]>.cancel_time:NULL
-    - flag server drustcraft.punish.player.<[player].uuid>.<[id]>.cancel_reason:NULL
+    - flag server drustcraft.punish.player.<[target_player].uuid>.<[id]>.rule:<[rule]>
+    - flag server drustcraft.punish.player.<[target_player].uuid>.<[id]>.issuer:<[issuer_uuid]>
+    - flag server drustcraft.punish.player.<[target_player].uuid>.<[id]>.reason:<[reason]||null>
+    - flag server drustcraft.punish.player.<[target_player].uuid>.<[id]>.type:<[type]>
+    - flag server drustcraft.punish.player.<[target_player].uuid>.<[id]>.start:<util.time_now.epoch_millis.div[1000].round>
+    - flag server drustcraft.punish.player.<[target_player].uuid>.<[id]>.end:<[ends]>
+    - flag server drustcraft.punish.player.<[target_player].uuid>.<[id]>.active:1
+    - flag server drustcraft.punish.player.<[target_player].uuid>.<[id]>.cancel_uuid:NULL
+    - flag server drustcraft.punish.player.<[target_player].uuid>.<[id]>.cancel_time:NULL
+    - flag server drustcraft.punish.player.<[target_player].uuid>.<[id]>.cancel_reason:NULL
     - determine <[id]>
 
 
