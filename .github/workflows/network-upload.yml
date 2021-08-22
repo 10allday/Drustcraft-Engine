@@ -17,4 +17,4 @@ jobs:
           username: ${{ secrets.AZENTINA_USER }}
           password: ${{ secrets.AZENTINA_PASSWORD }}
           server-dir: plugins/
-          exclude: '[**/*.md, **/.git*, **/.git*/**]'
+          exclude: '[**/*.md, **/.git*, **/.git*/**, LICENSE]'
