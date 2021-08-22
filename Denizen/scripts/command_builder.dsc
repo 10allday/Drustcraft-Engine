@@ -23,7 +23,7 @@ drustcraftw_builder:
         - define can_build:false
 
         - foreach <context.location.regions||<list[]>> as:target_region:
-          - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<player.uuid>]> || <proc[drustcraftp_region_player_is_owner].context[<[target_region].id>|<[target_region].world.name>|<player.uuid>]>:
+          - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<player>]> || <proc[drustcraftp_region_player_is_owner].context[<[target_region].id>|<[target_region].world.name>|<player>]>:
             - define can_build:true
             - foreach stop
 
@@ -36,7 +36,7 @@ drustcraftw_builder:
         - define can_build:false
 
         - foreach <context.location.regions||<list[]>> as:target_region:
-          - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<player.uuid>]> || <proc[drustcraftp_region_player_is_owner].context[<[target_region].id>|<[target_region].world.name>|<player.uuid>]>:
+          - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<player>]> || <proc[drustcraftp_region_player_is_owner].context[<[target_region].id>|<[target_region].world.name>|<player>]>:
             - define can_build:true
             - foreach stop
 
@@ -47,7 +47,7 @@ drustcraftw_builder:
     on portal created server_flagged:drustcraft.module.builder:
       - if <context.entity.is_player||false>:
         - foreach <context.blocks.parse[regions].combine.deduplicate||<list[]>> as:target_region:
-          - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<context.entity.uuid>]> || <proc[drustcraftp_region_player_is_owner].context[<[target_region].id>|<[target_region].world.name>|<context.entity.uuid>]>:
+          - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<context.entity>]> || <proc[drustcraftp_region_player_is_owner].context[<[target_region].id>|<[target_region].world.name>|<context.entity>]>:
             - narrate '<proc[drustcraftp_msg_format].context[error|You cannot create portals in regions that you are either a member or owner]>' targets:<context.entity.as_player>
             - determine cancelled
 
@@ -143,7 +143,7 @@ drustcraftt_builder_update_player:
         - define allow:false
         - if <proc[drustcraftp_region_location_gamemode].context[<[target_to]>]||SURVIVAL> != CREATIVE:
           - foreach <[target_to].regions||<list[]>> as:target_region:
-            - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<[target_player].uuid>]||false>:
+            - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<[target_player]>]||false>:
               - define allow:true
               - foreach stop
 
@@ -158,7 +158,7 @@ drustcraftt_builder_update_player:
 
         - define show_disabled:false
         - foreach <[target_from].regions||<list[]>> as:target_region:
-          - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<[target_player].uuid>]>:
+          - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<[target_player]>]>:
             - define show_disabled:true
             - foreach stop
 
@@ -239,7 +239,7 @@ drustcraftc_builder:
 
             - if !<player.location.world.name.starts_with[workshop_]> && !<player.has_permission[drustcraft.builder.override]>:
               - foreach <player.location.regions||<list[]>> as:target_region:
-                - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<player.uuid>]||false> || <proc[drustcraftp_region_player_is_owner].context[<[target_region].id>|<[target_region].world.name>|<player.uuid>]||false>:
+                - if <proc[drustcraftp_region_player_is_member].context[<[target_region].id>|<[target_region].world.name>|<player>]||false> || <proc[drustcraftp_region_player_is_owner].context[<[target_region].id>|<[target_region].world.name>|<player>]||false>:
                   - define allow:true
                   - foreach stop
 
