@@ -188,7 +188,11 @@ drustcraftt_punish_add:
 
     - define issuer_uuid:<tern[<[issuer].equals[console]>].pass[console].fail[<[issuer].uuid>]>
 
-    - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>punish_item`(`uuid`,`rule`,`issuer`,`reason`,`type`,`start`,`end`) VALUES("<[target_player].uuid>", "<[rule]>", "<[issuer].uuid>", <tern[<[reason].exists>].pass["<[reason]>"].fail[NULL]>, "<[type]>", <util.time_now.epoch_millis.div[1000].round>, <[ends]>);'
+    - if !<[reason].exists> || <[reason]> == <empty>:
+      - define reason:null
+    
+
+    - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>punish_item`(`uuid`,`rule`,`issuer`,`reason`,`type`,`start`,`end`) VALUES("<[target_player].uuid>", "<[rule]>", "<[issuer].uuid>", <tern[<[reason].equals[null]>].pass["<[reason]>"].fail[NULL]>, "<[type]>", <util.time_now.epoch_millis.div[1000].round>, <[ends]>);'
     - ~sql id:drustcraft 'query:SELECT LAST_INSERT_ID();' save:sql_result
     - define id:<entry[sql_result].result.get[1].split[/].get[1]>
 
@@ -381,10 +385,10 @@ drustcraftc_kick:
     - define message:<context.args.remove[1|2].space_separated>
 
     - if <[target_player]> == confirm:
-      - if <player.has_flag[drustcraft.punish.confirm.kick]>:
+      - if <player.has_flag[drustcraft.punish.confirm.kick.player]> && <player.has_flag[drustcraft.punish.confirm.kick.rule]>:
         - define found_player:<player.flag[drustcraft.punish.confirm.kick.player]>
         - define rule:<player.flag[drustcraft.punish.confirm.kick.rule]>
-        - define message:<player.flag[drustcraft.punish.confirm.kick.message]>
+        - define message:<player.flag[drustcraft.punish.confirm.kick.message]||null>
 
         - define reason:<proc[drustcraftp_punish_kick_msg].context[KICK|<[rule]>|0|<[message]>]>
         - kick <[found_player]> reason:<[reason]>
@@ -443,11 +447,11 @@ drustcraftc_ban:
     - define message:<context.args.remove[1|2|3].space_separated>
 
     - if <[target_player]> == confirm:
-      - if <player.has_flag[drustcraft.punish.confirm.ban]>:
+      - if <player.has_flag[drustcraft.punish.confirm.ban.player]> && <player.has_flag[drustcraft.punish.confirm.ban.rule]> && <player.has_flag[drustcraft.punish.confirm.ban.duration]>:
         - define found_player:<player.flag[drustcraft.punish.confirm.ban.player]>
         - define duration:<player.flag[drustcraft.punish.confirm.ban.duration]>
         - define rule:<player.flag[drustcraft.punish.confirm.ban.rule]>
-        - define message:<player.flag[drustcraft.punish.confirm.ban.message]>
+        - define message:<player.flag[drustcraft.punish.confirm.ban.message]||null>
 
         - define type:BAN
         - define reason:<proc[drustcraftp_punish_kick_msg].context[<[type]>|<[rule]>|<[duration]>|<[message]>]>
