@@ -354,16 +354,15 @@ drustcraftp_region_location_gamemode:
 
     - determine <[gamemode]>
 
-# TODO - change uuid to player object
 drustcraftp_region_player_is_member:
   type: procedure
   debug: false
-  definitions: region|world|uuid
+  definitions: region|world|target_player
   script:
-    - if <server.flag[drustcraft.region.list.<[world]>.<[region]>.members.players].contains[<[uuid]>]||false>:
+    - if <server.flag[drustcraft.region.list.<[world]>.<[region]>.members.players].contains[<[target_player].uuid>]||false>:
       - determine true
     - foreach <server.flag[drustcraft.region.list.<[world]>.<[region]>.members.groups]||<list[]>> as:group:
-      - if <proc[drustcraftp_group_is_member].context[<[group]>|<player[<[uuid]>]>]>:
+      - if <proc[drustcraftp_group_is_member].context[<[group]>|<[target_player]>]>:
         - determine true
     - determine false
 
