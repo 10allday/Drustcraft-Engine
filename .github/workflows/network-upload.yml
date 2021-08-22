@@ -12,21 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
-
-      - name: Simple File Upload (Azentina)
-        uses: bayssmekanique/action-simple-file-upload@v1.1.3
+      - name: Deploy to Drustcraft Network (Azentina)
+        uses: SamKirkland/FTP-Deploy-Action@4.1.0
         with:
-          user: ${{ secrets.AZENTINA_USER }}
+          server: ${{ secrets.AZENTINA_HOST }}
+          username: ${{ secrets.AZENTINA_USER }}
           password: ${{ secrets.AZENTINA_PASSWORD }}
-          host: ${{ secrets.AZENTINA_HOST }}
-          src: .
-          dest: ./plugins/
+          server-dir: plugins/
+          exclude:
+            - **/*.md
+            - **/.git*
+            - **/.git*/**
