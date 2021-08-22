@@ -13,7 +13,7 @@ drustcraftw_god:
       - run drustcraftt_god_load
 
     on entity damaged server_flagged:drustcraft.module.god:
-      - if <player.exists>:
+      - if <player.exists> && <player.has_flag[drustcraft.god]>:
         - if <context.entity> == <player>:
           - if <context.damager.exists>:
             - hurt 1000 <context.damager>
