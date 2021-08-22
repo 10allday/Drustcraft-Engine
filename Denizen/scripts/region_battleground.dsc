@@ -72,6 +72,6 @@ drustcraftt_region_battleground:
         - title title:<&6><[title]> subtitle:<&6>Battlegrounds
       - case exit:
         - if <player.has_flag[drustcraft.battleground.engaged]> && <player.flag[drustcraft.battleground.engaged].size> > 0:
-          - flag player 'drustcraft.player.death_message:Daevas doesn<&sq>t like cowards'
+          - flag player 'drustcraft.player.death_message:<player.name> was destroyed. Daevas doesn<&sq>t like cowards'
           - hurt <player.health> <player>
           - drop <item[player_head[skull_skin=<player.skull_skin>|<player.name>]]> <player.location.random_offset[3,0,3]> quantity:1
