@@ -14,12 +14,12 @@ The ultimate goal of this project is to create a free-play, safe and open world 
 ## What is the Drustcraft Engine?
 The Drustcraft Engine is the code (predominately Denizen) that adds all the core features used in an Drustcraft Environment such as Builder tools, NPC jobs and regions. The Engine does require certain Minecraft Plugins to be installed such as Denizen, Citizens, WorldGuard and FastAsyncWorldEdit.
 
-The Drustcraft Engine does not include any configuration or world settings/environments. That is up to the server administrator to configure and setup. Anyone can run the Drustcraft Engine on their own server. These servers are known as "powered by Drustcraft".
+The Drustcraft Engine does not include any configuration or world settings/environments. That is up to the server administrator to configure and setup. Anyone can run the Drustcraft Engine on their own server. These servers are known as "powered by the Drustcraft Engine".
 
 If you would like to make a feature request or report a bug on the the Drustcraft Minecraft Server (play.drustcraft.com.au), you can do so at the [Drustcraft-Game repository](https://github.com/Drustcraft/Drustcraft-Game/issues/new/choose)
 
 
-#### Currently supporting Minecraft Bedrock v1.17 and Minecraft Java v1.17.1.
+#### Currently supporting Minecraft Bedrock v1.17.11 and Minecraft Java v1.17.1.
 
 ## Setting Up
 Take a look [here](https://github.com/Drustcraft/Drustcraft/wiki#Setup) for how to set up Drustcraft.
