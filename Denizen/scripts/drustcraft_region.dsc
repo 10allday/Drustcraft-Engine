@@ -374,16 +374,15 @@ drustcraftp_region_member_groups:
   script:
     - determine <server.flag[drustcraft.region.list.<[world]>.<[region]>.members.groups]||<list[]>>
 
-# TODO - change uuid to player object
 drustcraftp_region_player_is_owner:
   type: procedure
   debug: false
-  definitions: region|world|uuid
+  definitions: region|world|target_player
   script:
-    - if <server.flag[drustcraft.region.list.<[world]>.<[region]>.owners.players].contains[<[uuid]>]||false>:
+    - if <server.flag[drustcraft.region.list.<[world]>.<[region]>.owners.players].contains[<[target_player].uuid>]||false>:
       - determine true
     - foreach <server.flag[drustcraft.region.list.<[world]>.<[region]>.owners.groups]||<list[]>> as:group:
-      - if <proc[drustcraftp_group_is_member].context[<[group]>|<player[<[uuid]>]>]>:
+      - if <proc[drustcraftp_group_is_member].context[<[group]>|<player[<[target_player]>]>]>:
         - determine true
     - determine false
 
