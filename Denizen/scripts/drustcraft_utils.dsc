@@ -4,7 +4,7 @@
 drustcraftw_util:
   type: world
   debug: false
-  version: 1
+  version: 2
   events:
     on server start:
       - run drustcraftt_util_load
@@ -166,3 +166,18 @@ drustcrafp_util_cron_now:
                 - if <[cron].get[6]> == * || <[cron].get[6]> == <[now].format[W]>:
                   - determine true
     - determine false
+
+
+drustcraftp_util_list_replace_text:
+  type: procedure
+  debug: false
+  script:
+    - define find:<[1]>
+    - define replace:<[2]>
+    - define target_list:<queue.definition[raw_context].remove[1|2]||<list[]>>
+    - define determine_list:<list[]>
+
+    - foreach <[target_list]>:
+      - define determine_list:->:<[value].replace_text[<[find]>].with[<[replace]>]>
+
+    - determine <[determine_list]>
