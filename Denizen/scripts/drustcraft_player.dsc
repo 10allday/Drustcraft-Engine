@@ -26,7 +26,7 @@ drustcraftw_player:
 
       - foreach <player.inventory.map_slots> as:item:
         - define skip:false
-        - foreach <yaml[drustcraft_player].read[death_drop_confirm]||<list[]>> as:confirm_proc:
+        - foreach <server.flag[drustcraft.player.death_drop_confirm]||<list[]>> as:confirm_proc:
           - if <proc[<[confirm_proc]>].context[<[item]>]>:
             - define skip:true
             - foreach stop
@@ -117,8 +117,7 @@ drustcraftt_player_death_drop_confirm_register:
   debug: false
   definitions: proc_name
   script:
-    - if !<yaml[drustcraft_player].read[death_drop_confirm].contains[<[proc_name]>]>:
-      - yaml id:drustcraft_player set death_drop_confirm:|:<[proc_name]>
+    - flag server drustcraft.player.death_drop_confirm:->:<[proc_name]>
 
 
 drustcraftp_player_groups:
