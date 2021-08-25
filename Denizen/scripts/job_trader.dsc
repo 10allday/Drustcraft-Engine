@@ -221,7 +221,7 @@ drustcraftc_job_trader:
         - if <[trader_id]> != <empty>:
           - if !<server.flag[drustcraft.job_trader.traders].keys.contains[<[trader_id]>]>:
             - waituntil <server.sql_connections.contains[drustcraft]>
-            - sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>job_trader_type(`trader_id`, `title`, `owner`) VALUES("<[trader_id]>", "<[trader_id].to_sentence_case>", "<player.uuid||console>");'
+            - sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>job_trader_type`(`trader_id`, `title`, `owner`) VALUES("<[trader_id]>", "<[trader_id].to_sentence_case>", "<player.uuid||console>");'
             - flag server drustcraft.job_trader.traders.<[trader_id]>.title:<[trader_id]>
             - flag server drustcraft.job_trader.traders.<[trader_id]>.owner:<player.uuid||console>
             - flag server drustcraft.job_trader.traders.<[trader_id]>.items:<list[]>
