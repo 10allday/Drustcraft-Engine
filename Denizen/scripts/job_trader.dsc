@@ -220,9 +220,12 @@ drustcraftc_job_trader:
         - define trader_id:<context.args.get[2]||<empty>>
         - if <[trader_id]> != <empty>:
           - if !<server.flag[drustcraft.job_trader.traders].keys.contains[<[trader_id]>]>:
+            - define title:<[trader_id]>
+            - if <context.args.size> > 2:
+              - define title:<context.args.remove[1|2].space_separated.to_titlecase>
             - waituntil <server.sql_connections.contains[drustcraft]>
             - sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>job_trader_type`(`trader_id`, `title`, `owner`) VALUES("<[trader_id]>", "<[trader_id].to_sentence_case>", "<player.uuid||console>");'
-            - flag server drustcraft.job_trader.traders.<[trader_id]>.title:<[trader_id]>
+            - flag server drustcraft.job_trader.traders.<[trader_id]>.title:<[title]>
             - flag server drustcraft.job_trader.traders.<[trader_id]>.owner:<player.uuid||console>
             - flag server drustcraft.job_trader.traders.<[trader_id]>.items:<list[]>
             - flag server drustcraft.job_trader.traders.<[trader_id]>.npcs:<list[]>
