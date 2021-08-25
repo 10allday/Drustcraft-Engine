@@ -112,7 +112,7 @@ drustcraftt_player_update_groups:
         - flag server drustcraft.player.players.<[uuid]>.groups:<server.flag[drustcraft.player.players.<[uuid]>.groups].include[<server.flag[drustcraft.player.group_inheritence.<[group_name]>]>].deduplicate>
 
 
-drustcraftt_player_death_drop_confirm:
+drustcraftt_player_death_drop_confirm_register:
   type: task
   debug: false
   definitions: proc_name
