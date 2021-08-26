@@ -98,6 +98,20 @@ drustcraftw_npc:
           - else:
             - narrate '<proc[drustcraftp_msg_format].context[error|You have no NPC selected]>'
 
+        - case find:
+          - determine passively fulfilled
+          - if <player.has_permission[citizens.npc]>:
+            - define search:<context.args.get[2]||<empty>>
+            - if <[search]> != <empty>:
+              - ~run drustcraftt_chatgui_clear
+              - foreach <server.npcs> as:target_npc:
+                - if <[target_npc].name.contains_text[<[search]>]>:
+                  - ~run drustcraftt_chatgui_item 'def:<proc[drustcraftp_chatgui_option].context[<[target_npc].id>]><proc[drustcraftp_chatgui_value].context[<[target_npc].name>]> <proc[drustcraftp_chatgui_button].context[view|TP|tptonpc <[target_npc].id>|Teleport to NPC|RUN_COMMAND]>'
+
+              - ~run drustcraftt_chatgui_render 'def:npc find <[search]>|NPC Search: <[search]>|<context.args.get[3]||1>'
+            - else:
+              - narrate '<proc[drustcraftp_msg_format].context[error|No search text was entered]>'
+
 
 drustcraftt_npc_load:
   type: task
@@ -108,6 +122,10 @@ drustcraftt_npc_load:
 
     - if !<server.scripts.parse[name].contains[drustcraftw_db]>:
       - log ERROR 'Drustcraft NPC: Drustcraft DB is required to be installed'
+      - stop
+
+    - if !<server.scripts.parse[name].contains[drustcraftw_chatgui]>:
+      - debug ERROR 'Drustcraft Job Quest: Drustcraft Chat GUI is required to be installed'
       - stop
 
     - waituntil <server.sql_connections.contains[drustcraft]>
@@ -144,6 +162,7 @@ drustcraftt_npc_load:
       - waituntil <server.has_flag[drustcraft.module.tabcomplete]>
       - run drustcraftt_tabcomplete_completion def:npc|job
       - run drustcraftt_tabcomplete_completion def:npc|job|_*npc_jobs
+      - run drustcraftt_tabcomplete_completion def:npc|find
       - run drustcraftt_tabcomplete_completion def:tptonpc|_*npcs
 
     - flag server drustcraft.module.npc:<script[drustcraftw_npc].data_key[version]>
