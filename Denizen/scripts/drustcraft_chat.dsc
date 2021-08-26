@@ -135,7 +135,7 @@ drustcraftw_chat:
         - determine CANCELLED
 
     on command priority:-1 flagged:drustcraft.chat.disabled:
-      - if <player.location.world> != <player.flag[drustcraft.chat.start_location].world>|| <player.location.distance_squared[<player.flag[drustcraft.chat.start_location]>]> >= 20:
+      - if <player.location.world> != <player.flag[drustcraft.chat.start_location].world> || <player.location.distance_squared[<player.flag[drustcraft.chat.start_location]>]> >= 20:
         - flag player drustcraft.chat.disabled:!
       - else:
         - narrate '<proc[drustcraftp_msg_format].context[error|You cannot run commands until you move some distance]>'
