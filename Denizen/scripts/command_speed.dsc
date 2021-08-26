@@ -74,15 +74,15 @@ drustcraftc_speed:
       - if <[user_speed]> == <empty>:
         - if <player.is_flying>:
           - adjust <player> fly_speed:<[speed]>
-          - narrate '<proc[drustcraftp_msg_format].context[arrow|Your fly speed is set to $e<player.fly_speed>]>'
+          - narrate '<proc[drustcraftp_msg_format].context[arrow|Your fly speed is set to $e<player.fly_speed.mul[10].round>]>'
         - else:
-          - narrate '<proc[drustcraftp_msg_format].context[arrow|Your walk speed is set to $e<player.walk_speed>]>'
+          - narrate '<proc[drustcraftp_msg_format].context[arrow|Your walk speed is set to $e<player.walk_speed.mul[10].round>]>'
       - else:
         - if <player.is_flying>:
           - adjust <player> fly_speed:<[speed]>
-          - narrate '<proc[drustcraftp_msg_format].context[arrow|Your fly speed now changed to $e<player.fly_speed>]>'
+          - narrate '<proc[drustcraftp_msg_format].context[arrow|Your fly speed now changed to $e<player.fly_speed.mul[10].round>]>'
         - else:
           - adjust <player> walk_speed:<[speed]>
-          - narrate '<proc[drustcraftp_msg_format].context[arrow|Your walk speed now changed to $e<player.walk_speed>]>'
+          - narrate '<proc[drustcraftp_msg_format].context[arrow|Your walk speed now changed to $e<player.walk_speed.mul[10].round>]>'
     - else:
       - narrate '<proc[drustcraftp_msg_format].context[error|This command can only be run by players]>'
