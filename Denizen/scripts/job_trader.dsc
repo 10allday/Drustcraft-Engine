@@ -131,6 +131,9 @@ drustcraftt_job_trader_update_npc:
 
     - define count_offset:<[npc].flag[drustcraft.job_trader.items].keys.highest||0>
     - repeat <[sell_item_count]>:
+      - if <[item_list].size> == 0:
+        - repeat stop
+
       - define item:<[item_list].random>
       - define item_list:<-:<[item]>
 
@@ -148,6 +151,9 @@ drustcraftt_job_trader_update_npc:
 
     - define count_offset:<[npc].flag[drustcraft.job_trader.items].keys.highest||0>
     - repeat <[buy_item_count]>:
+      - if <[item_list].size> == 0:
+        - repeat stop
+
       - define item:<[item_list].random>
       - define item_list:<-:<[item]>
 
