@@ -170,4 +170,7 @@ drustcraftp_chatgui_button:
       - define colour:c
 
     - define cmd_type:<[cmd_type]||SUGGEST_COMMAND>
-    - determine <element[&<[colour]><&lb><[title]><&rb>].on_click[/<[command]>].type[<[cmd_type]>].on_hover[<[hover]>].parse_color>
+    - define link:<element[&<[colour]><&lb><[title]><&rb>].on_click[/<[command]>].type[<[cmd_type]>]>
+    - if <[hover].exists>:
+      - define link:<[link].on_hover[<[hover]>]>
+    - determine <[link].parse_color>
