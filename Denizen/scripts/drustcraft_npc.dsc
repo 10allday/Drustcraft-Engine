@@ -272,6 +272,7 @@ drustcrafti_npc:
       click trigger:
         script:
           - if <npc.has_flag[drustcraft.npc.job]> && <player.gamemode> == SURVIVAL:
+            - flag <player> drustcraft.npc.last_clicked:<npc>
             - if <npc.has_flag[drustcraft.npc.engaged]>:
               - if !<server.online_players.contains[<npc.flag[drustcraft.npc.engaged]>]> || !<npc.flag[drustcraft.npc.engaged].has_flag[drustcraft.npc.engaged]> || <npc.flag[drustcraft.npc.engaged].flag[drustcraft.npc.engaged]> != <npc>:
                 - flag <npc> drustcraft.npc.engaged:!
