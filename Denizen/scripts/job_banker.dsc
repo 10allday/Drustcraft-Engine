@@ -17,7 +17,11 @@ drustcraftw_job_banker:
         - define slot_map:<context.inventory.map_slots>
         - note remove as:drustcraft_bank_<player.uuid>
         - run drustcraftt_setting_set def:drustcraft.bank.<player.uuid>|<[slot_map].to_json>
-        # - narrate '<proc[drustcraftp_npc_chat_format].context[<[target_npc]>|See ya round]>'
+        - if <player.has_flag[drustcraft.npc.last_clicked]>:
+          - define target_npc:<player.has_flag[drustcraft.npc.last_clicked]>
+          - random:
+            - narrate '<proc[drustcraftp_npc_chat_format].context[<[target_npc]>|See ya round]>'
+            - narrate '<proc[drustcraftp_npc_chat_format].context[<[target_npc]>|I<&sq>ll take good care of all this]>'
 
 drustcraftt_job_banker_load:
   type: task
