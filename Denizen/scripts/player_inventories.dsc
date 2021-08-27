@@ -45,6 +45,13 @@ drustcraftw_inventories:
         - narrate '<proc[drustcraftp_msg_format].context[error|You cannot drop items while not in Surival mode]>'
         - determine CANCELLED
 
+    on system time minutely every:10:
+      - foreach <server.online_players> as:target_player:
+        - flag <[target_player]> drustcraft.inventories.<[target_player].gamemode>:<[target_player].inventory.map_slots>
+        - ~run drustcraftt_setting_set def:drustcraft.inventories.<[target_player].uuid>.adventure|<[target_player].flag[drustcraft.inventories.adventure]> save:result
+        - ~run drustcraftt_setting_set def:drustcraft.inventories.<[target_player].uuid>.creative|<[target_player].flag[drustcraft.inventories.creative]> save:result
+        - ~run drustcraftt_setting_set def:drustcraft.inventories.<[target_player].uuid>.survival|<[target_player].flag[drustcraft.inventories.survival]> save:result
+
     on player closes inventory server_flagged:drustcraft.module.inventories:
       - if <context.inventory.note_name.starts_with[drustcraft_inventories_inspect_]||false>:
         - define target_uuid:<context.inventory.note_name.after[<player.uuid>_].before[_]>
