@@ -57,6 +57,10 @@ drustcraftt_player_load:
       - debug ERROR 'Drustcraft player requires LuckPerms installed'
       - stop
 
+    - foreach <server.online_players> as:target_player:
+      - foreach <[target_player].fake_entities> as:target_entity:
+        - fakespawn <[target_entity]> cancel players:<[target_player]>
+
     - ~yaml id:luckperms_config load:../LuckPerms/config.yml
     - if <yaml[luckperms_config].read[storage-method]||null> != MySQL:
       - debug ERROR 'Drustcraft player requires LuckPerms storage method set to MySQL'
