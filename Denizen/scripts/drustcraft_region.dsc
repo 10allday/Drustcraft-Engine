@@ -18,16 +18,16 @@ drustcraftw_region:
         - adjust <player> gamemode:<proc[drustcraftp_region_location_gamemode].context[<player.location>]>
 
     on player enters polygon:
-      - run drustcraftt_region_enter def:<context.area.note_name>|<context.from||<empty>>
+      - run drustcraftt_region_enter def:<context.area.note_name>|<context.from||<empty>>|<player>
 
     on player enters cuboid:
-      - run drustcraftt_region_enter def:<context.area.note_name>|<context.from||<empty>>
+      - run drustcraftt_region_enter def:<context.area.note_name>|<context.from||<empty>>|<player>
 
     on player exits polygon:
-      - run drustcraftt_region_exit def:<context.area.note_name>|<context.from||<empty>>
+      - run drustcraftt_region_exit def:<context.area.note_name>|<context.from||<empty>>|<player>
 
     on player exits cuboid:
-      - run drustcraftt_region_exit def:<context.area.note_name>|<context.from||<empty>>
+      - run drustcraftt_region_exit def:<context.area.note_name>|<context.from||<empty>>|<player>
 
     on rg|region command:
       - define args:<context.args>
@@ -285,7 +285,7 @@ drustcraftt_region_type_register:
 drustcraftt_region_enter:
   type: task
   debug: false
-  definitions: note_name|from
+  definitions: note_name|from|target_player
   script:
     - if <[note_name].starts_with[drustcraft_region_]>:
       - define world:<[note_name].after[drustcraft_region_].before[_]>
@@ -294,7 +294,7 @@ drustcraftt_region_enter:
       - define title:<server.flag[drustcraft.region.list.<[world]>.<[region]>.title]||null>
       - if <[type]> != null:
         - if <server.has_flag[drustcraft.region.type.<[type]>]>:
-          - run <server.flag[drustcraft.region.type.<[type]>]> def:enter|<[world]>|<[region]>|<[type]>|<[title]>|<[from]>
+          - run <server.flag[drustcraft.region.type.<[type]>]> def:enter|<[world]>|<[region]>|<[type]>|<[title]>|<[from]>|<[target_player]>
       - else if <[title]> != null:
         - title title:<&f><[title]>
 
@@ -302,7 +302,7 @@ drustcraftt_region_enter:
 drustcraftt_region_exit:
   type: task
   debug: false
-  definitions: note_name|from
+  definitions: note_name|from|target_player
   script:
     - if <[note_name].starts_with[drustcraft_region_]>:
       - define world:<[note_name].after[drustcraft_region_].before[_]>
@@ -311,7 +311,7 @@ drustcraftt_region_exit:
       - define title:<server.flag[drustcraft.region.list.<[world]>.<[region]>.title]||null>
       - if <[type]> != null:
         - if <server.has_flag[drustcraft.region.type.<[type]>]>:
-          - run <server.flag[drustcraft.region.type.<[type]>]> def:exit|<[world]>|<[region]>|<[type]>|<[title]>|<[from]>
+          - run <server.flag[drustcraft.region.type.<[type]>]> def:exit|<[world]>|<[region]>|<[type]>|<[title]>|<[from]>|<[target_player]>
 
 
 drustcraftp_region_map:
