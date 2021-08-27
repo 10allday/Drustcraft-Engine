@@ -278,7 +278,7 @@ drustcrafti_npc:
 
             - if !<npc.has_flag[drustcraft.npc.engaged]>:
               - run drustcraftt_npc_job_run def:<npc>|click|<player>|null save:result
-              - if <entry[result].created_queue.determination.get[1]>:
+              - if <entry[result].created_queue.determination.get[1]||false>:
                 - flag <npc> drustcraft.npc.engaged:<player>
                 - flag <player> drustcraft.npc.engaged:<npc>
             - else:
