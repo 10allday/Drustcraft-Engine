@@ -33,12 +33,12 @@ drustcraftt_region_town_load:
 drustcraftt_region_town:
   type: task
   debug: false
-  definitions: command|world|region|type|title
+  definitions: command|world|region|type|title|target_player
   script:
-    - choose <[command]>:
-      - case enter:
-        - narrate '<proc[drustcraftp_msg_format].context[arrow|You are entering a town. You cannot build in this area]>'
-        - title title:<&e><[title]> subtitle:<&e>Town
-      - case exit:
-        - narrate '<proc[drustcraftp_msg_format].context[arrow|You have left the town of <[title]>]>'
-
+    - if <[target_player].gamemode> == SURVIVAL:
+      - choose <[command]>:
+        - case enter:
+          - narrate '<proc[drustcraftp_msg_format].context[arrow|You are entering a town. You cannot build in this area]>'
+          - title title:<&e><[title]> subtitle:<&e>Town
+        - case exit:
+          - narrate '<proc[drustcraftp_msg_format].context[arrow|You have left the town of <[title]>]>'
