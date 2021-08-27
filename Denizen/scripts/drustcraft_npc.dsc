@@ -203,7 +203,7 @@ drustcraftt_npc_job_run:
   definitions: npc|action|player|data
   script:
     - if <[npc].has_flag[drustcraft.npc.job.task]>:
-      - run <[npc].flag[drustcraft.npc.job.task]> def:<[action]>|<[npc]>|<[player]||null>|<[data]||null> save:result
+      - ~run <[npc].flag[drustcraft.npc.job.task]> def:<[action]>|<[npc]>|<[player]||null>|<[data]||null> save:result
       - determine <entry[result].created_queue.determination.get[1]||null>
     - determine null
 
@@ -277,7 +277,7 @@ drustcrafti_npc:
                 - flag <npc> drustcraft.npc.engaged:!
 
             - if !<npc.has_flag[drustcraft.npc.engaged]>:
-              - run drustcraftt_npc_job_run def:<npc>|click|<player>|null save:result
+              - ~run drustcraftt_npc_job_run def:<npc>|click|<player>|null save:result
               - if <entry[result].created_queue.determination.get[1]||false>:
                 - flag <npc> drustcraft.npc.engaged:<player>
                 - flag <player> drustcraft.npc.engaged:<npc>
