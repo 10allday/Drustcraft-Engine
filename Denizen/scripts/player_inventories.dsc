@@ -15,11 +15,11 @@ drustcraftw_inventories:
     after player joins server_flagged:drustcraft.module.inventories:
       - wait 20t
       - ~run drustcraftt_setting_get def:drustcraft.inventories.<player.uuid>.adventure|<map[]> save:result
-      - flag <player> drustcraft.inventories.adventure:<entry[result].created_queue.determination.get[1]>
+      - flag player drustcraft.inventories.adventure:<entry[result].created_queue.determination.get[1]>
       - ~run drustcraftt_setting_get def:drustcraft.inventories.<player.uuid>.creative|<map[]> save:result
-      - flag <player> drustcraft.inventories.creative:<entry[result].created_queue.determination.get[1]>
+      - flag player drustcraft.inventories.creative:<entry[result].created_queue.determination.get[1]>
       - ~run drustcraftt_setting_get def:drustcraft.inventories.<player.uuid>.survival|<map[]> save:result
-      - flag <player> drustcraft.inventories.survival:<entry[result].created_queue.determination.get[1]>
+      - flag player drustcraft.inventories.survival:<entry[result].created_queue.determination.get[1]>
 
       - inventory clear
       - inventory set d:<player.inventory> o:<player.flag[drustcraft.inventories.<player.gamemode>]||<map[]>>
