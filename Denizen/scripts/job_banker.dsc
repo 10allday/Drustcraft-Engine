@@ -17,7 +17,7 @@ drustcraftw_job_banker:
         - define slot_map:<context.inventory.map_slots>
         - note remove as:drustcraft_bank_<player.uuid>
         - run drustcraftt_setting_set def:drustcraft.bank.<player.uuid>|<[slot_map].to_json>
-
+        # - narrate '<proc[drustcraftp_npc_chat_format].context[<[target_npc]>|See ya round]>'
 
 drustcraftt_job_banker_load:
   type: task
@@ -43,29 +43,23 @@ drustcraftt_job_banker_load:
 drustcraftt_job_banker:
   type: task
   debug: false
-  definitions: action|npc|player
+  definitions: action|target_npc|target_player
   script:
     - choose <[action]>:
       - case click:
-        - ~run drustcraftt_setting_get def:drustcraft.bank.<[player].uuid> save:result
+        - ~run drustcraftt_setting_get def:drustcraft.bank.<[target_player].uuid> save:result
         - define slot_map:<entry[result].created_queue.determination.get[1]>
         - if <[slot_map]> == null:
           - define slot_map:<map[]>
         - else:
           - define slot_map:<util.parse_yaml[<[slot_map]>]>
 
-        - note <inventory[generic[size=54;title=Banker]]> as:drustcraft_bank_<[player].uuid>
-        - inventory set d:<inventory[drustcraft_bank_<[player].uuid>]> o:<[slot_map]>
-        - inventory open d:<inventory[drustcraft_bank_<[player].uuid>]>
-        - determine true
-
-      - case close:
-        - define slot_map:<inventory[drustcraft_bank_<[player].uuid>].map_slots>
-        - note remove as:drustcraft_bank_<player.uuid>
-        - run drustcraftt_setting_set def:drustcraft.bank.<player.uuid>|<[slot_map].to_json>
+        - note <inventory[generic[size=54;title=Banker]]> as:drustcraft_bank_<[target_player].uuid>
+        - inventory set d:<inventory[drustcraft_bank_<[target_player].uuid>]> o:<[slot_map]>
+        - inventory open d:<inventory[drustcraft_bank_<[target_player].uuid>]>
 
       - case entry:
         - if <util.random.int[0].to[1]> == 0:
-          - narrate '<proc[drustcraftp_npc_chat_format].context[<[npc]>|<[player].name>, welcome to a town bank]>'
-          - narrate '<proc[drustcraftp_npc_chat_format].context[<[npc]>|You can click on me to open your personal vault]>'
-          - narrate '<proc[drustcraftp_npc_chat_format].context[<[npc]>|Anything you store in your bank vault is safe and can be retrieved from any town bank]>'
+          - narrate '<proc[drustcraftp_npc_chat_format].context[<[target_npc]>|<[target_player].name>, welcome to a town bank]>'
+          - narrate '<proc[drustcraftp_npc_chat_format].context[<[target_npc]>|You can click on me to open your personal vault]>'
+          - narrate '<proc[drustcraftp_npc_chat_format].context[<[target_npc]>|Anything you store in your bank vault is safe and can be retrieved from any town bank]>'
