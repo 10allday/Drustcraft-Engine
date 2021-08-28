@@ -181,3 +181,25 @@ drustcraftp_util_list_replace_text:
       - define determine_list:->:<[value].replace_text[<[find]>].with[<[replace]>]>
 
     - determine <[determine_list]>
+
+
+drustcraftp_util_to_version_map:
+  type: procedure
+  debug: false
+  definitions: version_data
+  script:
+    - define version_map:<map[].with[major].as[0].with[minor].as[0].with[bug].as[0]>
+    - if <[version_data].object_type> == ELEMENT:
+      - if <[version_data].is_decimal>:
+        - define version_map:<[version_map].with[major].as[<[version_data].truncate>]>
+        - define version_map:<[version_map].with[minor].as[<[version_data].sub[<[version_map].get[major]>]>]>
+      - else if <[version_data].is_integer>:
+        - define version_map:<[version_map].with[major].as[<[version_data]>]>
+      - else:
+        - define version_data:<[version_data].before[-]>
+        - define version_data:<[version_data].split[.]>
+        - define version_map:<[version_map].with[major].as[<[version_data].get[1]||0>]>
+        - define version_map:<[version_map].with[minor].as[<[version_data].get[2]||0>]>
+        - define version_map:<[version_map].with[bug].as[<[version_data].get[3]||0>]>
+
+    - determine <[version_map]>
