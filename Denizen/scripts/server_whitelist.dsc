@@ -159,10 +159,12 @@ drustcraftc_whitelist_resetpassword:
     - if !<context.console||false>:
         - waituntil <server.sql_connections.contains[drustcraft]>
 
-        - define reset_code:<util.random.int[10000].to[999999]>
+        - define reset_code:<util.random.int[100000].to[999999]>
         - define timeout:<util.time_now.epoch_millis.div[1000].round_down.add[259200]>
 
-        - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>whitelist_reset_code` WHERE `uuid` = "<player.uuid>"; INSERT INTO `<server.flag[drustcraft.db.prefix]>whitelist_reset_code` (`uuid`, `playername`, `reset_code`, `timeout`) VALUES("<player.uuid>", "<player.name>", "<[reset_code]>", <[timeout]>);'
+        - narrate 'VALUES("<player.uuid>", "<player.name>", "<[reset_code]>", <[timeout]>)'
+        - ~sql id:drustcraft 'update:DELETE FROM `<server.flag[drustcraft.db.prefix]>whitelist_reset_code` WHERE `uuid` = "<player.uuid>";'
+        - ~sql id:drustcraft 'update:INSERT INTO `<server.flag[drustcraft.db.prefix]>whitelist_reset_code` (`uuid`, `playername`, `reset_code`, `timeout`) VALUES("<player.uuid>", "<player.name>", "<[reset_code]>", <[timeout]>);'
 
         - narrate '<proc[drustcraftp_msg_format].context[success|Your website password reset code is $e<[reset_code]>]>'
         - narrate '<proc[drustcraftp_msg_format].context[arrow|DO NOT share this code with anyone else they will have access to your account. This code is valid for 72 hours]>'
