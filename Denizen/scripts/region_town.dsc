@@ -33,7 +33,7 @@ drustcraftt_region_town_load:
 drustcraftt_region_town:
   type: task
   debug: false
-  definitions: command|world|region|type|title|target_player
+  definitions: command|world|region|type|title|from|target_player
   script:
     - if <[target_player].gamemode> == SURVIVAL:
       - choose <[command]>:
