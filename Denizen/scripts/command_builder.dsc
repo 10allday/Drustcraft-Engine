@@ -74,7 +74,8 @@ drustcraftw_builder:
       - foreach <server.online_players.filter[has_flag[drustcraft.builder.noclip]]> as:player:
         - if <[player].gamemode> == CREATIVE:
           - define noclip:false
-          - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.sub[0,0.1,0].material.name>]> && <[player].is_sneaking>:
+          - define block:<[player].location.sub[0,0.1,0].material.name>
+          - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[block]>]>  && <[player].is_sneaking>:
             - define noclip:true
           - else:
             - define noclip:<proc[drustcraftp_builder_isnoclip].context[<[player]>]>
@@ -83,7 +84,8 @@ drustcraftw_builder:
             - adjust <[player]> gamemode:SPECTATOR
         - else if <[player].gamemode> == SPECTATOR:
           - define noclip:false
-          - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[player].location.sub[0,0.1,0].material.name>]>:
+          - define block:<[player].location.sub[0,0.1,0].material.name>
+          - if !<server.flag[drustcraft.builder.noclip.blocks].contains[<[block]>]>:
             - define noclip:true
           - else:
             - define noclip:<proc[drustcraftp_builder_isnoclip].context[<[player]>]>
@@ -117,7 +119,7 @@ drustcraftt_builder_load:
       - run drustcraftt_tabcomplete_completion def:builder|enable
       - run drustcraftt_tabcomplete_completion def:builder|disable
 
-    - flag server drustcraft.builder.noclip.blocks:<list[AIR|RAIL|WATER|CAVE_AIR|LAVA]>
+    - flag server drustcraft.builder.noclip.blocks:<list[AIR|RAIL|WATER|CAVE_AIR|LAVA|CAMPFIRE|SOUL_CAMPFIRE]>
 
     - flag server drustcraft.module.builder:<script[drustcraftw_builder].data_key[version]>
 
