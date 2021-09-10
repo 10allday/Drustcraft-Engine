@@ -6,7 +6,7 @@ Thank for for considering a contribution! Generally, Drustcraft welcomes PRs fro
 
 We have some general notes that should be applied throughout the code:
 
-  - Scripts must begin with 'drustcraft', the first letter of the script type followed by an underscore and the script group. A world script for quests would be named drustcraftw_quest
+  - Scripts should begin with 'drustcraft', the first letter of the script type followed by an underscore and the script group. A world script for quests would be named drustcraftw_quest
   
   - Combine task scripts using seperate keys if possible within a single script. ie drustcraftt_quest.add
   
